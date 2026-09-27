@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "firmware_a_sample"
+		},
+		{
+			"name": "firmware_b_demo",
+			"path": "firmware_b_demo"
+		}
+	],
+	"settings": {}
+}
