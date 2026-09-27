@@ -48,7 +48,10 @@ WOOD_IMPACT_V2
   "strike_id": 1,
   "reclamp_batch": 0,
   "sample_rate_hz": 16000,
-  "sample_count": 1024,
+  "sample_count": 4,
   "anomaly_flags": [],
   "raw": [2048, 2100, 2180, 2120]
 }
+```
+
+上面的短示例使用4个采样点，便于阅读。当前实际模拟采样参数为16000 Hz、每次1024点；正式示例见 `WOOD_IMPACT_V1_example.jsonl`。
