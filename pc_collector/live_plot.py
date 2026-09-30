@@ -1,9 +1,11 @@
 from collections import deque
 from pathlib import Path
+from time import monotonic
 
 
 TRIGGER_INDEX = 256
-PREVIEW_WINDOW_SECONDS = 2.0
+PREVIEW_WINDOW_SECONDS = 5.0
+PREVIEW_REDRAW_INTERVAL_SECONDS = 0.05
 
 
 class LiveWaveformPlot:
@@ -23,6 +25,7 @@ class LiveWaveformPlot:
         self.preview_times: deque[float] = deque()
         self.preview_samples: deque[int] = deque()
         self.preview_baselines: deque[float] = deque()
+        self.last_preview_redraw = 0.0
 
         self.plt.ion()
         self.figure, axes = self.plt.subplots(
@@ -135,6 +138,9 @@ class LiveWaveformPlot:
             self.preview_samples.popleft()
             self.preview_baselines.popleft()
 
+        if monotonic() - self.last_preview_redraw < PREVIEW_REDRAW_INTERVAL_SECONDS:
+            return
+
         relative_times = [
             value - timestamp_seconds
             for value in self.preview_times
@@ -149,12 +155,13 @@ class LiveWaveformPlot:
             list(self.preview_baselines),
         )
         self.preview_axis.set_title(
-            "Live preview (2 s) | "
+            "Live preview (5 s) | "
             f"ADC={sample} | baseline={baseline:.1f} | "
             f"difference={difference}"
         )
         self.figure.canvas.draw_idle()
         self.pump_events()
+        self.last_preview_redraw = monotonic()
 
     def update(self, record: dict) -> Path | None:
         """在下半图显示最新完整敲击，并保存组合图。"""

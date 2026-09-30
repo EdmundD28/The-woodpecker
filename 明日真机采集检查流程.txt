@@ -82,9 +82,9 @@ DFR0052内部约有1 MΩ泄放电阻和5.1 V钳位，但ESP32 ADC属于3.3 V系�
 
 找到类似：
 
-USB Serial Device (COM5)
-USB-SERIAL CH340 (COM5)
-Silicon Labs CP210x USB to UART Bridge (COM5)
+USB Serial Device (COM7)
+USB-SERIAL CH340 (COM7)
+Silicon Labs CP210x USB to UART Bridge (COM7)
 
 记录实际端口：
 
@@ -181,11 +181,11 @@ py -m pip install -r .\requirements.txt
 八、先做软件触发和静止测试
 --------------------------
 
-假设实际端口是COM5，执行：
+使用项目默认端口COM7，执行：
 
-py .\collector.py --port COM5 --baud 115200 --impact-point 1 --trigger software --count 1 --show
+py .\collector.py --port COM7 --baud 115200 --impact-point 1 --trigger software --count 1 --show
 
-必须把COM5替换成实际端口。
+如果Windows把设备分配到其他端口，可把--port COM7改为--port auto自动识别。
 
 collector将自动完成：
 
@@ -221,7 +221,7 @@ collector将自动完成：
 
 位置1单次采集命令：
 
-py .\collector.py --port COM5 --baud 115200 --impact-point 1 --trigger auto --count 1 --show
+py .\collector.py --port COM7 --baud 115200 --impact-point 1 --trigger auto --count 1 --show
 
 看到以下提示后再敲击：
 
@@ -278,36 +278,36 @@ TRIGGER_THRESHOLD = 200
 
 位置1单次：
 
-py .\collector.py --port COM5 --impact-point 1 --trigger auto --count 1 --show
+py .\collector.py --port COM7 --impact-point 1 --trigger auto --count 1 --show
 
 位置2单次：
 
-py .\collector.py --port COM5 --impact-point 2 --trigger auto --count 1 --show
+py .\collector.py --port COM7 --impact-point 2 --trigger auto --count 1 --show
 
 位置3单次：
 
-py .\collector.py --port COM5 --impact-point 3 --trigger auto --count 1 --show
+py .\collector.py --port COM7 --impact-point 3 --trigger auto --count 1 --show
 
 批量采集时，例如每个位置5次：
 
-py .\collector.py --port COM5 --impact-point 1 --trigger auto --count 5
-py .\collector.py --port COM5 --impact-point 2 --trigger auto --count 5
-py .\collector.py --port COM5 --impact-point 3 --trigger auto --count 5
+py .\collector.py --port COM7 --impact-point 1 --trigger auto --count 5
+py .\collector.py --port COM7 --impact-point 2 --trigger auto --count 5
+py .\collector.py --port COM7 --impact-point 3 --trigger auto --count 5
 
 批量采集时可以省略--show。PNG仍会保存，但不会每次弹窗阻塞流程。
 
 如果希望同一个波形窗口在每次敲击完成后立即刷新，使用：
 
-py .\collector.py --port COM5 --impact-point 1 --trigger auto --count 5 --live
+py .\collector.py --port COM7 --impact-point 1 --trigger auto --count 5 --live
 
 --live模式会在每收到一条完整的1024点记录后刷新曲线；它不是采样过程中的逐点滚动显示。
 采集结束后最后一条波形会保持显示，关闭图窗即可结束。
 
 如果希望持续观察压电片变化，同时保留完整敲击采集，使用：
 
-py .\collector.py --port COM5 --impact-point 1 --trigger auto --count 5 --monitor
+py .\collector.py --port COM7 --impact-point 1 --trigger auto --monitor
 
---monitor窗口上半图滚动显示最近2秒的250 Hz峰值预览；每个预览点取对应64个原始点中偏离基线最大的点，下半图显示最近一次完整的16 kHz、1024点波形。
+--monitor窗口上半图持续滚动显示最近5秒的250 Hz峰值预览；每个预览点取对应64个原始点中偏离基线最大的点，下半图显示最近一次完整的16 kHz、1024点波形。关闭窗口或按Ctrl+C才停止监测。
 预览数据不写入训练JSONL，完整敲击数据仍按WOOD_IMPACT_V1保存。
 
 [ ] P01数据的impact_point_id为1。

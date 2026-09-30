@@ -13,6 +13,39 @@ from protocol import validate_record
 OUTPUT_DIRECTORY = Path("collected_data")
 PLOT_DIRECTORY = OUTPUT_DIRECTORY / "plots"
 TRIGGER_INDEX = 256
+USB_SERIAL_VENDOR_IDS = {0x0403, 0x10C4, 0x1A86, 0x303A}
+
+
+def resolve_serial_port(requested_port: str) -> str:
+    if requested_port.lower() != "auto":
+        return requested_port
+
+    try:
+        from serial.tools import list_ports
+    except ModuleNotFoundError as error:
+        raise RuntimeError(
+            "缺少pyserial，请运行: py -m pip install -r requirements.txt"
+        ) from error
+
+    ports = list(list_ports.comports())
+    candidates = [
+        port for port in ports
+        if port.vid in USB_SERIAL_VENDOR_IDS
+    ]
+    com7 = next(
+        (port for port in candidates if port.device.upper() == "COM7"),
+        None,
+    )
+    if com7 is not None:
+        return com7.device
+    if len(candidates) == 1:
+        return candidates[0].device
+
+    available = ", ".join(port.device for port in ports) or "无"
+    raise RuntimeError(
+        f"无法唯一识别ESP32串口（可见端口：{available}）；"
+        "请用--port COM7指定端口"
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -22,7 +55,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--port",
-        help="ESP32串口，例如COM5；不指定时从标准输入读取",
+        help="ESP32串口，例如COM7；可填auto自动识别；交互终端默认自动识别",
     )
     parser.add_argument(
         "--baud",
@@ -68,7 +101,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--monitor",
         action="store_true",
-        help="显示最近2秒连续预览及最近一次完整敲击",
+        help="显示最近5秒连续预览及最近一次完整敲击",
     )
     parser.add_argument(
         "--no-plot",
@@ -95,13 +128,13 @@ def parse_args() -> argparse.Namespace:
             "--monitor不能与--show、--live或--no-plot同时使用"
         )
 
-    if not args.port and (
+    if args.port is None and not sys.stdin.isatty() and (
         args.trigger != "auto"
         or args.impact_point != 1
         or args.count != 1
     ):
         parser.error(
-            "--impact-point、--trigger和--count需要与--port一起使用"
+            "从标准输入读取时，--impact-point、--trigger和--count需要与--port一起使用"
         )
 
     return args
@@ -326,7 +359,7 @@ def collect_from_serial(
         if args.monitor:
             send_command(device, "M")
             print(
-                "已启用250 Hz实时预览（上图显示最近2秒）",
+                "已启用250 Hz实时预览（上图显示最近5秒）",
                 file=sys.stderr,
             )
 
@@ -339,14 +372,21 @@ def collect_from_serial(
 
         deadline = time.monotonic() + args.timeout
 
-        while valid_count < args.count:
+        while args.monitor or valid_count < args.count:
+            if (
+                args.monitor
+                and live_plotter is not None
+                and not live_plotter.is_open()
+            ):
+                break
+
             raw_line = device.readline()
 
             if not raw_line:
                 if live_plotter is not None:
                     live_plotter.pump_events()
 
-                if time.monotonic() >= deadline:
+                if not args.monitor and time.monotonic() >= deadline:
                     raise RuntimeError(
                         f"等待数据超过{args.timeout:g}秒"
                     )
@@ -359,7 +399,7 @@ def collect_from_serial(
             )
 
             if process_preview_line(input_line, live_plotter):
-                if time.monotonic() >= deadline:
+                if not args.monitor and time.monotonic() >= deadline:
                     raise RuntimeError(
                         f"等待完整敲击数据超过{args.timeout:g}秒"
                     )
@@ -384,7 +424,7 @@ def collect_from_serial(
 
             if (
                 args.trigger == "software"
-                and valid_count < args.count
+                and (args.monitor or valid_count < args.count)
             ):
                 time.sleep(0.6)
                 send_command(device, "C")
@@ -455,7 +495,9 @@ def main() -> None:
             encoding="utf-8",
             newline="\n",
         ) as output_file:
-            if args.port:
+            if args.port or sys.stdin.isatty():
+                args.port = resolve_serial_port(args.port or "auto")
+                print(f"使用串口：{args.port}", file=sys.stderr)
                 valid_count, invalid_count = collect_from_serial(
                     args,
                     output_file,
