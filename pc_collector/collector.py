@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TextIO
 
+from live_plot import LiveWaveformPlot
 from protocol import validate_record
 
 
@@ -60,6 +61,16 @@ def parse_args() -> argparse.Namespace:
         help="保存PNG后弹出Matplotlib波形窗口",
     )
     parser.add_argument(
+        "--live",
+        action="store_true",
+        help="保持一个波形窗口，并在每次敲击后立即刷新",
+    )
+    parser.add_argument(
+        "--monitor",
+        action="store_true",
+        help="显示最近2秒连续预览及最近一次完整敲击",
+    )
+    parser.add_argument(
         "--no-plot",
         action="store_true",
         help="只保存JSONL，不生成波形PNG",
@@ -72,6 +83,17 @@ def parse_args() -> argparse.Namespace:
 
     if args.timeout <= 0:
         parser.error("--timeout必须大于0")
+
+    if args.live and args.show:
+        parser.error("--live和--show不能同时使用")
+
+    if args.live and args.no_plot:
+        parser.error("--live和--no-plot不能同时使用")
+
+    if args.monitor and (args.show or args.live or args.no_plot):
+        parser.error(
+            "--monitor不能与--show、--live或--no-plot同时使用"
+        )
 
     if not args.port and (
         args.trigger != "auto"
@@ -151,6 +173,7 @@ def process_line(
     sample_ids: set[str],
     create_plot: bool,
     show_window: bool,
+    live_plotter: LiveWaveformPlot | None,
 ) -> tuple[bool, Path | None]:
     """验证并保存一行数据；返回是否有效及波形图路径。"""
 
@@ -179,7 +202,9 @@ def process_line(
         output_file.flush()
 
         plot_path = None
-        if create_plot:
+        if live_plotter is not None:
+            plot_path = live_plotter.update(record)
+        elif create_plot:
             plot_path = save_plot(record, show_window)
 
         print(
@@ -218,10 +243,44 @@ def send_command(device: object, command: str) -> None:
     device.flush()
 
 
+def process_preview_line(
+    input_line: str,
+    live_plotter: LiveWaveformPlot | None,
+) -> bool:
+    """解析P,timestamp_us,sample,baseline,difference预览行。"""
+
+    if not input_line.startswith("P,"):
+        return False
+
+    parts = input_line.strip().split(",")
+
+    if len(parts) != 5:
+        return True
+
+    try:
+        timestamp_us = int(parts[1])
+        sample = int(parts[2])
+        baseline = float(parts[3])
+        difference = int(parts[4])
+    except ValueError:
+        return True
+
+    if live_plotter is not None:
+        live_plotter.update_preview(
+            timestamp_us=timestamp_us,
+            sample=sample,
+            baseline=baseline,
+            difference=difference,
+        )
+
+    return True
+
+
 def collect_from_serial(
     args: argparse.Namespace,
     output_file: TextIO,
     sample_ids: set[str],
+    live_plotter: LiveWaveformPlot | None,
 ) -> tuple[int, int]:
     """直接打开ESP32串口并采集指定数量的有效记录。"""
 
@@ -264,6 +323,13 @@ def collect_from_serial(
             file=sys.stderr,
         )
 
+        if args.monitor:
+            send_command(device, "M")
+            print(
+                "已启用250 Hz实时预览（上图显示最近2秒）",
+                file=sys.stderr,
+            )
+
         if args.trigger == "software":
             time.sleep(0.1)
             send_command(device, "C")
@@ -277,6 +343,9 @@ def collect_from_serial(
             raw_line = device.readline()
 
             if not raw_line:
+                if live_plotter is not None:
+                    live_plotter.pump_events()
+
                 if time.monotonic() >= deadline:
                     raise RuntimeError(
                         f"等待数据超过{args.timeout:g}秒"
@@ -289,6 +358,13 @@ def collect_from_serial(
                 errors="replace",
             )
 
+            if process_preview_line(input_line, live_plotter):
+                if time.monotonic() >= deadline:
+                    raise RuntimeError(
+                        f"等待完整敲击数据超过{args.timeout:g}秒"
+                    )
+                continue
+
             valid, _ = process_line(
                 input_line=input_line,
                 line_number=line_number,
@@ -296,6 +372,7 @@ def collect_from_serial(
                 sample_ids=sample_ids,
                 create_plot=not args.no_plot,
                 show_window=args.show,
+                live_plotter=live_plotter,
             )
 
             if not valid:
@@ -313,6 +390,9 @@ def collect_from_serial(
                 send_command(device, "C")
                 print("已发送下一次软件触发C", file=sys.stderr)
 
+        if args.monitor:
+            send_command(device, "m")
+
     return valid_count, invalid_count
 
 
@@ -320,6 +400,7 @@ def collect_from_stdin(
     args: argparse.Namespace,
     output_file: TextIO,
     sample_ids: set[str],
+    live_plotter: LiveWaveformPlot | None,
 ) -> tuple[int, int]:
     """保留原来的模拟器/管道输入模式。"""
 
@@ -327,6 +408,9 @@ def collect_from_stdin(
     invalid_count = 0
 
     for line_number, input_line in enumerate(sys.stdin, start=1):
+        if process_preview_line(input_line, live_plotter):
+            continue
+
         valid, _ = process_line(
             input_line=input_line,
             line_number=line_number,
@@ -334,6 +418,7 @@ def collect_from_stdin(
             sample_ids=sample_ids,
             create_plot=not args.no_plot,
             show_window=args.show,
+            live_plotter=live_plotter,
         )
 
         if valid:
@@ -350,6 +435,7 @@ def main() -> None:
     OUTPUT_DIRECTORY.mkdir(parents=True, exist_ok=True)
     output_path = create_output_path()
     sample_ids: set[str] = set()
+    live_plotter = None
 
     print("采集工具已启动……", file=sys.stderr)
 
@@ -357,6 +443,13 @@ def main() -> None:
     invalid_count = 0
 
     try:
+        if args.live or args.monitor:
+            live_plotter = LiveWaveformPlot(PLOT_DIRECTORY)
+            print(
+                "实时波形窗口已打开。",
+                file=sys.stderr,
+            )
+
         with output_path.open(
             mode="w",
             encoding="utf-8",
@@ -367,6 +460,7 @@ def main() -> None:
                     args,
                     output_file,
                     sample_ids,
+                    live_plotter,
                 )
             else:
                 print(
@@ -377,6 +471,7 @@ def main() -> None:
                     args,
                     output_file,
                     sample_ids,
+                    live_plotter,
                 )
     except (RuntimeError, KeyboardInterrupt) as error:
         print(f"采集停止: {error}", file=sys.stderr)
@@ -391,6 +486,13 @@ def main() -> None:
     print(f"有效记录: {valid_count}", file=sys.stderr)
     print(f"无效记录: {invalid_count}", file=sys.stderr)
     print(f"保存位置: {output_path.resolve()}", file=sys.stderr)
+
+    if live_plotter is not None:
+        print(
+            "最后一条波形将保持显示；关闭图窗即可结束。",
+            file=sys.stderr,
+        )
+        live_plotter.hold()
 
 
 if __name__ == "__main__":

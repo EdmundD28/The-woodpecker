@@ -22,6 +22,9 @@ constexpr size_t POST_TRIGGER_COUNT = SAMPLE_COUNT - PRE_TRIGGER_COUNT;
 constexpr uint32_t SAMPLE_PERIOD_SHORT_US = 62;
 constexpr uint32_t SAMPLE_PERIOD_LONG_US = 63;
 
+// 实时预览每64点发送其中最大偏差点：16000 / 64 = 250 Hz
+constexpr uint16_t PREVIEW_DECIMATION = 64;
+
 // ESP32 12位ADC及真机调试参数
 constexpr int ADC_MIN_VALUE = 0;
 constexpr int ADC_MAX_VALUE = 4095;
@@ -51,6 +54,10 @@ bool baselineInitialized = false;
 bool captureActive = false;
 bool softwareTriggerRequested = false;
 bool sampleLossDetected = false;
+bool monitorEnabled = false;
+uint16_t previewSampleCounter = 0;
+uint16_t previewPeakSample = 0;
+int previewPeakDifference = 0;
 
 uint64_t nextSampleTimeUs = 0;
 bool useLongSamplePeriod = false;
@@ -292,6 +299,45 @@ void finishCapture() {
 }
 
 
+void outputPreviewSample(
+    uint16_t sample,
+    int differenceFromBaseline
+) {
+    if (!monitorEnabled || captureActive) {
+        return;
+    }
+
+    if (
+        previewSampleCounter == 0
+        || differenceFromBaseline > previewPeakDifference
+    ) {
+        previewPeakSample = sample;
+        previewPeakDifference = differenceFromBaseline;
+    }
+
+    ++previewSampleCounter;
+
+    if (previewSampleCounter < PREVIEW_DECIMATION) {
+        return;
+    }
+
+    previewSampleCounter = 0;
+
+    // 独立预览格式，不属于WOOD_IMPACT_V1训练记录：
+    // P,timestamp_us,sample,baseline,difference
+    Serial.print("P,");
+    Serial.print(micros());
+    Serial.print(",");
+    Serial.print(previewPeakSample);
+    Serial.print(",");
+    Serial.print(baseline, 1);
+    Serial.print(",");
+    Serial.println(previewPeakDifference);
+
+    previewPeakDifference = 0;
+}
+
+
 void readSerialCommands() {
     while (Serial.available() > 0) {
         char command = static_cast<char>(Serial.read());
@@ -305,6 +351,15 @@ void readSerialCommands() {
         // 发送C执行一次软件触发
         if (command == 'C' || command == 'c') {
             softwareTriggerRequested = true;
+        }
+
+        // M开启实时预览，m关闭实时预览
+        if (command == 'M') {
+            monitorEnabled = true;
+            previewSampleCounter = 0;
+            previewPeakDifference = 0;
+        } else if (command == 'm') {
+            monitorEnabled = false;
         }
     }
 }
@@ -348,6 +403,7 @@ void takeOneSample() {
 
     updateBaseline(sample);
     storePreTriggerSample(sample);
+    outputPreviewSample(sample, distanceFromBaseline);
 }
 
 

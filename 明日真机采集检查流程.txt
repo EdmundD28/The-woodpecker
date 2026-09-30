@@ -296,6 +296,20 @@ py .\collector.py --port COM5 --impact-point 3 --trigger auto --count 5
 
 批量采集时可以省略--show。PNG仍会保存，但不会每次弹窗阻塞流程。
 
+如果希望同一个波形窗口在每次敲击完成后立即刷新，使用：
+
+py .\collector.py --port COM5 --impact-point 1 --trigger auto --count 5 --live
+
+--live模式会在每收到一条完整的1024点记录后刷新曲线；它不是采样过程中的逐点滚动显示。
+采集结束后最后一条波形会保持显示，关闭图窗即可结束。
+
+如果希望持续观察压电片变化，同时保留完整敲击采集，使用：
+
+py .\collector.py --port COM5 --impact-point 1 --trigger auto --count 5 --monitor
+
+--monitor窗口上半图滚动显示最近2秒的250 Hz峰值预览；每个预览点取对应64个原始点中偏离基线最大的点，下半图显示最近一次完整的16 kHz、1024点波形。
+预览数据不写入训练JSONL，完整敲击数据仍按WOOD_IMPACT_V1保存。
+
 [ ] P01数据的impact_point_id为1。
 [ ] P02数据的impact_point_id为2。
 [ ] P03数据的impact_point_id为3。
