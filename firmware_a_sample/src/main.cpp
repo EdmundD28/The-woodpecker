@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <esp_timer.h>
+#include <driver/adc.h>
+#include <driver/i2s.h>
 
 // 数据协议（保持WOOD_IMPACT_V1字段不变）
 constexpr char PROTOCOL_VERSION[] = "WOOD_IMPACT_V1";
@@ -18,9 +20,20 @@ constexpr size_t SAMPLE_COUNT = 1024;
 constexpr size_t PRE_TRIGGER_COUNT = 256;
 constexpr size_t POST_TRIGGER_COUNT = SAMPLE_COUNT - PRE_TRIGGER_COUNT;
 
-// 16kHz的周期是62.5us，交替等待62us和63us以保持平均16kHz
-constexpr uint32_t SAMPLE_PERIOD_SHORT_US = 62;
-constexpr uint32_t SAMPLE_PERIOD_LONG_US = 63;
+// 硬件连续采样；主循环按块读取，不再依赖analogRead的软件耗时。
+constexpr i2s_port_t ADC_PORT = I2S_NUM_0;
+constexpr adc1_channel_t ADC_CHANNEL = ADC1_CHANNEL_6;
+constexpr size_t DMA_BLOCK_SAMPLES = 128;
+uint16_t dmaBlock[DMA_BLOCK_SAMPLES];
+QueueHandle_t adcEventQueue = nullptr;
+bool captureFinishedInBlock = false;
+bool timingDiagnostics = false;
+uint32_t dmaErrorCount = 0;
+size_t lossHistoryRemaining = 0;
+size_t startupDiscardRemaining = 256;
+uint64_t dmaRateStartUs = 0;
+uint32_t dmaRateSamples = 0;
+uint32_t measuredRateHz = 0;
 
 // 实时预览每64点发送其中最大偏差点：16000 / 64 = 250 Hz
 constexpr uint16_t PREVIEW_DECIMATION = 64;
@@ -30,14 +43,13 @@ constexpr int ADC_MIN_VALUE = 0;
 constexpr int ADC_MAX_VALUE = 4095;
 constexpr int CLIP_LOW = 10;
 constexpr int CLIP_HIGH = 4085;
-constexpr int TRIGGER_THRESHOLD = 200;
+constexpr int TRIGGER_THRESHOLD = 300;
 constexpr int WEAK_SIGNAL_THRESHOLD = 100;
 
 // 避免一次敲击的余振被识别成多次敲击
 constexpr uint32_t REARM_DELAY_MS = 500;
 
-// 如果采样时刻落后计划超过两个采样周期，标记丢样
-constexpr uint32_t SAMPLE_LOSS_LIMIT_US = 125;
+// SAMPLE_LOSS现在依据DMA溢出、读取失败和通道错误，保留真实异常判定。
 
 uint16_t rawSamples[SAMPLE_COUNT];
 uint16_t preTriggerBuffer[PRE_TRIGGER_COUNT];
@@ -59,8 +71,6 @@ uint16_t previewSampleCounter = 0;
 uint16_t previewPeakSample = 0;
 int previewPeakDifference = 0;
 
-uint64_t nextSampleTimeUs = 0;
-bool useLongSamplePeriod = false;
 uint32_t rearmUntilMs = 0;
 
 
@@ -71,25 +81,37 @@ struct QualityFlags {
 };
 
 
-uint32_t nextSamplePeriodUs() {
-    useLongSamplePeriod = !useLongSamplePeriod;
-
-    return useLongSamplePeriod
-        ? SAMPLE_PERIOD_LONG_US
-        : SAMPLE_PERIOD_SHORT_US;
+void markDmaLoss() {
+    ++dmaErrorCount;
+    if (captureActive) sampleLossDetected = true;
+    lossHistoryRemaining = PRE_TRIGGER_COUNT;
 }
 
-
-void scheduleNextSample() {
-    nextSampleTimeUs += nextSamplePeriodUs();
+void checkDmaEvents() {
+    i2s_event_t event;
+    while (xQueueReceive(adcEventQueue, &event, 0) == pdTRUE) {
+        if (event.type == I2S_EVENT_RX_Q_OVF || event.type == I2S_EVENT_DMA_ERROR) {
+            markDmaLoss();
+        }
+    }
 }
 
-
-void resetSamplingSchedule() {
-    useLongSamplePeriod = false;
-    nextSampleTimeUs =
-        static_cast<uint64_t>(esp_timer_get_time())
-        + nextSamplePeriodUs();
+bool initialiseContinuousAdc() {
+    if (adc1_config_width(ADC_WIDTH_BIT_12) != ESP_OK ||
+        adc1_config_channel_atten(ADC_CHANNEL, ADC_ATTEN_DB_12) != ESP_OK) return false;
+    i2s_config_t config{};
+    config.mode = static_cast<i2s_mode_t>(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_ADC_BUILT_IN);
+    config.sample_rate = SAMPLE_RATE_HZ;
+    config.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
+    config.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
+    config.communication_format = I2S_COMM_FORMAT_STAND_MSB;
+    config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
+    config.dma_buf_count = 8;
+    config.dma_buf_len = DMA_BLOCK_SAMPLES;
+    config.use_apll = true;
+    if (i2s_driver_install(ADC_PORT, &config, 32, &adcEventQueue) != ESP_OK) return false;
+    return i2s_set_adc_mode(ADC_UNIT_1, ADC_CHANNEL) == ESP_OK &&
+        i2s_adc_enable(ADC_PORT) == ESP_OK;
 }
 
 
@@ -134,6 +156,7 @@ void copyPreTriggerSamples() {
 
 
 void beginCapture(uint16_t triggerSample) {
+    sampleLossDetected = lossHistoryRemaining != 0;
     copyPreTriggerSamples();
 
     // 第256号元素保存触发当下的采样值；之后还会采767点
@@ -285,9 +308,17 @@ void outputRecord(
 
 
 void finishCapture() {
+    // 先停止采样再传输；约半秒的JSON发送不再造成缓冲溢出。
+    i2s_adc_disable(ADC_PORT);
+    i2s_stop(ADC_PORT);
+    checkDmaEvents();
     uint16_t strikeId = nextStrikeId[currentImpactPointId - 1]++;
 
     outputRecord(currentImpactPointId, strikeId);
+    if (timingDiagnostics) {
+        Serial.printf("#DMA,rate_hz=%u,errors=%u\n", unsigned(measuredRateHz), unsigned(dmaErrorCount));
+    }
+    Serial.flush();
 
     captureActive = false;
     sampleLossDetected = false;
@@ -295,7 +326,23 @@ void finishCapture() {
     preTriggerValidCount = 0;
     baselineInitialized = false;
     rearmUntilMs = millis() + REARM_DELAY_MS;
-    resetSamplingSchedule();
+    previewSampleCounter = 0;
+    previewPeakDifference = 0;
+    lossHistoryRemaining = 0;
+    // 清除停止前已排队的数据，下一条记录只使用重新启动后的样本。
+    size_t staleBytes = 0;
+    do {
+        i2s_read(ADC_PORT, dmaBlock, sizeof(dmaBlock), &staleBytes, 0);
+    } while (staleBytes != 0);
+    xQueueReset(adcEventQueue);
+    startupDiscardRemaining = 256;
+    dmaRateStartUs = 0;
+    dmaRateSamples = 0;
+    if (i2s_start(ADC_PORT) != ESP_OK || i2s_adc_enable(ADC_PORT) != ESP_OK) {
+        Serial.println("#FATAL,ADC_RESTART_FAILED");
+        while (true) delay(1000);
+    }
+    captureFinishedInBlock = true;
 }
 
 
@@ -325,14 +372,14 @@ void outputPreviewSample(
 
     // 独立预览格式，不属于WOOD_IMPACT_V1训练记录：
     // P,timestamp_us,sample,baseline,difference
-    Serial.print("P,");
-    Serial.print(micros());
-    Serial.print(",");
-    Serial.print(previewPeakSample);
-    Serial.print(",");
-    Serial.print(baseline, 1);
-    Serial.print(",");
-    Serial.println(previewPeakDifference);
+    char line[80];
+    int length = snprintf(line, sizeof(line), "P,%lu,%u,%.1f,%d\n",
+        static_cast<unsigned long>(micros()), unsigned(previewPeakSample),
+        baseline, previewPeakDifference);
+    // 预览可跳帧，但绝不能阻塞真实采样数据的读取。
+    if (length > 0 && length < int(sizeof(line)) && Serial.availableForWrite() >= length) {
+        Serial.write(reinterpret_cast<const uint8_t*>(line), length);
+    }
 
     previewPeakDifference = 0;
 }
@@ -341,6 +388,8 @@ void outputPreviewSample(
 void readSerialCommands() {
     while (Serial.available() > 0) {
         char command = static_cast<char>(Serial.read());
+        if (command == 'D') timingDiagnostics = true;
+        if (command == 'd') timingDiagnostics = false;
 
         // 发送1、2、3选择当前敲击位置
         if (command >= '1' && command <= '3') {
@@ -365,10 +414,7 @@ void readSerialCommands() {
 }
 
 
-void takeOneSample() {
-    uint16_t sample = static_cast<uint16_t>(
-        analogRead(PIEZO_PIN)
-    );
+void takeOneSample(uint16_t sample) {
 
     if (captureActive) {
         rawSamples[postTriggerWriteIndex++] = sample;
@@ -403,6 +449,7 @@ void takeOneSample() {
 
     updateBaseline(sample);
     storePreTriggerSample(sample);
+    if (lossHistoryRemaining > 0) --lossHistoryRemaining;
     outputPreviewSample(sample, distanceFromBaseline);
 }
 
@@ -410,30 +457,48 @@ void takeOneSample() {
 void setup() {
     Serial.begin(115200);
 
-    analogReadResolution(12);
-    analogSetPinAttenuation(PIEZO_PIN, ADC_11db);
-
-    resetSamplingSchedule();
+    if (!initialiseContinuousAdc()) {
+        Serial.println("#FATAL,ADC_INITIALISATION_FAILED");
+        while (true) delay(1000);
+    }
 }
 
 
 void loop() {
     readSerialCommands();
 
-    uint64_t nowUs =
-        static_cast<uint64_t>(esp_timer_get_time());
-
-    if (nowUs < nextSampleTimeUs) {
+    size_t bytesRead = 0;
+    esp_err_t result = i2s_read(ADC_PORT, dmaBlock, sizeof(dmaBlock), &bytesRead, pdMS_TO_TICKS(100));
+    checkDmaEvents();
+    if (result != ESP_OK || bytesRead == 0 || bytesRead % sizeof(uint16_t) != 0) {
+        markDmaLoss();
         return;
     }
-
-    uint64_t latenessUs = nowUs - nextSampleTimeUs;
-
-    if (captureActive
-        && latenessUs > SAMPLE_LOSS_LIMIT_US) {
-        sampleLossDetected = true;
+    size_t count = bytesRead / sizeof(uint16_t);
+    uint64_t nowUs = esp_timer_get_time();
+    if (dmaRateStartUs == 0) {
+        dmaRateStartUs = nowUs;
+        dmaRateSamples = 0;
+    } else {
+        dmaRateSamples += count;
+        if (nowUs - dmaRateStartUs >= 1000000) {
+            measuredRateHz = uint64_t(dmaRateSamples) * 1000000 / (nowUs - dmaRateStartUs);
+            dmaRateStartUs = nowUs;
+            dmaRateSamples = 0;
+        }
     }
-
-    scheduleNextSample();
-    takeOneSample();
+    captureFinishedInBlock = false;
+    for (size_t index = 0; index < count; ++index) {
+        if (startupDiscardRemaining > 0) {
+            --startupDiscardRemaining;
+            continue;
+        }
+        uint16_t word = dmaBlock[index];
+        if ((word >> 12) != unsigned(ADC_CHANNEL)) {
+            markDmaLoss();
+            continue;
+        }
+        takeOneSample(word & 0x0FFF);
+        if (captureFinishedInBlock) break;
+    }
 }
