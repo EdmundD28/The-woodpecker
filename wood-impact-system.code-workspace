@@ -8,5 +8,7 @@
 			"path": "firmware_b_demo"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"platformio-ide.useBuiltinPIOCore": true
+	}
 }

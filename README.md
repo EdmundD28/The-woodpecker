@@ -98,6 +98,10 @@ WOOD01-E01-R00-P01-H001
 
 ## 快速验证
 
+在 VS Code 中测试采样固件时，使用“文件 → 打开文件夹”，选择 `The-woodpecker/firmware_a_sample`。这个文件夹本身就是 PlatformIO 项目根目录，里面有 `platformio.ini`。展示固件则单独打开 `The-woodpecker/firmware_b_demo`。如果想同时查看两个固件和电脑采集工具，可以打开上一级 `build-a-thon/woodpecker-local.code-workspace`，不要把 `build-a-thon` 文件夹当作 PlatformIO 项目根目录。
+
+目前固件 A 生成模拟振动数据；真实传感器采样尚未接入。要把输出保存到电脑，还需运行 `pc_collector/collector.py`。
+
 ### 1. 编译固件 A
 
 ```powershell
