@@ -2,15 +2,17 @@ import argparse
 import json
 import sys
 import time
+import re
+from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
 from typing import TextIO
 
 from live_plot import LiveWaveformPlot
-from protocol import validate_record
+from protocol import build_sample_id, validate_record
 
 
-OUTPUT_DIRECTORY = Path("collected_data")
+OUTPUT_DIRECTORY = Path(__file__).resolve().parent / "collected_data"
 PLOT_DIRECTORY = OUTPUT_DIRECTORY / "plots"
 TRIGGER_INDEX = 256
 USB_SERIAL_VENDOR_IDS = {0x0403, 0x10C4, 0x1A86, 0x303A}
@@ -57,6 +59,7 @@ def parse_args() -> argparse.Namespace:
         "--port",
         help="ESP32串口，例如COM7；可填auto自动识别；交互终端默认自动识别",
     )
+    parser.add_argument("--interactive", action="store_true", help="逐项输入批量采集信息")
     parser.add_argument(
         "--baud",
         type=int,
@@ -110,6 +113,10 @@ def parse_args() -> argparse.Namespace:
     )
 
     args = parser.parse_args()
+    args.batch = False
+    args.stop_after_count = False
+    if args.interactive or (len(sys.argv) == 1 and sys.stdin.isatty()):
+        configure_batch(args)
 
     if args.count < 1:
         parser.error("--count必须大于等于1")
@@ -140,11 +147,44 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
+def configure_batch(args: argparse.Namespace) -> None:
+    """实验信息由电脑端统一编号，ADC原始值和异常标记保持不变。"""
+    def ask_integer(label: str, default: int, minimum: int, maximum: int | None = None) -> int:
+        while True:
+            value = input(f"{label} [{default}]：").strip() or str(default)
+            try:
+                number = int(value)
+                if number >= minimum and (maximum is None or number <= maximum):
+                    return number
+            except ValueError:
+                pass
+            print("请输入允许范围内的整数。")
+
+    print("批量采集设置：直接回车使用方括号内默认值。")
+    args.port = input("COM端口 [auto]：").strip() or "auto"
+    while True:
+        args.stick_id = input("木头编号 [WOOD01]：").strip() or "WOOD01"
+        if re.fullmatch(r"[A-Za-z0-9_-]+", args.stick_id):
+            break
+        print("木头编号请使用英文字母、数字、下划线或短横线。")
+    args.experiment_batch = ask_integer("实验批次", 1, 1)
+    args.reclamp_batch = ask_integer("重新装夹批次（未重新装夹填0）", 0, 0)
+    args.impact_point = ask_integer("敲击位置（1～3）", 1, 1, 3)
+    args.count = ask_integer("采集次数（异常记录也保存并计数）", 20, 1)
+    args.start_strike = ask_integer("起始敲击编号（续采请接着上次编号）", 1, 1)
+    args.monitor = input("开启5秒实时监控？[Y/n]：").strip().lower() != "n"
+    args.trigger = "auto"
+    args.batch = True
+    args.stop_after_count = True
+    print(f"本批：{args.stick_id} / E{args.experiment_batch} / R{args.reclamp_batch} / P{args.impact_point}，共{args.count}次。")
+    input("确认安装与位置正确，按Enter开始；每次敲击间隔至少1秒。")
+
+
 def create_output_path() -> Path:
     """创建不会重复的数据文件名。"""
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    return OUTPUT_DIRECTORY / f"session_{timestamp}.jsonl"
+    return OUTPUT_DIRECTORY / f"session_{timestamp}_{uuid4().hex[:8]}.jsonl"
 
 
 def save_plot(record: dict, show_window: bool) -> Path:
@@ -207,6 +247,7 @@ def process_line(
     create_plot: bool,
     show_window: bool,
     live_plotter: LiveWaveformPlot | None,
+    batch_args: argparse.Namespace | None = None,
 ) -> tuple[bool, Path | None]:
     """验证并保存一行数据；返回是否有效及波形图路径。"""
 
@@ -219,12 +260,22 @@ def process_line(
         record = json.loads(input_line)
         validate_record(record)
 
+        if batch_args is not None and batch_args.batch:
+            record["stick_id"] = batch_args.stick_id
+            record["experiment_batch"] = batch_args.experiment_batch
+            record["reclamp_batch"] = batch_args.reclamp_batch
+            record["impact_point_id"] = batch_args.impact_point
+            record["strike_id"] = batch_args.start_strike + len(sample_ids)
+            record["sample_id"] = build_sample_id(
+                record["stick_id"], record["experiment_batch"],
+                record["reclamp_batch"], record["impact_point_id"], record["strike_id"],
+            )
+            validate_record(record)
+
         sample_id = record["sample_id"]
 
         if sample_id in sample_ids:
             raise ValueError(f"样本编号重复: {sample_id}")
-
-        sample_ids.add(sample_id)
 
         saved_line = json.dumps(
             record,
@@ -233,12 +284,16 @@ def process_line(
         )
         output_file.write(saved_line + "\n")
         output_file.flush()
+        sample_ids.add(sample_id)
 
         plot_path = None
-        if live_plotter is not None:
-            plot_path = live_plotter.update(record)
-        elif create_plot:
-            plot_path = save_plot(record, show_window)
+        try:
+            if live_plotter is not None:
+                plot_path = live_plotter.update(record)
+            elif create_plot:
+                plot_path = save_plot(record, show_window)
+        except Exception as error:
+            print(f"数据已保存，但绘图失败：{error}", file=sys.stderr)
 
         print(
             "已保存: "
@@ -372,7 +427,7 @@ def collect_from_serial(
 
         deadline = time.monotonic() + args.timeout
 
-        while args.monitor or valid_count < args.count:
+        while (args.monitor and not args.stop_after_count) or valid_count < args.count:
             if (
                 args.monitor
                 and live_plotter is not None
@@ -413,6 +468,7 @@ def collect_from_serial(
                 create_plot=not args.no_plot,
                 show_window=args.show,
                 live_plotter=live_plotter,
+                batch_args=args,
             )
 
             if not valid:
@@ -420,11 +476,13 @@ def collect_from_serial(
                 continue
 
             valid_count += 1
+            if args.batch:
+                print(f"采集进度：{valid_count}/{args.count}（异常记录保留标记）", file=sys.stderr)
             deadline = time.monotonic() + args.timeout
 
             if (
                 args.trigger == "software"
-                and (args.monitor or valid_count < args.count)
+                and ((args.monitor and not args.stop_after_count) or valid_count < args.count)
             ):
                 time.sleep(0.6)
                 send_command(device, "C")
@@ -478,6 +536,8 @@ def main() -> None:
     live_plotter = None
 
     print("采集工具已启动……", file=sys.stderr)
+    global PLOT_DIRECTORY
+    PLOT_DIRECTORY = OUTPUT_DIRECTORY / "plots" / output_path.stem
 
     valid_count = 0
     invalid_count = 0
@@ -491,7 +551,7 @@ def main() -> None:
             )
 
         with output_path.open(
-            mode="w",
+            mode="x",
             encoding="utf-8",
             newline="\n",
         ) as output_file:
@@ -518,8 +578,11 @@ def main() -> None:
     except (RuntimeError, KeyboardInterrupt) as error:
         print(f"采集停止: {error}", file=sys.stderr)
 
+    valid_count = len(sample_ids)
+
     if valid_count == 0:
-        output_path.unlink(missing_ok=True)
+        if output_path.exists() and output_path.stat().st_size == 0:
+            output_path.unlink()
         print("没有收到有效记录，未保存数据文件。", file=sys.stderr)
         return
 
