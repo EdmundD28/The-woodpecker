@@ -3,7 +3,6 @@ import json
 import sys
 import time
 import re
-from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
 from typing import TextIO
@@ -16,6 +15,7 @@ OUTPUT_DIRECTORY = Path(__file__).resolve().parent / "collected_data"
 PLOT_DIRECTORY = OUTPUT_DIRECTORY / "plots"
 TRIGGER_INDEX = 256
 USB_SERIAL_VENDOR_IDS = {0x0403, 0x10C4, 0x1A86, 0x303A}
+_reserved_output_paths: set[Path] = set()
 
 
 def resolve_serial_port(requested_port: str) -> str:
@@ -180,11 +180,28 @@ def configure_batch(args: argparse.Namespace) -> None:
     input("确认安装与位置正确，按Enter开始；每次敲击间隔至少1秒。")
 
 
-def create_output_path() -> Path:
-    """创建不会重复的数据文件名。"""
+def create_output_path(args: argparse.Namespace | None = None) -> Path:
+    """按启动时间、木头、位置和计划次数命名；独占创建防覆盖。"""
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    return OUTPUT_DIRECTORY / f"session_{timestamp}_{uuid4().hex[:8]}.jsonl"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    stick_id = getattr(args, "stick_id", "UNKNOWN")
+    impact_point = getattr(args, "impact_point", 1)
+    count = getattr(args, "count", 1)
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", stick_id):
+        raise ValueError("木头编号包含不能用于文件名的字符")
+    # Unbounded input must not falsely claim a planned one-record batch.
+    bounded = args is not None and getattr(args, "stop_after_count", False)
+    bounded = bounded or (args is not None and bool(getattr(args, "port", None))
+                          and not getattr(args, "monitor", False))
+    count_label = f"N{count:03d}" if bounded or args is None else "Nstream"
+    stem = f"{timestamp}_{stick_id}_P{impact_point:02d}_{count_label}"
+    path = OUTPUT_DIRECTORY / f"{stem}.jsonl"
+    sequence = 2
+    while path.exists() or path.resolve() in _reserved_output_paths:
+        path = OUTPUT_DIRECTORY / f"{stem}_{sequence:02d}.jsonl"
+        sequence += 1
+    _reserved_output_paths.add(path.resolve())
+    return path
 
 
 def save_plot(record: dict, show_window: bool) -> Path:
@@ -276,15 +293,30 @@ def process_line(
 
         if sample_id in sample_ids:
             raise ValueError(f"样本编号重复: {sample_id}")
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", sample_id):
+            raise ValueError("样本编号包含不能用于文件名的字符")
 
         saved_line = json.dumps(
             record,
             ensure_ascii=False,
             separators=(",", ":"),
         )
+        # One impact per JSON; session JSONL remains a compatibility index.
+        sample_directory = Path(output_file.name).resolve().parent / "samples"
+        sample_directory.mkdir(parents=True, exist_ok=True)
+        sample_path = sample_directory / f"{sample_id}.json"
+        try:
+            with sample_path.open("x", encoding="utf-8", newline="\n") as sample_file:
+                sample_file.write(saved_line + "\n")
+        except FileExistsError as error:
+            raise FileExistsError(
+                f"同编号数据已存在，已停止以防覆盖：{sample_path}；"
+                "请调整起始敲击编号或实验批次后重新采集"
+            ) from error
+        sample_ids.add(sample_id)
         output_file.write(saved_line + "\n")
         output_file.flush()
-        sample_ids.add(sample_id)
+        print(f"单次数据: {sample_path}", file=sys.stderr)
 
         plot_path = None
         try:
@@ -531,7 +563,7 @@ def main() -> None:
     args = parse_args()
 
     OUTPUT_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    output_path = create_output_path()
+    output_path = create_output_path(args)
     sample_ids: set[str] = set()
     live_plotter = None
 
@@ -575,7 +607,7 @@ def main() -> None:
                     sample_ids,
                     live_plotter,
                 )
-    except (RuntimeError, KeyboardInterrupt) as error:
+    except (RuntimeError, OSError, KeyboardInterrupt) as error:
         print(f"采集停止: {error}", file=sys.stderr)
 
     valid_count = len(sample_ids)

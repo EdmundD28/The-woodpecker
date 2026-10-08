@@ -4,4 +4,6 @@
 **/*.pyc
 collected_data/
 **/collected_data/
+**/simulation/
+**/simulation_test/
 
