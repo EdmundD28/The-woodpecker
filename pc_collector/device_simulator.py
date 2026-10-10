@@ -11,6 +11,10 @@ from protocol import validate_record
 
 SAMPLE_RATE_HZ = 16000
 SAMPLE_COUNT = 1024
+PRE_TRIGGER_COUNT = 256
+PREVIEW_RATE_HZ = 250
+PREVIEW_DURATION_SECONDS = 2.0
+PREVIEW_IMPACT_TIME_SECONDS = 1.0
 
 ADC_MIDPOINT = 2048
 ADC_MIN = 0
@@ -54,32 +58,38 @@ def generate_raw_signal(
     raw = []
 
     for index in range(SAMPLE_COUNT):
-        time_s = index / SAMPLE_RATE_HZ
+        time_after_trigger = (
+            index - PRE_TRIGGER_COUNT
+        ) / SAMPLE_RATE_HZ
 
-        # 模拟敲击后逐渐衰减的振动
-        envelope = math.exp(-45.0 * time_s)
+        vibration_1 = 0.0
+        vibration_2 = 0.0
 
-        vibration_1 = (
-            amplitude
-            * envelope
-            * math.sin(
-                2.0
-                * math.pi
-                * main_frequency
-                * time_s
+        if time_after_trigger >= 0.0:
+            # 模拟触发后的衰减振动；前256点只包含静止噪声
+            envelope = math.exp(-45.0 * time_after_trigger)
+
+            vibration_1 = (
+                amplitude
+                * envelope
+                * math.sin(
+                    2.0
+                    * math.pi
+                    * main_frequency
+                    * time_after_trigger
+                )
             )
-        )
 
-        vibration_2 = (
-            420.0
-            * envelope
-            * math.sin(
-                2.0
-                * math.pi
-                * 1750.0
-                * time_s
+            vibration_2 = (
+                420.0
+                * envelope
+                * math.sin(
+                    2.0
+                    * math.pi
+                    * 1750.0
+                    * time_after_trigger
+                )
             )
-        )
 
         noise = random.gauss(0.0, 12.0)
 
@@ -99,6 +109,63 @@ def generate_raw_signal(
         raw.append(value)
 
     return raw
+
+
+def output_preview_sequence(
+    impact_point_id: int,
+    strike_id: int,
+    start_timestamp_us: int,
+    realtime: bool,
+) -> int:
+    """输出两秒预览，在中间模拟一次明显敲击。"""
+
+    random.seed(
+        9000
+        + impact_point_id * 100
+        + strike_id
+    )
+
+    point_count = round(
+        PREVIEW_RATE_HZ * PREVIEW_DURATION_SECONDS
+    )
+    period_us = round(1_000_000 / PREVIEW_RATE_HZ)
+    amplitude = {
+        1: 700.0,
+        2: 850.0,
+        3: 620.0,
+    }[impact_point_id]
+
+    timestamp_us = start_timestamp_us
+
+    for index in range(point_count):
+        time_s = index / PREVIEW_RATE_HZ
+        noise = random.gauss(0.0, 10.0)
+        excursion = 0.0
+
+        if time_s >= PREVIEW_IMPACT_TIME_SECONDS:
+            time_after_impact = (
+                time_s - PREVIEW_IMPACT_TIME_SECONDS
+            )
+            envelope = math.exp(-12.0 * time_after_impact)
+            direction = 1.0 if index % 2 == 0 else -1.0
+            excursion = direction * amplitude * envelope
+
+        sample = round(ADC_MIDPOINT + noise + excursion)
+        sample = max(ADC_MIN, min(ADC_MAX, sample))
+        difference = abs(sample - ADC_MIDPOINT)
+
+        print(
+            f"P,{timestamp_us},{sample},"
+            f"{ADC_MIDPOINT:.1f},{difference}",
+            flush=True,
+        )
+
+        timestamp_us += period_us
+
+        if realtime:
+            time.sleep(1.0 / PREVIEW_RATE_HZ)
+
+    return timestamp_us
 
 
 def build_record(
@@ -157,6 +224,16 @@ def main() -> None:
         default=0.0,
         help="每条记录之间等待多少秒",
     )
+    parser.add_argument(
+        "--preview",
+        action="store_true",
+        help="在每条完整记录前输出两秒250 Hz实时预览",
+    )
+    parser.add_argument(
+        "--preview-fast",
+        action="store_true",
+        help="生成预览但不按真实时间等待，用于自动测试",
+    )
 
     args = parser.parse_args()
 
@@ -171,6 +248,7 @@ def main() -> None:
         )
 
     first_record = True
+    preview_timestamp_us = 0
 
     for impact_point_id in IMPACT_POINT_IDS:
         for strike_id in range(
@@ -184,6 +262,14 @@ def main() -> None:
                 impact_point_id=impact_point_id,
                 strike_id=strike_id,
             )
+
+            if args.preview:
+                preview_timestamp_us = output_preview_sequence(
+                    impact_point_id=impact_point_id,
+                    strike_id=strike_id,
+                    start_timestamp_us=preview_timestamp_us,
+                    realtime=not args.preview_fast,
+                )
 
             output_line = json.dumps(
                 record,

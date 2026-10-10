@@ -59,7 +59,7 @@ with data_file.open(encoding="utf-8") as file:
 
             if not np.isfinite(model_input).all():
                 raise ValueError("处理结果存在无效数值")
-            
+
             accepted_inputs.append(model_input)
             accepted_ids.append(sample_id)
 
