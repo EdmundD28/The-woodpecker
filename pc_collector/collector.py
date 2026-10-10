@@ -3,12 +3,15 @@ import json
 import sys
 import time
 import re
+from contextlib import nullcontext
+from queue import Empty
 from datetime import datetime
 from pathlib import Path
 from typing import TextIO
 
 from live_plot import LiveWaveformPlot
 from protocol import build_sample_id, validate_record
+from capture_gate import GatedSerialReader, enable_firmware_gate, windows_key_reader
 
 
 OUTPUT_DIRECTORY = Path(__file__).resolve().parent / "collected_data"
@@ -60,6 +63,10 @@ def parse_args() -> argparse.Namespace:
         help="ESP32串口，例如COM7；可填auto自动识别；交互终端默认自动识别",
     )
     parser.add_argument("--interactive", action="store_true", help="逐项输入批量采集信息")
+    parser.add_argument(
+        "--hold-key", choices=("space", "f8", "none"),
+        help="按住才允许保存：space空格（串口自动触发默认）、f8或none关闭",
+    )
     parser.add_argument(
         "--baud",
         type=int,
@@ -118,6 +125,12 @@ def parse_args() -> argparse.Namespace:
     if args.interactive or (len(sys.argv) == 1 and sys.stdin.isatty()):
         configure_batch(args)
 
+    serial_mode = bool(args.port) or sys.stdin.isatty()
+    if args.hold_key is None:
+        args.hold_key = "space" if serial_mode and args.trigger == "auto" else "none"
+    if args.hold_key != "none" and (not serial_mode or args.trigger != "auto"):
+        parser.error("--hold-key仅用于串口自动触发；管道或软件触发请使用--hold-key none")
+
     if args.count < 1:
         parser.error("--count必须大于等于1")
 
@@ -173,11 +186,15 @@ def configure_batch(args: argparse.Namespace) -> None:
     args.count = ask_integer("采集次数（异常记录也保存并计数）", 20, 1)
     args.start_strike = ask_integer("起始敲击编号（续采请接着上次编号）", 1, 1)
     args.monitor = input("开启5秒实时监控？[Y/n]：").strip().lower() != "n"
+    if args.hold_key is None:
+        args.hold_key = "space" if input("按住空格才允许采集？[Y/n]：").strip().lower() != "n" else "none"
     args.trigger = "auto"
     args.batch = True
     args.stop_after_count = True
     print(f"本批：{args.stick_id} / E{args.experiment_batch} / R{args.reclamp_batch} / P{args.impact_point}，共{args.count}次。")
     input("确认安装与位置正确，按Enter开始；每次敲击间隔至少1秒。")
+    if args.hold_key != "none":
+        print("提锤时松键；准备好后按住指定键，等待允许采集再敲击，按住直到已保存；每次松开再按只收一条。")
 
 
 def create_output_path(args: argparse.Namespace | None = None) -> Path:
@@ -412,20 +429,19 @@ def collect_from_serial(
             "py -m pip install -r requirements.txt"
         ) from error
 
+    key_pressed = windows_key_reader(args.hold_key) if args.hold_key != "none" else None
+
     try:
         device = serial.Serial(
             port=args.port,
             baudrate=args.baud,
-            timeout=0.25,
+            timeout=0.01 if key_pressed is not None else 0.25,
+            write_timeout=0.25,
         )
     except serial.SerialException as error:
         raise RuntimeError(
             f"无法打开串口{args.port}: {error}"
         ) from error
-
-    valid_count = 0
-    invalid_count = 0
-    line_number = 0
 
     with device:
         print(
@@ -437,13 +453,19 @@ def collect_from_serial(
         time.sleep(2.0)
         device.reset_input_buffer()
 
+        if key_pressed is not None:
+            enable_firmware_gate(device)
+            print("已确认固件支持按住许可；松键时仅预览，不启动正式采样。", file=sys.stderr)
+        else:
+            send_command(device, "g")
+
         send_command(device, str(args.impact_point))
         print(
             f"已选择敲击位置P{args.impact_point:02d}",
             file=sys.stderr,
         )
 
-        if args.monitor:
+        if args.monitor or args.live:
             send_command(device, "M")
             print(
                 "已启用250 Hz实时预览（上图显示最近5秒）",
@@ -455,73 +477,117 @@ def collect_from_serial(
             send_command(device, "C")
             print("已发送软件触发C", file=sys.stderr)
         else:
-            print("请敲击木头，正在等待自动触发……", file=sys.stderr)
+            if key_pressed is not None:
+                print("采集已锁定。先松开按键，再提锤；按住空格或F8（按设置），等待允许采集后敲击。", file=sys.stderr)
+            else:
+                print("请敲击木头，正在等待自动触发……", file=sys.stderr)
 
-        deadline = time.monotonic() + args.timeout
+        reader_context = (
+            GatedSerialReader(device, key_pressed, "空格" if args.hold_key == "space" else "F8")
+            if key_pressed is not None else nullcontext(None)
+        )
+        with reader_context as reader:
+            try:
+                return collect_serial_records(args, device, output_file, sample_ids, live_plotter, reader)
+            finally:
+                if args.monitor or args.live:
+                    send_command(device, "m")
 
-        while (args.monitor and not args.stop_after_count) or valid_count < args.count:
-            if (
-                args.monitor
-                and live_plotter is not None
-                and not live_plotter.is_open()
-            ):
-                break
 
+def collect_serial_records(args, device, output_file, sample_ids, live_plotter, reader):
+    valid_count = invalid_count = line_number = ignored_count = 0
+    deadline = time.monotonic() + args.timeout
+    while (args.monitor and not args.stop_after_count) or valid_count < args.count:
+        if reader is not None and live_plotter is not None:
+            live_plotter.set_capture_status(reader.gate.status())
+        if (
+            args.monitor
+            and live_plotter is not None
+            and not live_plotter.is_open()
+        ):
+            break
+
+        permit = None
+        if reader is not None:
+            try:
+                item = reader.lines.get(timeout=0.05)
+            except Empty:
+                item = ("", None)
+            if isinstance(item, Exception):
+                raise RuntimeError(f"串口后台读取失败：{item}") from item
+            input_line, permit = item
+            raw_line = input_line.encode("utf-8")
+            # 未允许采集时不消耗等待时间，留出提锤、调整装夹的时间。
+            if reader.gate.ticket() is None:
+                deadline = time.monotonic() + args.timeout
+        else:
             raw_line = device.readline()
 
-            if not raw_line:
-                if live_plotter is not None:
-                    live_plotter.pump_events()
+        if not raw_line:
+            if live_plotter is not None:
+                live_plotter.pump_events()
 
-                if not args.monitor and time.monotonic() >= deadline:
-                    raise RuntimeError(
-                        f"等待数据超过{args.timeout:g}秒"
-                    )
+            if not args.monitor and time.monotonic() >= deadline:
+                raise RuntimeError(
+                    f"等待数据超过{args.timeout:g}秒"
+                )
+            continue
+
+        line_number += 1
+        input_line = raw_line.decode(
+            "utf-8",
+            errors="replace",
+        )
+
+        if process_preview_line(input_line, live_plotter):
+            if not args.monitor and time.monotonic() >= deadline:
+                raise RuntimeError(
+                    f"等待完整敲击数据超过{args.timeout:g}秒"
+                )
+            continue
+
+        if reader is not None:
+            if not input_line.lstrip().startswith("{"):
+                if input_line.strip():
+                    print(input_line.strip(), file=sys.stderr)
+                continue
+            if permit is None or permit.used:
+                ignored_count += 1
                 continue
 
-            line_number += 1
-            input_line = raw_line.decode(
-                "utf-8",
-                errors="replace",
-            )
+        valid, _ = process_line(
+            input_line=input_line,
+            line_number=line_number,
+            output_file=output_file,
+            sample_ids=sample_ids,
+            create_plot=not args.no_plot,
+            show_window=args.show,
+            live_plotter=live_plotter,
+            batch_args=args,
+        )
 
-            if process_preview_line(input_line, live_plotter):
-                if not args.monitor and time.monotonic() >= deadline:
-                    raise RuntimeError(
-                        f"等待完整敲击数据超过{args.timeout:g}秒"
-                    )
-                continue
+        if not valid:
+            invalid_count += 1
+            continue
 
-            valid, _ = process_line(
-                input_line=input_line,
-                line_number=line_number,
-                output_file=output_file,
-                sample_ids=sample_ids,
-                create_plot=not args.no_plot,
-                show_window=args.show,
-                live_plotter=live_plotter,
-                batch_args=args,
-            )
+        valid_count += 1
+        if permit is not None:
+            permit.used = True
+            print("本次按住已采集一条，请松键后再准备下一次。", file=sys.stderr)
+        if args.batch:
+            print(f"采集进度：{valid_count}/{args.count}（异常记录保留标记）", file=sys.stderr)
+        deadline = time.monotonic() + args.timeout
 
-            if not valid:
-                invalid_count += 1
-                continue
+        if (
+            args.trigger == "software"
+            and ((args.monitor and not args.stop_after_count) or valid_count < args.count)
+        ):
+            time.sleep(0.6)
+            send_command(device, "C")
+            print("已发送下一次软件触发C", file=sys.stderr)
 
-            valid_count += 1
-            if args.batch:
-                print(f"采集进度：{valid_count}/{args.count}（异常记录保留标记）", file=sys.stderr)
-            deadline = time.monotonic() + args.timeout
-
-            if (
-                args.trigger == "software"
-                and ((args.monitor and not args.stop_after_count) or valid_count < args.count)
-            ):
-                time.sleep(0.6)
-                send_command(device, "C")
-                print("已发送下一次软件触发C", file=sys.stderr)
-
-        if args.monitor:
-            send_command(device, "m")
+    if reader is not None:
+        print(f"未获按键许可而忽略的记录：{ignored_count}（不计入次数和敲击编号）", file=sys.stderr)
 
     return valid_count, invalid_count
 

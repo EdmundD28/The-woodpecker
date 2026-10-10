@@ -2,6 +2,7 @@
 #include <esp_timer.h>
 #include <driver/adc.h>
 #include <driver/i2s.h>
+#include "capture_permission.h"
 
 // 数据协议（保持WOOD_IMPACT_V1字段不变）
 constexpr char PROTOCOL_VERSION[] = "WOOD_IMPACT_V1";
@@ -67,6 +68,7 @@ bool captureActive = false;
 bool softwareTriggerRequested = false;
 bool sampleLossDetected = false;
 bool monitorEnabled = false;
+CapturePermission capturePermission;
 uint16_t previewSampleCounter = 0;
 uint16_t previewPeakSample = 0;
 int previewPeakDifference = 0;
@@ -156,6 +158,7 @@ void copyPreTriggerSamples() {
 
 
 void beginCapture(uint16_t triggerSample) {
+    capturePermission.consume();
     sampleLossDetected = lossHistoryRemaining != 0;
     copyPreTriggerSamples();
 
@@ -388,6 +391,18 @@ void outputPreviewSample(
 void readSerialCommands() {
     while (Serial.available() > 0) {
         char command = static_cast<char>(Serial.read());
+        if (command == 'G') {
+            capturePermission.enable(true);
+            captureActive = false;
+            softwareTriggerRequested = false;
+            Serial.println("#GATE,V1");
+        } else if (command == 'g') {
+            capturePermission.enable(false);
+        } else if (command == 'A') {
+            capturePermission.renew(millis());
+        } else if (command == 'a') {
+            capturePermission.lock();
+        }
         if (command == 'D') timingDiagnostics = true;
         if (command == 'd') timingDiagnostics = false;
 
@@ -416,6 +431,12 @@ void readSerialCommands() {
 
 void takeOneSample(uint16_t sample) {
 
+    // 松键或心跳过期后，取消尚未完成的正式采样；ADC和预览继续。
+    if (!capturePermission.allowed(millis())) {
+        captureActive = false;
+        softwareTriggerRequested = false;
+    }
+
     if (captureActive) {
         rawSamples[postTriggerWriteIndex++] = sample;
 
@@ -435,11 +456,13 @@ void takeOneSample(uint16_t sample) {
 
     bool automaticTrigger =
         bufferReady
+        && capturePermission.canStart(millis())
         && millis() >= rearmUntilMs
         && distanceFromBaseline >= TRIGGER_THRESHOLD;
 
     bool softwareTrigger =
         bufferReady
+        && capturePermission.canStart(millis())
         && softwareTriggerRequested;
 
     if (automaticTrigger || softwareTrigger) {

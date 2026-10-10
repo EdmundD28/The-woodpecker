@@ -26,6 +26,7 @@ class LiveWaveformPlot:
         self.preview_samples: deque[int] = deque()
         self.preview_baselines: deque[float] = deque()
         self.last_preview_redraw = 0.0
+        self.capture_status = None
 
         self.plt.ion()
         self.figure, axes = self.plt.subplots(
@@ -99,6 +100,16 @@ class LiveWaveformPlot:
 
     def is_open(self) -> bool:
         return self.plt.fignum_exists(self.figure.number)
+
+    def set_capture_status(self, status: str) -> None:
+        """在图窗标题栏显示按住采集状态，避免必须切回终端查看。"""
+        if status == self.capture_status or not self.is_open():
+            return
+        self.capture_status = status
+        try:
+            self.figure.canvas.manager.set_window_title(f"木材采样 | {status}")
+        except AttributeError:
+            pass
 
     def pump_events(self) -> None:
         """在等待串口数据时保持窗口可响应。"""
