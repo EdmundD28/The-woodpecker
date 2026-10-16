@@ -63,7 +63,7 @@ The-woodpecker/
 | `strike_id` | 同一位置的第几次敲击 |
 | `reclamp_batch` | 重新装夹批次；首次装夹为 0 |
 | `sample_rate_hz` | 采样率，当前为 16000 Hz |
-| `sample_count` | 每次敲击的采样点数，当前为 1024 |
+| `sample_count` | 每次敲击的采样点数，当前为 4800 |
 | `anomaly_flags` | 异常标记数组，无异常时为空数组 |
 | `raw` | 原始时域采样值数组，长度必须等于 `sample_count` |
 
@@ -139,7 +139,7 @@ pc_collector/collected_data/session_*.jsonl
 - 开发框架：Arduino Framework，使用 VS Code + PlatformIO。
 - 串口速率：115200 baud。
 - 采样率：16000 Hz。
-- 每次敲击：1024 点，对应 64 ms 信号。
+- 每次敲击：4800 点，对应 300 ms 信号。
 - 当前模拟值按照 ESP32 12 位 ADC 范围生成：0～4095，中点约为 2048。
 - 真实传感器型号、输出类型、ADC/I2S 接口、GPIO 和模拟前端电路尚未冻结，需要电气负责人确认。
 - 如果使用压电或其他模拟传感器，必须确认输入电压范围、偏置、限幅保护、放大和抗混叠要求，不能将可能为负或过压的信号直接接入 ESP32。

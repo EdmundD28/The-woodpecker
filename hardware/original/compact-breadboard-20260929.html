@@ -1,0 +1,180 @@
+<div id="breadboard-five-row">
+  <style>
+    #breadboard-five-row { color: var(--foreground); }
+    #breadboard-five-row .board-wrap { width: 100%; }
+    #breadboard-five-row svg { display: block; width: 100%; overflow: visible; }
+    #breadboard-five-row svg text { fill: var(--foreground); font-size: 12px; font-weight: 400; }
+    #breadboard-five-row .board-structure { stroke: var(--border); fill: none; }
+    #breadboard-five-row .part-label { font-weight: 500; }
+    #breadboard-five-row .part { transition: opacity 120ms; }
+    #breadboard-five-row .part.dim { opacity: .18; }
+    #breadboard-five-row .part.active { color: var(--viz-series-2); }
+    #breadboard-five-row .lead { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+    #breadboard-five-row .insulated { stroke-width: 3; }
+    #breadboard-five-row .body { fill: var(--card); stroke: currentColor; stroke-width: 1.6; }
+    #breadboard-five-row .jump { stroke-dasharray: 4 3; stroke-width: 2; }
+    #breadboard-five-row .selection { margin-top: .5rem; min-height: 2.5em; }
+    #breadboard-five-row .legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin: .5rem 0; }
+    #breadboard-five-row .legend span { white-space: nowrap; }
+    #breadboard-five-row .ports { display: flex; flex-wrap: wrap; gap: .35rem 1rem; margin-top: .5rem; }
+    #breadboard-five-row .port { white-space: nowrap; }
+    #breadboard-five-row .nav { margin-bottom: .75rem; }
+    #breadboard-five-row .form-label { display: flex; flex-direction: column; gap: .3rem; }
+    #breadboard-five-row .parts-table td:first-child { white-space: nowrap; }
+    @media (prefers-reduced-motion: reduce) { #breadboard-five-row .part { transition: none; } }
+  </style>
+  <h3>5行紧凑布局</h3>
+  <div class="legend text-small"><span>顶视图 · 芯片缺口朝上</span><span>左＋：3V3 · 左−：GND</span><span>右＋：传感器蓝线 · 右−：GND</span></div>
+  <div class="nav nav-pills" role="tablist" aria-label="布局视图">
+    <button class="nav-link active" id="bb-drawing-tab" role="tab" aria-controls="bb-drawing-panel" aria-selected="true" type="button">面包板</button>
+    <button class="nav-link" id="bb-holes-tab" role="tab" aria-controls="bb-holes-panel" aria-selected="false" type="button">逐孔接法</button>
+  </div>
+  <div id="bb-drawing-panel" role="tabpanel" aria-labelledby="bb-drawing-tab">
+    <div class="board-wrap"><svg role="img" aria-label="使用第1至5行的面包板布局，八脚MCP6002跨中沟占第1至4行，长引脚跨排；右侧加号长母线用作传感器信号"></svg></div>
+    <div class="viz-controls">
+      <label class="form-label">查看元件或跳线<select class="form-select" aria-label="选择元件" id="bb-part-select"></select></label>
+    </div>
+    <div class="selection" aria-live="polite" id="bb-selected-detail"></div>
+    <div class="legend text-small"><span>实线：元件引脚</span><span>虚线：绝缘跳线</span><span>粗实线：须套绝缘管的长脚</span><span>二极管色环：K端</span></div>
+  </div>
+  <div id="bb-holes-panel" role="tabpanel" aria-labelledby="bb-holes-tab" hidden>
+    <table class="table table-sm parts-table"><thead><tr><th>元件</th><th>两个插孔</th><th>连接节点／极性</th></tr></thead><tbody id="bb-part-rows"></tbody></table>
+    <table class="table table-sm"><thead><tr><th>跳线</th><th>插孔</th><th>作用</th></tr></thead><tbody id="bb-wire-rows"></tbody></table>
+    <div class="text-small">U1：1脚E1、2脚E2、3脚E3、4脚E4；8脚F1、7脚F2、6脚F3、5脚F4。</div>
+  </div>
+  <div class="ports text-small" aria-label="外接插孔">
+    <span class="port">ESP32 3V3 → 左＋5</span><span class="port">ESP32 GND → 右−4</span><span class="port">GPIO34 → A5</span><span class="port">传感器蓝线 → 右＋1</span><span class="port">传感器黑线 → 右−2</span><span class="port">传感器红线：悬空</span>
+  </div>
+  <div class="text-small" style="margin-top:.5rem">插孔范围：1—5行 · 电容本体按给定理想尺寸 · 引脚与跳线可分层跨过</div>
+  <script>
+  (() => {
+    const root = document.getElementById('breadboard-five-row');
+    const svg = root.querySelector('svg');
+    const selector = root.querySelector('#bb-part-select');
+    const detail = root.querySelector('#bb-selected-detail');
+    const cols = {A:0,B:1,C:2,D:3,E:4,F:7,G:8,H:9,I:10,J:11,'左−':-4,'左＋':-3,'右−':14,'右＋':15};
+    const coords = name => {
+      const m = name.match(/^(.*?)([1-5])$/);
+      return [cols[m[1]],Number(m[2])];
+    };
+    const parts = [
+      {id:'R1',value:'10kΩ',ends:['左＋2','B3'],nets:['3V3','VREF_RAW'],kind:'r',body:[-2.5,2,.5,2],routes:[[-3,2],[-2.5,2],[.5,2],[.75,2.7],[1,3]]},
+      {id:'R2',value:'10kΩ',ends:['A3','左−3'],nets:['VREF_RAW','GND'],kind:'r',body:[-3.5,3,-.5,3],routes:[[0,3],[-.5,3],[-3.5,3],[-4,3]]},
+      {id:'R3',value:'47kΩ',ends:['F5','J4'],nets:['耦合后','SENSE'],kind:'r',body:[7.5,5,10.5,5],routes:[[7,5],[7.5,5],[10.5,5],[11,4]]},
+      {id:'R4',value:'100kΩ',ends:['A1','H4'],nets:['VREF','SENSE'],kind:'r',body:[.5,1,3.5,1],routes:[[0,1],[.5,1],[3.5,1],[5.2,1.45],[7.55,1.7],[9,4]],insulated:true},
+      {id:'R5',value:'2.2kΩ',ends:['G2','D5'],nets:['缓冲输出','ADC'],kind:'r',body:[8.5,2,11.5,2],routes:[[8,2],[8.5,2],[11.5,2],[11.4,2.5],[7.2,2.75],[5.3,3.2],[3,5]],insulated:true},
+      {id:'D1',value:'BAT85',ends:['右−3','I4'],nets:['GND（A）','SENSE（K，色环）'],kind:'d',body:[9.4,3,11.4,3],bandAt:'start',routes:[[14,3],[11.4,3],[9.4,3],[9.5,3.6],[10,4]]},
+      {id:'D2',value:'BAT85',ends:['G4','G1'],nets:['SENSE（A）','3V3（K，色环）'],kind:'d',body:[8,1.5,8,3.5],bandAt:'start',routes:[[8,4],[8,3.5],[8,1.5],[8,1]]},
+      {id:'C1',value:'10µF',ends:['D3','D4'],nets:['VREF_RAW（＋）','GND（−）'],kind:'c',body:[3,3.5],routes:[[3,3],[3,4]],polar:true},
+      {id:'C2',value:'100nF',ends:['C3','C4'],nets:['VREF_RAW','GND'],kind:'c',body:[2,3.5],routes:[[2,3],[2,4]]},
+      {id:'C3',value:'100nF',ends:['J5','右＋5'],nets:['耦合后','传感器蓝线'],kind:'c',body:[13,5],routes:[[11,5],[15,5]]},
+      {id:'C4',value:'10nF',ends:['B5','B4'],nets:['ADC','GND'],kind:'c',body:[1,4.5],routes:[[1,5],[1,4]]},
+      {id:'C5',value:'100nF',ends:['H1','右−1'],nets:['3V3','GND'],kind:'c',body:[8.9,.68],routes:[[9,1],[8.9,.68],[14,.68],[14,1]]},
+      {id:'C6',value:'10µF',ends:['左＋4','左−2'],nets:['3V3（＋）','GND（−）'],kind:'c',body:[-3.5,2.6],routes:[[-3,4],[-3.25,3.55],[-3.25,2.6],[-3.5,2.6],[-3.75,2.6],[-4,2]],polar:true}
+    ];
+    const wires = [
+      {id:'W1',ends:['D1','D2'],label:'运放A：1脚回接2脚',routes:[[3,1],[3,2]]},
+      {id:'W2',ends:['H2','H3'],label:'运放B：7脚回接6脚',routes:[[9,2],[9,3]]},
+      {id:'W3',ends:['左−4','A4'],label:'4脚接地',routes:[[-4,4],[0,4]]},
+      {id:'W4',ends:['左＋3','J1'],label:'8脚供电',routes:[[-3,3],[-1.6,3.6],[.25,2.55],[4.9,2.35],[7.35,.7],[11,1]]},
+      {id:'W5',ends:['左−5','右−5'],label:'左右接地母线连通',routes:[[-4,5],[-3.75,5.5],[13.75,5.5],[14,5]]}
+    ];
+    const all = [{id:'all',label:'全部元件与接线'},{id:'U1',label:'U1 · MCP6002'}]
+      .concat(parts.map(p=>({id:p.id,label:p.id+' · '+p.value})),wires.map(w=>({id:w.id,label:w.id+' · '+w.label})));
+    all.forEach(item => { const o=document.createElement('option');o.value=item.id;o.textContent=item.label;selector.appendChild(o); });
+    parts.forEach(p => {
+      const tr=document.createElement('tr');
+      [p.id+' '+p.value,p.ends.join(' ↔ '),p.nets.join(' ↔ ')].forEach(t=>{const td=document.createElement('td');td.textContent=t;tr.appendChild(td);});
+      root.querySelector('#bb-part-rows').appendChild(tr);
+    });
+    wires.forEach(w=>{const tr=document.createElement('tr');[w.id,w.ends.join(' ↔ '),w.label].forEach(t=>{const td=document.createElement('td');td.textContent=t;tr.appendChild(td);});root.querySelector('#bb-wire-rows').appendChild(tr);});
+    const netSlots = ['VREF','VREF','VREF_RAW','GND','ADC','3V3','缓冲输出','缓冲输出','SENSE','耦合后'];
+    const railNets = {'左−':'GND','左＋':'3V3','右−':'GND','右＋':'传感器蓝线'};
+    const sn = 'http://www.w3.org/2000/svg';
+    let chosen='all';
+    const saved=window.openai && window.openai.widgetState;
+    if(saved && saved.privateContent && all.some(a=>a.id===saved.privateContent.part)) chosen=saved.privateContent.part;
+    function node(tag,attrs,parent=svg,text) {const e=document.createElementNS(sn,tag);Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,String(v)));if(text!==undefined)e.textContent=text;parent.appendChild(e);return e;}
+    function draw(){
+      const w=Math.max(280,root.querySelector('.board-wrap').clientWidth);
+      const p=(w-36)/21.3;
+      const X=x=>18+(x+5.3)*p;
+      const Y=y=>64+(y-1)*p;
+      const h=Y(5)+43;
+      svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.setAttribute('height',h);svg.replaceChildren();
+      node('title',{},svg,'5行面包板布局');
+      node('desc',{},svg,'每行A至E内部相连，F至J内部相连，中沟隔开。左侧两条长母线供电；右侧负号长母线接地，加号长母线接传感器蓝线。芯片在E1至E4、F1至F4。长脚和绝缘跳线允许上下分层。选择元件可查看具体插孔。');
+      node('rect',{x:X(-4.7),y:Y(.5),width:X(15.65)-X(-4.7),height:Y(5.8)-Y(.5),rx:4,fill:'var(--muted)',opacity:.4});
+      node('rect',{x:X(4.6),y:Y(.5),width:X(6.4)-X(4.6),height:Y(5.8)-Y(.5),fill:'var(--background)',opacity:.5});
+      for(let r=1;r<=5;r++){
+        node('text',{x:X(-5.05),y:Y(r)+4,'text-anchor':'middle'},svg,r);
+        [[0,4],[7,11]].forEach(([a,b])=>node('line',{x1:X(a),x2:X(b),y1:Y(r),y2:Y(r),stroke:'var(--border)','stroke-width':2,opacity:.75}));
+      }
+      Object.entries(cols).forEach(([c,x])=>{
+        const isRail=c.length>1;
+        node('text',{x:X(x),y:42,'text-anchor':'middle'},svg,isRail?c.slice(-1):c);
+        if(isRail)node('line',{x1:X(x),x2:X(x),y1:Y(.7),y2:Y(5.3),stroke:c==='右＋'?'var(--viz-series-2)':'var(--border)','stroke-width':2,opacity:.7});
+        for(let r=1;r<=5;r++){
+          const hole=node('circle',{cx:X(x),cy:Y(r),r:Math.max(2.4,Math.min(3.8,p*.12)),fill:'var(--muted-foreground)','data-tooltip':`${c}${r} · ${isRail?railNets[c]:netSlots[(x<5?0:5)+r-1]}`});
+          hole.setAttribute('aria-label',`${c}${r}`);
+        }
+      });
+      const ic=node('g',{'class':'part','data-part':'U1',color:'var(--foreground)'});
+      const pins=[['E1',1],['E2',2],['E3',3],['E4',4],['F4',5],['F3',6],['F2',7],['F1',8]];
+      pins.forEach(([hole,n])=>{
+        const [x,y]=coords(hole),left=x<5;
+        node('line',{x1:X(x),x2:X(left?4.45:6.55),y1:Y(y),y2:Y(y),stroke:'var(--foreground)','stroke-width':3},ic);
+      });
+      node('rect',{x:X(4.35),y:Y(.57),width:2.3*p,height:3.86*p,rx:3,fill:'var(--card)',stroke:'var(--foreground)','stroke-width':1.5},ic);
+      node('path',{d:`M ${X(5.1)} ${Y(.58)} Q ${X(5.5)} ${Y(1.03)} ${X(5.9)} ${Y(.58)}`,fill:'none',stroke:'var(--foreground)','stroke-width':1.5},ic);
+      if(w>450)node('text',{x:X(5.5),y:Y(2.5)+4,'text-anchor':'middle',transform:`rotate(-90 ${X(5.5)} ${Y(2.5)})`},ic,'MCP6002');
+      const pathFor=points=>points.map(([x,y],i)=>(i?'L':'M')+' '+X(x)+' '+Y(y)).join(' ');
+      const endpoint=(g,name)=>{const[x,y]=coords(name);node('circle',{cx:X(x),cy:Y(y),r:Math.max(2.4,p*.095),fill:'currentColor'},g);};
+      wires.forEach(z=>{
+        const g=node('g',{'class':'part','data-part':z.id,color:'var(--viz-series-4)','data-tooltip':z.id+'：'+z.ends.join(' ↔ ')+'；'+z.label});
+        node('path',{d:pathFor(z.routes),'class':'lead jump'},g);z.ends.forEach(e=>endpoint(g,e));
+      });
+      parts.forEach(z=>{
+        const g=node('g',{'class':'part','data-part':z.id,color:'var(--viz-series-1)','data-tooltip':z.id+' '+z.value+'：'+z.ends.join(' ↔ ')+'；'+z.nets.join(' ↔ ')});
+        node('path',{d:pathFor(z.routes),'class':'lead'+(z.insulated?' insulated':'')},g);
+        if(z.kind==='r'||z.kind==='d'){
+          const [a,b,c,d]=z.body,vertical=a===c;
+          const bw=z.kind==='r'?.52:.38;
+          node('rect',{x:X(a-(vertical?bw/2:0)),y:Y(b-(vertical?0:bw/2)),width:(vertical?bw:c-a)*p,height:(vertical?d-b:bw)*p,rx:2,'class':'body'},g);
+          if(z.kind==='d'){
+            if(vertical)node('line',{x1:X(a-bw/2),x2:X(a+bw/2),y1:Y(b+.18),y2:Y(b+.18),stroke:'var(--foreground)','stroke-width':3},g);
+            else node('line',{x1:X(a+.18),x2:X(a+.18),y1:Y(b-bw/2),y2:Y(b+bw/2),stroke:'var(--foreground)','stroke-width':3},g);
+          }
+          const tx=X((a+c)/2),ty=Y((b+d)/2)+4;
+          if(w>450||!vertical)node('text',{x:tx,y:ty,'text-anchor':'middle','class':'part-label',transform:vertical?`rotate(-90 ${tx} ${ty-4})`:''},g,z.id);
+        } else {
+          const[a,b]=z.body;
+          node('circle',{cx:X(a),cy:Y(b),r:Math.max(3.5,p*.22),'class':'body'},g);
+          if(w>560)node('text',{x:X(a)+6,y:Y(b)+(z.id==='C5'?20:-7),'text-anchor':'start','class':'part-label'},g,z.id);
+        }
+        z.ends.forEach(e=>endpoint(g,e));
+      });
+      node('line',{x1:X(0),x2:X(0),y1:Y(5)+5,y2:Y(5)+18,stroke:'var(--viz-series-2)','stroke-width':1.8},svg);
+      node('text',{x:X(0),y:Y(5)+33,'text-anchor':'middle'},svg,'ESP32 GPIO34');
+      pins.forEach(([hole,n])=>{const [x,y]=coords(hole);node('text',{x:X(x<5?4.68:6.32),y:Y(y)+4,'text-anchor':'middle'},svg,n);});
+      if(chosen!=='all'){
+        const item=parts.find(z=>z.id===chosen)||wires.find(z=>z.id===chosen);
+        if(item)item.ends.forEach((name,i)=>{const[x,y]=coords(name);node('circle',{cx:X(x),cy:Y(y),r:7,fill:'none',stroke:'var(--viz-series-2)','stroke-width':2});node('text',{x:X(x),y:Y(y)+(y===5?23:-13),'text-anchor':'middle'},svg,name);});
+      }
+      applySelection();
+    }
+    function applySelection(){
+      selector.value=chosen;
+      root.querySelectorAll('[data-part]').forEach(e=>{e.classList.toggle('dim',chosen!=='all'&&e.dataset.part!==chosen);e.classList.toggle('active',chosen===e.dataset.part);});
+      if(chosen==='all')detail.textContent='1—4行：芯片、分压与保护；第5行：耦合输入和采样输出。';
+      else if(chosen==='U1')detail.textContent='U1 MCP6002：缺口朝上；左1、2、3、4脚依次在E1—E4；右8、7、6、5脚依次在F1—F4。';
+      else {const z=parts.find(p=>p.id===chosen)||wires.find(p=>p.id===chosen);detail.textContent=z.id+' '+(z.value||z.label)+'：'+z.ends.join(' ↔ ')+'。'+(z.nets?z.nets.join(' ↔ ')+(z.insulated?'；跨芯片长脚套绝缘管。':'。'):'');}
+    }
+    selector.addEventListener('change',()=>{chosen=selector.value;draw();if(window.openai&&window.openai.setWidgetState)window.openai.setWidgetState({modelContent:{selected:chosen,rows:5},privateContent:{part:chosen}}).catch(()=>{});});
+    window.addEventListener('openai:set_globals',e=>{const state=e.detail&&e.detail.globals&&e.detail.globals.widgetState;const key=state&&state.privateContent&&state.privateContent.part;if(all.some(a=>a.id===key)){chosen=key;draw();}});
+    new ResizeObserver(draw).observe(root.querySelector('.board-wrap'));
+    draw();
+    root.__breadboardData={parts,wires,cols};
+  })();
+  </script>
+</div>

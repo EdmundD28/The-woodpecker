@@ -1,0 +1,84 @@
+<div id="piezo-esp32-circuit">
+  <h2>DFR0052 → ESP32 完整模拟采样电路</h2>
+  <div class="viz-row text-small"><span>设计初版 · 未实测</span><span>● 电连接点</span><span>同名网络直接相连</span><span>A＝阳极 · K＝阴极（色环端）</span></div>
+  <div class="circuit-grid">
+    <section><h3>① 产生并缓冲 1.65V 偏置</h3><svg data-panel="bias" role="img" aria-label="两只10千欧电阻分压，10微法和100纳法并联到地，经MCP6002的A通道缓冲产生VREF"></svg></section>
+    <section><h3>② 压电输入、限流与双向保护</h3><svg data-panel="input" role="img" aria-label="蓝线经100纳法电容与47千欧电阻接SENSE。SENSE经100千欧接VREF，BAT85二极管分别钳位到地和3.3伏。红线悬空，黑线接地"></svg></section>
+    <section><h3>③ 信号缓冲、低通与采样输入</h3><svg data-panel="adc" role="img" aria-label="SENSE接运放B的5脚，7脚回接6脚，7脚经2.2千欧电阻接GPIO34，GPIO34经10纳法电容接地"></svg></section>
+    <section><h3>④ 运放供电与封装引脚</h3><svg data-panel="power" role="img" aria-label="MCP6002-I/P的8脚接3.3伏，4脚接地，100纳法和10微法电容并联跨接供电。8脚双列直插封装顶视图和全部引脚连接"></svg></section>
+  </div>
+  <div class="viz-row text-small"><span>缺件：MCP6002-I/P ×1；BAT85 ×2</span><span>现有电阻、电容：具体阻值与容量待核对</span></div>
+  <div class="viz-row text-small"><span>整机共地；运放只接 3V3；DFR0052 不接电源</span><span>USB → ESP32；GPIO34＝ADC1_CH6</span></div>
+  <div class="viz-row text-small"><span>资料：</span><a href="https://wiki.dfrobot.com/dfr0052/" target="_blank" rel="noreferrer">传感器引脚</a><a href="https://dfimg.dfrobot.com/wiki/17157/DFR0052_digital-piezo-disk-vibration-sensor_schematics_v1.0.pdf" target="_blank" rel="noreferrer">模块内置电路</a><a href="https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP6001-1R-1U-2-4-1-MHz-Low-Power-Op-Amp-DS20001733L.pdf" target="_blank" rel="noreferrer">运放数据手册</a><a href="https://assets.nexperia.com/documents/data-sheet/BAT85.pdf" target="_blank" rel="noreferrer">二极管数据手册</a></div>
+</div>
+<style>
+#piezo-esp32-circuit {color:var(--foreground)}
+#piezo-esp32-circuit .circuit-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-block:16px}
+#piezo-esp32-circuit section {min-width:0}
+#piezo-esp32-circuit svg {display:block;width:100%;overflow:visible}
+#piezo-esp32-circuit svg text {fill:var(--foreground);font-size:var(--font-size-base);font-weight:400}
+#piezo-esp32-circuit .wire {fill:none;stroke:var(--foreground);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#piezo-esp32-circuit .part {fill:var(--background);stroke:var(--foreground);stroke-width:1.5}
+#piezo-esp32-circuit .dot {fill:var(--foreground)}
+#piezo-esp32-circuit .missing {stroke:var(--orange)}
+#piezo-esp32-circuit .mark {fill:var(--foreground);font-weight:500}
+@media(max-width:650px){#piezo-esp32-circuit .circuit-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+<script>
+(() => {
+ const root=document.getElementById('piezo-esp32-circuit');
+ const NS='http://www.w3.org/2000/svg';
+ function draw(svg){
+  const w=Math.max(300,Math.round(svg.parentElement.getBoundingClientRect().width));
+  const kind=svg.dataset.panel, h={bias:515,input:515,adc:515,power:515}[kind];
+  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.setAttribute('height',h);svg.replaceChildren();
+  const c=w/2;
+  function el(tag,attrs={},content){const e=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(content!==undefined)e.textContent=content;svg.appendChild(e);return e;}
+  function path(d,cls='wire'){return el('path',{d,class:cls});}
+  function line(x1,y1,x2,y2,cls='wire'){return el('line',{x1,y1,x2,y2,class:cls});}
+  function txt(x,y,s,anchor='start',cls=''){return el('text',{x,y,'text-anchor':anchor,class:cls},s);}
+  function dot(x,y){el('circle',{cx:x,cy:y,r:3,class:'dot'});}
+  function gnd(x,y){line(x,y,x,y+8);line(x-10,y+8,x+10,y+8);line(x-6,y+13,x+6,y+13);line(x-2,y+18,x+2,y+18);}
+  function net(x,y,s,anchor='middle'){txt(x,y-8,s,anchor,'mark');}
+  function rv(x,y,label){line(x,y,x,y+10);el('rect',{x:x-7,y:y+10,width:14,height:36,class:'part'});line(x,y+46,x,y+56);txt(x+13,y+33,label);}
+  function cv(x,y,label,positive=false){line(x,y,x,y+15);line(x-10,y+15,x+10,y+15);line(x-10,y+22,x+10,y+22);line(x,y+22,x,y+48);txt(x+14,y+22,label);if(positive)txt(x-19,y+12,'+');}
+  function diodeUp(x,y,label){line(x,y,x,y+18);line(x-10,y+18,x+10,y+18);path(`M${x},${y+18} L${x-10},${y+38} L${x+10},${y+38} Z`,'part missing');line(x,y+38,x,y+60);txt(x+16,y+16,'K');txt(x+16,y+48,'A');txt(x-15,y+33,label,'end');}
+  function amp(x,y,tag,pplus,pminus,pout){path(`M${x},${y} L${x},${y+80} L${x+70},${y+40} Z`,'part missing');txt(x+8,y+28,'+');txt(x+8,y+62,'−');txt(x-8,y+22,pplus,'end');txt(x-8,y+64,pminus,'end');txt(x+75,y+33,pout);txt(x+31,y-12,tag,'middle');}
+  if(kind==='bias'){
+   const x=c-80;
+   net(x,25,'3V3');line(x,25,x,35);rv(x,35,'R1 10kΩ');line(x,91,x,110);dot(x,110);txt(x+13,106,'VREF_RAW');line(x,110,x,135);rv(x,135,'R2 10kΩ');line(x,191,x,220);gnd(x,220);
+   const cx=c+65;path(`M${x},110 H${cx} V135`);cv(cx,135,'',true);txt(cx-23,136,'C1 10µF','end');gnd(cx,183);
+   path(`M${cx},110 V55 H${cx+40} V135`);dot(cx,110);cv(cx+40,135,'',false);gnd(cx+40,183);txt(cx+42,219,'C2','middle');txt(cx+42,241,'100nF','middle');
+   path(`M${x},110 H${x-37} V317 H${c-45}`);amp(c-45,295,'U1A · MCP6002','3','2','1');
+   line(c+25,335,c+75,335);dot(c+50,335);path(`M${c+50},335 V410 H${c-70} V357 H${c-45}`);txt(c+77,340,'VREF');txt(c+77,363,'≈1.65V');
+   txt(c,462,'U1A：1脚直接回接2脚','middle');txt(c,487,'C1 正极接 VREF_RAW，负极接地','middle');
+  }
+  if(kind==='input'){
+   const x=c-32;
+   txt(c,21,'DFR0052 白色三线插头','middle','mark');txt(c,45,'蓝＝信号 · 红＝NC悬空 · 黑＝GND','middle');
+   txt(x-15,78,'蓝线','end');line(x,65,x,89);cv(x,89,'C3 100nF');line(x,137,x,153);rv(x,153,'R3 47kΩ');line(x,209,x,236);dot(x,236);txt(x-13,241,'SENSE','end');line(x,236,x,276);rv(x,276,'R4 100kΩ');line(x,332,x,352);txt(x,374,'VREF（接①输出）','middle');
+   const dx=c+100;path(`M${x},236 H${dx}`);dot(dx,236);line(dx,236,dx,200);diodeUp(dx,140,'D2');line(dx,140,dx,111);net(dx,111,'3V3');
+   line(dx,236,dx,274);diodeUp(dx,274,'D1');line(dx,334,dx,352);gnd(dx,352);
+   txt(c,416,'D1、D2：BAT85（均待补齐）','middle');txt(c,441,'D1：A接地，K接SENSE','middle');txt(c,466,'D2：A接SENSE，K接3V3','middle');txt(c,491,'SENSE 接③；传感器黑线接公共地','middle');
+  }
+  if(kind==='adc'){
+   net(c-80,47,'SENSE');path(`M${c-80},47 V112 H${c-45}`);amp(c-45,90,'U1B · MCP6002','5','6','7');line(c+25,130,c+75,130);dot(c+55,130);path(`M${c+55},130 V193 H${c-75} V152 H${c-45}`);
+   path(`M${c+75},130 V232 H${c}`);rv(c,232,'R5 2.2kΩ');line(c,288,c,325);dot(c,325);line(c,325,c,350);cv(c,350,'C4 10nF');gnd(c,398);
+   line(c,325,c+95,325);txt(c+95,291,'ESP32','middle','mark');txt(c+95,312,'GPIO34','middle');
+   txt(c,449,'U1B：7脚直接回接6脚','middle');txt(c,474,'C4 靠近 GPIO34；低通约7.2kHz','middle');txt(c,499,'静止时 ADC 输入约1.65V','middle');
+  }
+  if(kind==='power'){
+   txt(c,21,'U1＝MCP6002-I/P · 双列直插8脚','middle','mark');txt(c,45,'顶视图：缺口朝上，1脚在左上','middle');
+   el('rect',{x:c-35,y:67,width:70,height:132,class:'part missing'});path(`M${c-10},67 Q${c},85 ${c+10},67`);txt(c,123,'U1','middle');
+   const left=['1 → VREF','2 → 1脚','3 → VREF_RAW','4 → GND'],right=['8 → 3V3','7 → R5','6 → 7脚','5 → SENSE'];
+   for(let i=0;i<4;i++){const y=87+i*30;line(c-50,y,c-35,y);line(c+35,y,c+50,y);if(i===2){txt(c-56,y,'3 →','end');txt(c-56,y+16,'VREF_RAW','end');}else{txt(c-56,y+5,left[i],'end');}txt(c+56,y+5,right[i]);}
+   const x=c-105, x2=c+12;
+   txt(c,235,'供电去耦（接在 U1 附近）','middle');line(x,269,c+105,269);net(c,269,'3V3 → U1 第8脚');line(x,269,x,300);cv(x,300,'C5 100nF');line(x,348,x,387);line(x2,269,x2,300);cv(x2,300,'C6 10µF',true);line(x2,348,x2,387);dot(x2,269);dot(x2,387);line(x,387,c+105,387);txt(c,432,'GND → U1 第4脚','middle');gnd(c,387);
+   txt(c,450,'电阻：10kΩ×2、47kΩ、100kΩ、2.2kΩ','middle');txt(c,475,'电容：100nF×3、10µF×2、10nF×1','middle');txt(c,500,'10µF 若为电解：正极在上，负极接地','middle');
+  }
+ }
+ const observer=new ResizeObserver(()=>root.querySelectorAll('svg[data-panel]').forEach(draw));
+ root.querySelectorAll('section').forEach(s=>observer.observe(s));
+ root.querySelectorAll('svg[data-panel]').forEach(draw);
+})();
+</script>

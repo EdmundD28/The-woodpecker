@@ -308,8 +308,6 @@ def process_line(
 
         sample_id = record["sample_id"]
 
-        if sample_id in sample_ids:
-            raise ValueError(f"样本编号重复: {sample_id}")
         if not re.fullmatch(r"[A-Za-z0-9_-]+", sample_id):
             raise ValueError("样本编号包含不能用于文件名的字符")
 
@@ -322,14 +320,9 @@ def process_line(
         sample_directory = Path(output_file.name).resolve().parent / "samples"
         sample_directory.mkdir(parents=True, exist_ok=True)
         sample_path = sample_directory / f"{sample_id}.json"
-        try:
-            with sample_path.open("x", encoding="utf-8", newline="\n") as sample_file:
-                sample_file.write(saved_line + "\n")
-        except FileExistsError as error:
-            raise FileExistsError(
-                f"同编号数据已存在，已停止以防覆盖：{sample_path}；"
-                "请调整起始敲击编号或实验批次后重新采集"
-            ) from error
+        # 同编号有意覆盖，以最新一次采集为准。
+        with sample_path.open("w", encoding="utf-8", newline="\n") as sample_file:
+            sample_file.write(saved_line + "\n")
         sample_ids.add(sample_id)
         output_file.write(saved_line + "\n")
         output_file.flush()
@@ -676,8 +669,8 @@ def main() -> None:
     except (RuntimeError, OSError, KeyboardInterrupt) as error:
         print(f"采集停止: {error}", file=sys.stderr)
 
-    valid_count = len(sample_ids)
-
+    # 中断时仍保留已保存记录的计数；正常结束按实际接收条数计数。
+    valid_count = max(valid_count, len(sample_ids))
     if valid_count == 0:
         if output_path.exists() and output_path.stat().st_size == 0:
             output_path.unlink()

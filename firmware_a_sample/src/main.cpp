@@ -16,10 +16,14 @@ constexpr uint16_t RECLAMP_BATCH = 0;
 constexpr uint8_t PIEZO_PIN = 34;
 
 // 固定采样参数
-constexpr uint32_t SAMPLE_RATE_HZ = 16000;
-constexpr size_t SAMPLE_COUNT = 1024;
+constexpr uint32_t SAMPLE_RATE_HZ = 8000;
+constexpr uint32_t CAPTURE_WINDOW_MS = 300;
+constexpr size_t SAMPLE_COUNT = SAMPLE_RATE_HZ * CAPTURE_WINDOW_MS / 1000;
 constexpr size_t PRE_TRIGGER_COUNT = 256;
 constexpr size_t POST_TRIGGER_COUNT = SAMPLE_COUNT - PRE_TRIGGER_COUNT;
+static_assert(SAMPLE_RATE_HZ * CAPTURE_WINDOW_MS % 1000 == 0,
+              "Capture window must contain a whole number of samples");
+static_assert(SAMPLE_COUNT > PRE_TRIGGER_COUNT, "Capture must include trigger sample");
 
 // 硬件连续采样；主循环按块读取，不再依赖analogRead的软件耗时。
 constexpr i2s_port_t ADC_PORT = I2S_NUM_0;
@@ -36,7 +40,7 @@ uint64_t dmaRateStartUs = 0;
 uint32_t dmaRateSamples = 0;
 uint32_t measuredRateHz = 0;
 
-// 实时预览每64点发送其中最大偏差点：16000 / 64 = 250 Hz
+// 实时预览每64点发送其中最大偏差点：8000 / 64 = 125 Hz
 constexpr uint16_t PREVIEW_DECIMATION = 64;
 
 // ESP32 12位ADC及真机调试参数
@@ -44,7 +48,7 @@ constexpr int ADC_MIN_VALUE = 0;
 constexpr int ADC_MAX_VALUE = 4095;
 constexpr int CLIP_LOW = 10;
 constexpr int CLIP_HIGH = 4085;
-constexpr int TRIGGER_THRESHOLD = 300;
+constexpr int TRIGGER_THRESHOLD = 500;
 constexpr int WEAK_SIGNAL_THRESHOLD = 100;
 
 // 避免一次敲击的余振被识别成多次敲击
@@ -162,7 +166,7 @@ void beginCapture(uint16_t triggerSample) {
     sampleLossDetected = lossHistoryRemaining != 0;
     copyPreTriggerSamples();
 
-    // 第256号元素保存触发当下的采样值；之后还会采767点
+    // 第256号元素保存触发当下的采样值；之后采满窗口剩余的2143点。
     rawSamples[PRE_TRIGGER_COUNT] = triggerSample;
     postTriggerWriteIndex = PRE_TRIGGER_COUNT + 1;
     captureActive = true;
@@ -311,7 +315,7 @@ void outputRecord(
 
 
 void finishCapture() {
-    // 先停止采样再传输；约半秒的JSON发送不再造成缓冲溢出。
+    // 先停止采样再传输；2400点JSON在115200波特率下约需1.1秒。
     i2s_adc_disable(ADC_PORT);
     i2s_stop(ADC_PORT);
     checkDmaEvents();

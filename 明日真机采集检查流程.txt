@@ -13,7 +13,7 @@
 本次真机测试需要确认：
 
 [ ] ESP32能够读取真实压电敲击信号。
-[ ] 能以16000 Hz、1024点固定窗口完成一次采样。
+[ ] 能以16000 Hz、4800点固定窗口完成一次采样。
 [ ] 能保存触发前256点和触发部分768点。
 [ ] 软件触发能够工作。
 [ ] 真实敲击阈值触发能够工作。
@@ -128,7 +128,7 @@ firmware_a_sample/src/main.cpp
 
 PIEZO_PIN = 34
 SAMPLE_RATE_HZ = 16000
-SAMPLE_COUNT = 1024
+SAMPLE_COUNT = 4800
 PRE_TRIGGER_COUNT = 256
 TRIGGER_THRESHOLD = 200（初始值，真机测试后调整）
 
@@ -197,7 +197,7 @@ collector将自动完成：
 
 [ ] collector成功打开COM端口。
 [ ] 收到一条WOOD_IMPACT_V1记录。
-[ ] sample_count等于1024。
+[ ] sample_count等于4800。
 [ ] sample_rate_hz等于16000。
 [ ] impact_point_id等于1。
 [ ] 生成JSONL文件。
@@ -300,14 +300,14 @@ py .\collector.py --port COM7 --impact-point 3 --trigger auto --count 5
 
 py .\collector.py --port COM7 --impact-point 1 --trigger auto --count 5 --live
 
---live模式会在每收到一条完整的1024点记录后刷新曲线；它不是采样过程中的逐点滚动显示。
+--live模式会在每收到一条完整的4800点记录后刷新曲线；它不是采样过程中的逐点滚动显示。
 采集结束后最后一条波形会保持显示，关闭图窗即可结束。
 
 如果希望持续观察压电片变化，同时保留完整敲击采集，使用：
 
 py .\collector.py --port COM7 --impact-point 1 --trigger auto --monitor
 
---monitor窗口上半图持续滚动显示最近5秒的250 Hz峰值预览；每个预览点取对应64个原始点中偏离基线最大的点，下半图显示最近一次完整的16 kHz、1024点波形。关闭窗口或按Ctrl+C才停止监测。
+--monitor窗口上半图持续滚动显示最近5秒的250 Hz峰值预览；每个预览点取对应64个原始点中偏离基线最大的点，下半图显示最近一次完整的16 kHz、4800点波形。关闭窗口或按Ctrl+C才停止监测。
 预览数据不写入训练JSONL，完整敲击数据仍按WOOD_IMPACT_V1保存。
 
 [ ] P01数据的impact_point_id为1。
@@ -393,7 +393,7 @@ pc_collector\collected_data\plots\样本编号.png
 [ ] USB及COM端口正常。
 [ ] 固件A成功上传。
 [ ] 三处串口波特率均为115200。
-[ ] 软件触发能够采集1024点。
+[ ] 软件触发能够采集4800点。
 [ ] 真实敲击能够自动触发。
 [ ] 包含触发前256点和触发部分768点。
 [ ] 正常敲击没有严重削顶。

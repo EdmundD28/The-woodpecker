@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="780" viewBox="0 0 1100 780" role="img" aria-labelledby="title desc">
+<title id="title">ESP32 整机接线更新：压电、触摸、OLED</title>
+<desc id="desc">原压电模拟前端不变，输出接 GPIO34。支持3.3伏的三针数字触摸模块接3V3、GND、GPIO27。支持3.3伏的四针I2C OLED接3V3、GND、GPIO21、GPIO22。所有同名电源和地节点相连。新增模块型号待确认。</desc>
+<style>
+text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#18202b;font-size:17px} .head{font-size:27px;font-weight:700}.sub{font-size:15px;fill:#485365}.label{font-size:19px;font-weight:700}.box{fill:#f4f7fb;stroke:#8792a2;stroke-width:1.5}.wire{fill:none;stroke:#365a83;stroke-width:2}.power{stroke:#a64535}.ground{stroke:#57616e}.node{fill:#365a83}.note{font-size:16px}.tag{font-size:14px;fill:#73520c}
+</style>
+<rect width="1100" height="780" fill="#fff"/>
+<text x="36" y="44" class="head">整机接线更新 · 压电支路保留</text>
+<text x="36" y="75" class="sub">2026-10-16 ｜ 新增模块型号待确认 ｜ 按丝印接线，GPIO 编号不是排针序号</text>
+
+<rect x="36" y="105" width="1028" height="176" fill="none" stroke="#c8cfd8"/>
+<text x="54" y="134" class="label">① 原压电模拟前端</text>
+<rect class="box" x="54" y="153" width="475" height="104" rx="4"/>
+<text x="72" y="181">DFR0052 → 隔直／偏置／保护／缓冲／低通</text>
+<text x="72" y="210" class="note">保留 MCP6002、BAT85 和现有阻容接线</text>
+<text x="72" y="239" class="sub">原前端仍接 3V3 / GND；DFR0052 红线悬空</text>
+<path class="wire" d="M529 198H798"/>
+<text x="577" y="184" class="note">滤波后信号</text>
+<rect class="box" x="798" y="160" width="246" height="90" rx="4"/>
+<text x="817" y="191" class="label">ESP32 · GPIO34</text>
+<text x="817" y="220" class="note">ADC1_CH6</text>
+
+<rect x="36" y="299" width="1028" height="174" fill="none" stroke="#c8cfd8"/>
+<text x="54" y="329" class="label">② 电容式触摸模块 · 三针数字输出</text>
+<text x="590" y="329" class="tag">条件：支持 3.3V，非自锁模式</text>
+<rect class="box" x="54" y="346" width="475" height="108" rx="4"/>
+<text x="73" y="374">VCC</text><text x="73" y="407">GND</text><text x="73" y="440">I/O</text>
+<path class="wire power" d="M529 369H798"/><path class="wire ground" d="M529 402H798"/><path class="wire" d="M529 435H798"/>
+<rect class="box" x="798" y="346" width="246" height="108" rx="4"/>
+<text x="816" y="374">ESP32 · 3V3</text><text x="816" y="407">ESP32 · GND</text><text x="816" y="440">ESP32 · GPIO27</text>
+
+<rect x="36" y="491" width="1028" height="204" fill="none" stroke="#c8cfd8"/>
+<text x="54" y="521" class="label">③ OLED · 四针 I²C 接口</text>
+<text x="590" y="521" class="tag">条件：支持 3.3V，接口模式已确认</text>
+<rect class="box" x="54" y="538" width="475" height="138" rx="4"/>
+<text x="73" y="566">VCC</text><text x="73" y="599">GND</text><text x="73" y="632">SDA</text><text x="73" y="665">SCL</text>
+<path class="wire power" d="M529 561H798"/><path class="wire ground" d="M529 594H798"/><path class="wire" d="M529 627H798"/><path class="wire" d="M529 660H798"/>
+<rect class="box" x="798" y="538" width="246" height="138" rx="4"/>
+<text x="816" y="566">ESP32 · 3V3</text><text x="816" y="599">ESP32 · GND</text><text x="816" y="632">ESP32 · GPIO21</text><text x="816" y="665">ESP32 · GPIO22</text>
+
+<text x="36" y="725" class="note">同名 3V3、GND 节点全部相连；信号支路独立，共享供电与公共地。</text>
+<text x="36" y="754" class="note">GPIO27 提供持续触摸许可；压电阈值负责敲击触发。松开即撤销许可，须由固件实现。</text>
+</svg>
