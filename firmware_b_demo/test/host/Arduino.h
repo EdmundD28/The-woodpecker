@@ -10,6 +10,12 @@
 inline uint32_t fakeNow=0;
 inline uint32_t millis() { return fakeNow; }
 inline void delay(uint32_t ms) { fakeNow+=ms; }
+constexpr int LOW=0,HIGH=1,INPUT_PULLDOWN=2,INPUT_PULLUP=3,OUTPUT=4;
+inline int fakeOutputs[40]={};
+inline void digitalWrite(int pin,int value) { fakeOutputs[pin]=value; }
+inline int fakeTouchLevel=LOW,fakeInputPin=-1,fakeInputMode=-1;
+inline void pinMode(int pin,int mode) { fakeInputPin=pin; fakeInputMode=mode; }
+inline int digitalRead(int pin) { return pin==27?fakeTouchLevel:LOW; }
 struct TextSink {
     std::string text;
     std::deque<char> commands;

@@ -8,24 +8,34 @@ void reset() {
     fakeNow=1000; head=filled=0; next=PRE; discard=lossHistory=0;
     active=loss=requested=baselineReady=finishedBlock=false;
     running=readyShown=true; rearmAt=resumeAt=0; baseline=0; accepted=0;
+    fakeTouchLevel=HIGH; touchPermission=TouchPermission{};
+    touchPermission.update(false,0); touchPermission.update(true,0);
+    gateView=GateView::Ready;
     fakeAdc.clear(); fakeEvents.clear(); Serial.text.clear(); Serial.commands.clear(); oled.text.clear();
+    Wire.probeResults.clear(); Wire.ends=0; oled.beginResults.clear(); oled.beginCalls=0;
+    runStatusAt=fakeNow; runStatusHigh=false; fakeOutputs[25]=LOW;
 }
 void waveform(int amplitude) {
     for(size_t i=0;i<N;++i) raw[i]=2048+(i%2?amplitude:-amplitude);
 }
 void readyAgain() {
+    fakeTouchLevel=LOW; pollTouch();
     fakeNow=resumeAt; restartAdc();
-    fakeNow=rearmAt; readyShown=true; discard=0;
+    fakeTouchLevel=HIGH; pollTouch(); fakeNow+=1000;
+    readyShown=true; gateView=GateView::Ready; discard=0;
 }
 void captureReference(size_t row,size_t point) {
     std::copy(test_raw[row][point],test_raw[row][point]+N,raw);
+    touchPermission.consume();
     finishCapture();
 }
 int main() {
-    reset(); setup();
+    reset(); fakeTouchLevel=LOW; setup();
     assert(N==2400 && FS==8000 && PRE==256 && THRESHOLD==500);
     assert(oled.text.find("Preparing")!=std::string::npos && !readyShown);
     assert(OLED_SDA==21 && OLED_SCL==22 && OLED_ADDRESS==0x3C);
+    assert(fakeInputPin==27 && fakeInputMode==INPUT_PULLDOWN);
+    assert(fakeOutputs[25]==LOW);
     std::cout<<"PASS initialization, trained sampling contract and OLED pins\n";
 
     float maxInputError=0,maxScoreError=0;
@@ -94,7 +104,7 @@ int main() {
 
     reset(); active=true; next=PRE; captureDeadline=fakeNow+600;
     fakeEvents.push_back(I2S_EVENT_DMA_ERROR); checkEvents(); assert(loss && lossHistory==PRE);
-    reset(); readyShown=false; rearmAt=fakeNow+500;
+    reset(); readyShown=false; gateView=GateView::Arming; rearmAt=fakeNow+500;
     for(size_t i=0;i<PRE;++i) sample(2048);
     sample(3000); assert(!active);
     fakeNow=rearmAt; loop(); assert(readyShown && oled.text.find("first endpoint")!=std::string::npos);
@@ -107,5 +117,86 @@ int main() {
     reset(); accepted=2; Serial.commands.push_back('R'); loop();
     assert(accepted==0 && !running && !requested && Serial.text.find("#RESET")!=std::string::npos);
     fakeNow=resumeAt; loop(); assert(running && !readyShown);
-    std::cout<<"PASS manual group reset\nALL PASSED ("<<wood_classifier::mode<<")\n";
+    std::cout<<"PASS manual group reset\n";
+
+    TouchPermission gate;
+    gate.update(true,0); gate.update(true,10000); assert(!gate.canStart(10000));
+    gate.update(false,10001); gate.update(true,10002);
+    assert(!gate.canStart(11001) && gate.canStart(11002));
+    gate.consume(); gate.update(true,20000); assert(!gate.canStart(20000) && gate.held());
+    gate.update(false,20001); assert(!gate.held());
+    gate.update(true,0xFFFFFF00u); assert(!gate.canStart(500) && gate.canStart(800));
+    reset(); touchPermission=TouchPermission{}; gateView=GateView::Unknown;
+    loop(); assert(gateView==GateView::Used && !readyShown);
+    fakeTouchLevel=LOW; loop(); assert(gateView==GateView::Locked);
+    std::cout<<"PASS startup-held lock, one-second delay, one attempt/hold, immediate release, timer wrap\n";
+
+    // Locked and warming touch cannot be bypassed by an impact or serial C.
+    reset(); fakeTouchLevel=LOW; pollTouch();
+    for(size_t i=0;i<PRE+1;++i) sample(i%2?3048:1048);
+    assert(!active && accepted==0);
+    Serial.commands.push_back('C'); loop(); assert(!requested && !active);
+    fakeTouchLevel=HIGH; pollTouch(); assert(filled==0 && !readyShown);
+    fakeNow+=999; requested=true; sample(3048); assert(!active);
+    std::cout<<"PASS locked impacts/C ignored, hold clears old pretrigger data, warmup cannot trigger\n";
+
+    // Release in the middle of a record invalidates only that position.
+    reset(); accepted=1;
+    assert(wood_classifier::store_point(test_raw[0][0],0));
+    float saved=wood_classifier::input[0];
+    for(size_t i=0;i<PRE;++i) sample(2048);
+    requested=true; sample(2648); assert(active && touchPermission.consumed());
+    fakeTouchLevel=LOW; sample(2048);
+    assert(!active && !running && accepted==1 && wood_classifier::input[0]==saved);
+    assert(Serial.text.find("#CANCELLED,TOUCH_RELEASED")!=std::string::npos);
+    assert(oled.text.find("cancelled")!=std::string::npos);
+    std::cout<<"PASS release mid-capture cancels without increment or losing earlier point\n";
+
+    // Capture one attempt, keep holding through processing, and verify lockout.
+    reset();
+    for(size_t i=0;i<PRE;++i) sample(2048);
+    requested=true; sample(2648);
+    for(size_t i=PRE+1;i<N;++i) sample(i%2?2648:1448);
+    assert(accepted==1 && touchPermission.consumed());
+    fakeNow=resumeAt; loop(); loop();
+    assert(gateView==GateView::Used && !readyShown);
+    for(size_t i=0;i<PRE+5;++i) sample(i%2?2648:1448);
+    assert(!active && accepted==1);
+    fakeTouchLevel=LOW; loop(); assert(gateView==GateView::Locked);
+    fakeTouchLevel=HIGH; loop(); assert(gateView==GateView::Arming);
+    fakeNow+=1000;
+    for(size_t i=0;i<PRE;++i) sample(2048);
+    loop(); assert(readyShown && gateView==GateView::Ready);
+    assert(filled==0); // Display queued frames must not enter the next window.
+    requested=true; sample(2648); assert(!active);
+    for(size_t i=0;i<PRE;++i) sample(2048);
+    sample(2648); assert(active);
+    std::cout<<"PASS hold cannot repeat, release/rehold rearms, Ready refills a fresh prebuffer\n";
+
+    // Unplugged active-high input defaults low and never grants permission.
+    reset(); fakeTouchLevel=LOW; loop();
+    for(size_t i=0;i<PRE+5;++i) sample(i%2?3048:1048);
+    assert(!active && !readyShown && gateView==GateView::Locked);
+    std::cout<<"PASS disconnected/low input remains locked\n";
+
+    reset(); Wire.probeResults={2,2,0,0};
+    uint32_t bootStart=fakeNow;
+    assert(initialiseDisplay());
+    assert(Wire.ends==3 && Wire.clock==100000 && oled.beginCalls==2);
+    assert(fakeNow-bootStart>=1650);
+    assert(Serial.text.find("attempt=3,i2c_status=0,init=1")!=std::string::npos);
+    reset(); Wire.probeResults={2,2,2,2,2,2};
+    assert(!initialiseDisplay() && Wire.ends==6 && oled.beginCalls==0);
+    Wire.probeResults={0,0}; assert(initialiseDisplay());
+    reset(); oled.beginResults={false,true,true};
+    assert(initialiseDisplay() && Wire.ends==2 && oled.beginCalls==3);
+    reset(); Wire.probeResults={0,2,0,0};
+    assert(initialiseDisplay() && Wire.ends==2 && oled.beginCalls==4);
+    std::cout<<"PASS delayed OLED power-up, slow bus, retries, init failure and post-init NACK\n";
+    reset(); fakeNow+=999; updateRunStatus(); assert(fakeOutputs[25]==LOW);
+    ++fakeNow; updateRunStatus(); assert(fakeOutputs[25]==HIGH);
+    fakeNow+=1000; updateRunStatus(); assert(fakeOutputs[25]==LOW);
+    runStatusAt=0xFFFFFF00u; fakeNow=800; updateRunStatus(); assert(fakeOutputs[25]==HIGH);
+    std::cout<<"PASS independent GPIO25 liveness output and timer wrap\n";
+    std::cout<<"ALL PASSED ("<<wood_classifier::mode<<")\n";
 }
