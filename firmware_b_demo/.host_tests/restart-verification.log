@@ -1,0 +1,32 @@
+PASS initialization, trained sampling contract and OLED pins
+PASS 6 real triplets and both directions; max_input_error=0, max_score_error=5.96046e-08
+PASS triplet flow, persistent result, fresh one-second restart, short-touch rejection and timer wrap
+PASS invalid hit keeps position/earlier wave; retry completes correct triplet
+PASS hardware threshold, ordered prebuffer, exactly 2400 points
+PASS software trigger, weak-signal rejection and incomplete capture timeout
+PASS DMA loss, preparing/rearming gate, recovery and timer wraparound
+PASS manual group reset
+PASS startup-held lock, one-second delay, one attempt/hold, immediate release, timer wrap
+PASS locked impacts/C ignored, hold clears old pretrigger data, warmup cannot trigger
+PASS release mid-capture cancels without increment or losing earlier point
+PASS hold cannot repeat, release/rehold rearms, Ready refills a fresh prebuffer
+PASS disconnected/low input remains locked
+PASS delayed OLED power-up, slow bus, retries, init failure and post-init NACK
+PASS independent GPIO25 liveness output and timer wrap
+ALL PASSED (TIME)
+PASS initialization, trained sampling contract and OLED pins
+PASS 6 real triplets and both directions; max_input_error=2.79397e-09, max_score_error=5.96046e-08
+PASS triplet flow, persistent result, fresh one-second restart, short-touch rejection and timer wrap
+PASS invalid hit keeps position/earlier wave; retry completes correct triplet
+PASS hardware threshold, ordered prebuffer, exactly 2400 points
+PASS software trigger, weak-signal rejection and incomplete capture timeout
+PASS DMA loss, preparing/rearming gate, recovery and timer wraparound
+PASS manual group reset
+PASS startup-held lock, one-second delay, one attempt/hold, immediate release, timer wrap
+PASS locked impacts/C ignored, hold clears old pretrigger data, warmup cannot trigger
+PASS release mid-capture cancels without increment or losing earlier point
+PASS hold cannot repeat, release/rehold rearms, Ready refills a fresh prebuffer
+PASS disconnected/low input remains locked
+PASS delayed OLED power-up, slow bus, retries, init failure and post-init NACK
+PASS independent GPIO25 liveness output and timer wrap
+ALL PASSED (SPECTRUM)

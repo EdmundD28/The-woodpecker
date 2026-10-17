@@ -1,0 +1,2 @@
+0
+2322 281474978499753 1792220171049511700 efb411cdcafcb20f10da918034bb27c0 1 libc\mingw\lib-common\api-ms-win-crt-string-l1-1-0.def

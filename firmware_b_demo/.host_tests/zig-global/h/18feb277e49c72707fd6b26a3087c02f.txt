@@ -1,0 +1,2 @@
+0
+555 281474978499741 1792220171034582900 d0e8e2498aad9d05e318a1b56aca27c9 1 libc\mingw\lib-common\api-ms-win-crt-conio-l1-1-0.def

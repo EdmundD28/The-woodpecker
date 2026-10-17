@@ -1,0 +1,14 @@
+[
+  {
+    "mode": "time",
+    "passed": true,
+    "oracle_triplets": 6,
+    "output": "PASS initialization, trained sampling contract and OLED pins\nPASS 6 real triplets and both directions; max_input_error=0, max_score_error=5.96046e-08\nPASS triplet flow, persistent result, fresh one-second restart, short-touch rejection and timer wrap\nPASS invalid hit keeps position/earlier wave; retry completes correct triplet\nPASS hardware threshold, ordered prebuffer, exactly 2400 points\nPASS software trigger, weak-signal rejection and incomplete capture timeout\nPASS DMA loss, preparing/rearming gate, recovery and timer wraparound\nPASS manual group reset\nPASS every invalid, cancel and fatal reason has its own screen\nPASS startup-held lock, one-second delay, one attempt/hold, immediate release, timer wrap\nPASS locked impacts/C ignored, hold clears old pretrigger data, warmup cannot trigger\nPASS release mid-capture cancels without increment or losing earlier point\nPASS hold cannot repeat, release/rehold rearms, Ready refills a fresh prebuffer\nPASS disconnected/low input remains locked\nPASS delayed OLED power-up, slow bus, retries, init failure and post-init NACK\nPASS independent GPIO25 liveness output and timer wrap\nALL PASSED (TIME)\n"
+  },
+  {
+    "mode": "spectrum",
+    "passed": true,
+    "oracle_triplets": 6,
+    "output": "PASS initialization, trained sampling contract and OLED pins\nPASS 6 real triplets and both directions; max_input_error=2.79397e-09, max_score_error=5.96046e-08\nPASS triplet flow, persistent result, fresh one-second restart, short-touch rejection and timer wrap\nPASS invalid hit keeps position/earlier wave; retry completes correct triplet\nPASS hardware threshold, ordered prebuffer, exactly 2400 points\nPASS software trigger, weak-signal rejection and incomplete capture timeout\nPASS DMA loss, preparing/rearming gate, recovery and timer wraparound\nPASS manual group reset\nPASS every invalid, cancel and fatal reason has its own screen\nPASS startup-held lock, one-second delay, one attempt/hold, immediate release, timer wrap\nPASS locked impacts/C ignored, hold clears old pretrigger data, warmup cannot trigger\nPASS release mid-capture cancels without increment or losing earlier point\nPASS hold cannot repeat, release/rehold rearms, Ready refills a fresh prebuffer\nPASS disconnected/low input remains locked\nPASS delayed OLED power-up, slow bus, retries, init failure and post-init NACK\nPASS independent GPIO25 liveness output and timer wrap\nALL PASSED (SPECTRUM)\n"
+  }
+]
