@@ -176,14 +176,15 @@ def configure_batch(args: argparse.Namespace) -> None:
     print("批量采集设置：直接回车使用方括号内默认值。")
     args.port = input("COM端口 [auto]：").strip() or "auto"
     while True:
-        args.stick_id = input("木头编号 [WOOD01]：").strip() or "WOOD01"
-        if re.fullmatch(r"[A-Za-z0-9_-]+", args.stick_id):
+        wood_number = input("木头编号 [01]：").strip() or "01"
+        if re.fullmatch(r"[0-9]+", wood_number) and int(wood_number) >= 1:
+            args.stick_id = f"WOOD{int(wood_number):02d}"
             break
-        print("木头编号请使用英文字母、数字、下划线或短横线。")
+        print("木头编号请输入大于等于1的数字，例如02。")
     args.experiment_batch = ask_integer("实验批次", 1, 1)
-    args.reclamp_batch = ask_integer("重新装夹批次（未重新装夹填0）", 0, 0)
+    args.reclamp_batch = 0
     args.impact_point = ask_integer("敲击位置（1～3）", 1, 1, 3)
-    args.count = ask_integer("采集次数（异常记录也保存并计数）", 20, 1)
+    args.count = ask_integer("采集次数（异常记录也保存并计数）", 50, 1)
     args.start_strike = ask_integer("起始敲击编号（续采请接着上次编号）", 1, 1)
     args.monitor = input("开启5秒实时监控？[Y/n]：").strip().lower() != "n"
     if args.hold_key is None:
@@ -191,7 +192,7 @@ def configure_batch(args: argparse.Namespace) -> None:
     args.trigger = "auto"
     args.batch = True
     args.stop_after_count = True
-    print(f"本批：{args.stick_id} / E{args.experiment_batch} / R{args.reclamp_batch} / P{args.impact_point}，共{args.count}次。")
+    print(f"本批：{args.stick_id} / E{args.experiment_batch} / P{args.impact_point}，共{args.count}次。")
     input("确认安装与位置正确，按Enter开始；每次敲击间隔至少1秒。")
     if args.hold_key != "none":
         print("提锤时松键；准备好后按住指定键，等待允许采集再敲击，按住直到已保存；每次松开再按只收一条。")
