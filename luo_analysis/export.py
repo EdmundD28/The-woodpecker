@@ -1,11 +1,14 @@
 """Export a self-contained float32 C++ reference, without touching firmware B."""
 from pathlib import Path
 import numpy as np
-from .core import dump
+from .core import dump, validate_config, input_contract
 
 
 def export(model,out):
     out = Path(out)
+    c = validate_config(model['config'])
+    count = c['sample_count']
+    bins = count // 2 + 1
     weights = model['weights']
     arrays = []
     for name,value in weights.items():
@@ -60,7 +63,7 @@ inline void preprocess(const uint16_t* raw,float* input) {
 } // namespace wood_model
 '''
     mode=model['config'].get('input_mode','time')
-    lengths=[1024 if mode=='time' else 513]
+    lengths=[count if mode=='time' else bins]
     channels=[1]
     for cout,kernel,stride in model['config']['conv_layers']:
         lengths.append((lengths[-1]+stride-1)//stride)
@@ -72,12 +75,15 @@ inline void preprocess(const uint16_t* raw,float* input) {
     header=header.replace('conv(a,512,8,b,16,5,2,w1,b1);',f'conv(a,{lengths[1]},8,b,16,5,2,w1,b1);')
     header=header.replace('conv(b,256,16,a,32,3,2,w2,b2);',f'conv(b,{lengths[2]},16,a,32,3,2,w2,b2);')
     header=header.replace('t<128',f't<{lengths[3]}').replace('/128.0f',f'/{lengths[3]}.0f')
+    # Update the raw preprocessing as well as every convolution dimension.
+    header=header.replace('i<1024',f'i<{count}').replace('/1024.0f',f'/{count}.0f')
+    header=header.replace('TIME_V0_1',c['interface_version'])
     if mode=='spectrum':
         pool_start=header.index('    float pooled[32]={};')
         pool_end=header.index('    for(int o=0;o<2;++o)',pool_start)
         header=header[:pool_start]+'    const float* pooled=a; // Flatten preserves frequency-bin positions.\n'+header[pool_end:]
         header=header.replace('for(int c=0;c<32;++c) scores',f'for(int c=0;c<{lengths[3]*32};++c) scores')
-        window=','.join(f'{float(v):.17e}' for v in np.hanning(1024))
+        window=','.join(f'{float(v):.17e}' for v in np.hanning(count))
         spectral='''// SPECTRUM_V0_1: direct DFT reference; replace with a verified FFT for hardware speed.
 // Input is 1024 ADC points, output is float32[513], including DC and Nyquist.
 static const double hann[1024] = {WINDOW};
@@ -96,18 +102,20 @@ inline void preprocess(const uint16_t* raw,float* input) {
         input[k]=float(std::sqrt(re*re+im*im)/1024.0);
     }
 }
-'''.replace('WINDOW',window)
+'''
+        spectral=spectral.replace('SPECTRUM_V0_1',input_contract(c)['version'])
+        spectral=spectral.replace('1024',str(count)).replace('513',str(bins)).replace('WINDOW',window)
         start=header.index('// Quality checks remain')
         header=header[:start]+spectral+'} // namespace wood_model\n'
     header=header.replace('namespace wood_model',f'namespace wood_model_{mode}')
     (out/'model_weights.h').write_text(header,encoding='utf-8')
-    count = sum(np.asarray(v).size for v in weights.values())
+    parameter_count = sum(np.asarray(v).size for v in weights.values())
     dense_inputs=lengths[3]*32 if mode=='spectrum' else 32
     macs=sum(lengths[i+1]*cout*kernel*channels[i] for i,(cout,kernel,stride) in enumerate(model['config']['conv_layers']))+dense_inputs*2
-    dump(out/'deployment_budget.json',{'input_mode':mode,'parameters':count,'float32_weight_bytes':count*4,
+    dump(out/'deployment_budget.json',{'input_mode':mode,'parameters':parameter_count,'float32_weight_bytes':parameter_count*4,
          'input_bytes':lengths[0]*4,'scratch_bytes':buffer*8,'local_pooled_bytes':0 if mode=='spectrum' else 128,
          'classification_head':'flatten' if mode=='spectrum' else 'global_average',
-         'conv_dense_macs':macs,'spectrum_hann_reference_bytes':8192 if mode=='spectrum' else 0,
-         'frequency_transform':'direct DFT reference (1024 x 513 iterations); FFT replacement required for practical latency' if mode=='spectrum' else 'none',
+         'conv_dense_macs':macs,'raw_input_bytes':count*2,'spectrum_hann_reference_bytes':count*8 if mode=='spectrum' else 0,
+         'frequency_transform':f'direct DFT reference ({count} x {bins} iterations); FFT replacement required for practical latency' if mode=='spectrum' else 'none',
          'not_included':'ADC/DMA/OLED, runtime stack, code, allocator and firmware globals',
          'hardware_latency':'NOT_MEASURED','esp32_integration':'PENDING'})

@@ -27,7 +27,7 @@ class CNN:
             self.p[f'w{i}'] = (rng.normal(size=(k,channels,cout))*np.sqrt(2/(k*channels))).astype(np.float32)
             self.p[f'b{i}'] = np.zeros(cout,dtype=np.float32)
             channels = cout
-        length=513 if c.get('input_mode','time')=='spectrum' else 1024
+        length=c['sample_count']//2+1 if c.get('input_mode','time')=='spectrum' else c['sample_count']
         for cout,k,stride in self.layers:
             length=(length+stride-1)//stride
         dense_inputs=length*channels if self.head=='flatten' else channels

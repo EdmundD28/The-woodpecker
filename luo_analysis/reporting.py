@@ -42,7 +42,8 @@ def training_plots(history,results,c,out,mark):
         for j in range(2):
             ax.text(j,i,str(cm[i,j]),ha='center',va='center')
     ax.set_xticks([0,1],c['classes']); ax.set_yticks([0,1],c['classes'])
-    ax.set_xlabel('Predicted'); ax.set_ylabel('Actual'); ax.set_title(mark+'\nHeld-out groups')
+    held_out = 'Held-out independent hits' if c.get('split_strategy','group') == 'stratified_hit' else 'Held-out groups'
+    ax.set_xlabel('Predicted'); ax.set_ylabel('Actual'); ax.set_title(mark+'\n'+held_out)
     fig.tight_layout(); fig.savefig(out/'confusion_matrix.png',dpi=150); plt.close(fig)
 
 
@@ -106,10 +107,11 @@ def analyze(records,c,out):
         for a in selected:
             x = a['input'][:,0]
             tag = a['label'] or a['record']['stick_id']
-            axes[0,0].plot(np.arange(1024)/16,x,label=tag,alpha=.7)
-            power = np.abs(np.fft.rfft(x*np.hanning(1024)))**2
-            axes[0,1].plot(np.fft.rfftfreq(1024,1/16000),power/max(power.sum(),1e-12),label=tag)
-        axes[0,0].axvline(16,color='gray',ls='--'); axes[0,0].set(xlabel='Time (ms)',ylabel='TIME_V0_1')
+            axes[0,0].plot(np.arange(c['sample_count'])/c['sample_rate_hz']*1000,x,label=tag,alpha=.7)
+            power = np.abs(np.fft.rfft(x*np.hanning(c['sample_count'])))**2
+            axes[0,1].plot(np.fft.rfftfreq(c['sample_count'],1/c['sample_rate_hz']),power/max(power.sum(),1e-12),label=tag)
+        axes[0,0].axvline(c['trigger_index']/c['sample_rate_hz']*1000,color='gray',ls='--')
+        axes[0,0].set(xlabel='Time (ms)',ylabel=c['interface_version'])
         axes[0,1].set(xlabel='Frequency (Hz)',ylabel='Normalized spectral power')
         for name in c['classes']:
             rs = [r for r in rows if r['label']==name]

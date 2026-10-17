@@ -16,6 +16,7 @@ def verify(run, compiler='c++', zig=False):
         raise ValueError('no fixed test vectors')
     mode=model['config'].get('input_mode','time')
     n=len(vectors[0]['preprocessed_input'])
+    raw_count=model['config']['sample_count']
     out=run/'cpp_checks'; out.mkdir(exist_ok=True)
     raw=',\n'.join('{'+','.join(str(v) for v in a['record']['raw'])+'}' for a in vectors)
     inp=',\n'.join('{'+','.join(f'{v:.9e}f' for v in a['preprocessed_input'])+'}' for a in vectors)
@@ -24,7 +25,7 @@ def verify(run, compiler='c++', zig=False):
     text=f'''#include "{header}"
 #include <cstdio>
 #include <cmath>
-static const uint16_t raw[{len(vectors)}][1024]={{ {raw} }};
+static const uint16_t raw[{len(vectors)}][{raw_count}]={{ {raw} }};
 static const float expected_input[{len(vectors)}][{n}]={{ {inp} }};
 static const float expected_scores[{len(vectors)}][2]={{ {scores} }};
 int main() {{

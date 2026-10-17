@@ -1,13 +1,14 @@
-# 候选模型：时域输入的小型1D CNN
-input_length = 1024
-input_channels = 1
+# 与训练配置一致的时域模型预算。
+import json
+from pathlib import Path
+
+config = json.loads((Path(__file__).resolve().parents[1]/'luo_analysis'/'config.json').read_text(encoding='utf-8'))
+input_length = config['sample_count']
+input_channels = config['channels']
 
 # 每层配置：（输出通道数，卷积核长度，步长）
-conv_layers = [
-    (8, 9, 2),
-    (16, 5, 2),
-    (32, 3, 2),
-]
+conv_layers = config['conv_layers']
+output_shapes = []
 
 total_params = 0
 total_macs = 0
@@ -38,14 +39,15 @@ for index, (out_channels, kernel, stride) in enumerate(
         f"参数={params}, MAC={macs}"
     )
 
+    output_shapes.append((out_length, out_channels))
     length = out_length
     channels = out_channels
 
 # 全局平均池化没有可训练参数
 print("全局平均池化输出:", channels)
 
-# 最后的四分类全连接层
-class_count = 4
+# 类别数与实际训练配置一致。
+class_count = len(config['classes'])
 dense_params = channels * class_count + class_count
 dense_macs = channels * class_count
 
@@ -65,12 +67,10 @@ print("卷积与全连接合计MAC:", total_macs)
 
 # 估算float32输入及中间结果的存储量
 tensor_sizes = [
-    ("模型输入", 1024 * 1 * 4),
-    ("卷积层1输出", 512 * 8 * 4),
-    ("卷积层2输出", 256 * 16 * 4),
-    ("卷积层3输出", 128 * 32 * 4),
-    ("全局平均池化输出", 32 * 4),
-    ("分类输出", 4 * 4),
+    ("模型输入", input_length * input_channels * 4),
+    *[(f"卷积层{i+1}输出", size * channels * 4) for i,(size,channels) in enumerate(output_shapes)],
+    ("全局平均池化输出", channels * 4),
+    ("分类输出", class_count * 4),
 ]
 
 print()
@@ -88,8 +88,8 @@ largest_pair_bytes = max(
     for i in range(len(tensor_sizes) - 1)
 )
 
-# 现有固件A用uint16_t保存1024个原始采样值
-raw_buffer_bytes = 1024 * 2
+# 原始采样值按uint16_t保存。
+raw_buffer_bytes = input_length * 2
 
 print()
 print("全部上述数组保留:", round(all_tensor_bytes / 1024, 2), "KiB")

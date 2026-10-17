@@ -15,10 +15,21 @@ def dump(path, data):
 
 def config(path=None):
     c = json.loads(Path(path or ROOT/'config.json').read_text(encoding='utf-8-sig'))
-    fixed = {'interface_version':'TIME_V0_1', 'sample_rate_hz':16000,
-             'sample_count':1024, 'channels':1, 'scale_divisor':2048.0, 'trigger_index':256}
+    return validate_config(c)
+
+
+def validate_config(c):
+    profiles = {'TIME_V0_1': (16000, 1024), 'TIME_V0_2': (8000, 2400)}
+    version = c.get('interface_version')
+    if version not in profiles:
+        raise ValueError('unsupported preprocessing interface version')
+    fs, count = profiles[version]
+    fixed = {'sample_rate_hz':fs, 'sample_count':count, 'channels':1,
+             'scale_divisor':2048.0, 'trigger_index':256}
     if any(c.get(k) != v for k,v in fixed.items()):
-        raise ValueError('TIME_V0_1 fixed interface mismatch; do not silently change the 09/28 contract')
+        raise ValueError(version + ' fixed interface mismatch')
+    if c.get('split_strategy', 'group') not in ['group', 'stratified_hit']:
+        raise ValueError('split_strategy must be group or stratified_hit')
     if c.get('input_mode', 'time') not in ['time','spectrum']:
         raise ValueError('input_mode must be time or spectrum')
     if len(c['classes']) != 2 or len(set(c['classes'])) != 2:
@@ -33,7 +44,7 @@ def config(path=None):
     if not np.isfinite(c['learning_rate']) or c['learning_rate'] <= 0:
         raise ValueError('invalid learning_rate')
     if c['conv_layers'] != [[8,9,2],[16,5,2],[32,3,2]]:
-        raise ValueError('this version exports the fixed 09/28 candidate CNN only')
+        raise ValueError('this version exports the three-layer candidate CNN only')
     threshold = c['confidence_threshold']
     if threshold is not None and (not np.isfinite(threshold) or not 0 <= threshold <= 1):
         raise ValueError('invalid confidence_threshold')
@@ -45,7 +56,7 @@ def config(path=None):
 def preprocess(record, c):
     validate_record(record)
     if record['sample_rate_hz'] != c['sample_rate_hz'] or record['sample_count'] != c['sample_count']:
-        raise ValueError('expected 16000 Hz and 1024 points; no resampling/padding/truncation')
+        raise ValueError(f"expected {c['sample_rate_hz']} Hz and {c['sample_count']} points; no resampling/padding/truncation")
     if record['anomaly_flags']:
         raise ValueError('anomaly_flags=' + ','.join(record['anomaly_flags']))
     raw = np.asarray(record['raw'], dtype=np.int64)
@@ -56,35 +67,38 @@ def preprocess(record, c):
     if int(np.ptp(raw)) < c['min_peak_to_peak']:
         raise ValueError('WEAK_SIGNAL detected independently')
     # Sum integer ADC values first: exactly matches firmware B mean/divisor.
-    mean = np.float32(int(raw.sum()) / 1024)
-    x = (raw.astype(np.float32) - mean) / np.float32(2048)
-    return x.reshape(1024,1)
+    mean = np.float32(int(raw.sum()) / c['sample_count'])
+    x = (raw.astype(np.float32) - mean) / np.float32(c['scale_divisor'])
+    return x.reshape(c['sample_count'],1)
 
 
 def model_input(time_inputs,c):
-    """TIME_V0_1 unchanged; optional independent SPECTRUM_V0_1 model adapter.
+    """Convert the complete configured time window to model input.
 
     Symmetric Hann (denominator N-1), RFFT magnitude / N. No log transform,
     peak normalization, phase, bin dropping or one-sided doubling.
-    Accepts [batch,1024,1]; frequency bins include DC and Nyquist.
+    Accepts [batch,sample_count,1]; bins include DC and Nyquist.
     """
-    if time_inputs.ndim != 3 or time_inputs.shape[1:] != (1024,1):
-        raise ValueError('expected TIME_V0_1 batch [batch,1024,1]')
+    count = c['sample_count']
+    if time_inputs.ndim != 3 or time_inputs.shape[1:] != (count,1):
+        raise ValueError(f"expected {c['interface_version']} batch [batch,{count},1]")
     if c.get('input_mode','time') == 'time':
         return time_inputs.astype(np.float32,copy=False)
-    windowed = time_inputs[:,:,0].astype(np.float64)*np.hanning(1024)
-    return (np.abs(np.fft.rfft(windowed,axis=1))/1024).astype(np.float32)[:,:,None]
+    windowed = time_inputs[:,:,0].astype(np.float64)*np.hanning(count)
+    return (np.abs(np.fft.rfft(windowed,axis=1))/count).astype(np.float32)[:,:,None]
 
 
 def input_contract(c):
+    count, fs = c['sample_count'], c['sample_rate_hz']
+    version = c['interface_version']
     if c.get('input_mode','time') == 'time':
-        return {'version':'TIME_V0_1','shape':[1024,1],'dtype':'float32',
+        return {'version':version,'shape':[count,1],'dtype':'float32',
                 'operation':'whole-window mean removal, fixed /2048; no FFT'}
-    return {'version':'SPECTRUM_V0_1','shape':[513,1],'dtype':'float32',
-            'base_preprocessing':'TIME_V0_1', 'window':'symmetric Hann, denominator 1023',
-            'operation':'abs(rfft(time_input * hann))/1024',
-            'bin_range':'0..512 inclusive (DC through Nyquist)',
-            'bin_spacing_hz':15.625,'phase':False,'one_sided_doubling':False,
+    return {'version':version.replace('TIME_', 'SPECTRUM_'),'shape':[count//2+1,1],'dtype':'float32',
+            'base_preprocessing':version, 'window':f'symmetric Hann, denominator {count-1}',
+            'operation':f'abs(rfft(time_input * hann))/{count}',
+            'bin_range':f'0..{count//2} inclusive (DC through Nyquist)',
+            'bin_spacing_hz':fs/count,'phase':False,'one_sided_doubling':False,
             'log_transform':False,'per_record_peak_normalization':False}
 
 
@@ -173,6 +187,8 @@ def load(paths, c, manifest=None):
 def split(records, c):
     if not records or any(a['label'] not in c['classes'] for a in records):
         raise ValueError('all accepted records need confirmed class labels')
+    if c.get('split_strategy', 'group') == 'stratified_hit':
+        return split_hits(records, c)
     groups = sorted({a['group'] for a in records})
     if len(groups) < 5:
         raise ValueError('need >=5 independent E/R groups; never substitute a random hit split')
@@ -186,6 +202,27 @@ def split(records, c):
         if all({records[i]['label'] for i in ix} == set(c['classes']) for ix in ids.values()):
             return ids, partition
     raise ValueError('cannot make group-disjoint partitions containing both classes; collect balanced batches')
+
+
+def split_hits(records, c):
+    """Hold out independent hits on the same known boards; never split a hit."""
+    sample_ids = [a['record']['sample_id'] for a in records]
+    if len(sample_ids) != len(set(sample_ids)):
+        raise ValueError('duplicate sample_id; deduplicate independent hits before splitting')
+    rng = np.random.default_rng(c['seed'])
+    parts = {'train': [], 'validation': [], 'test': []}
+    for label in c['classes']:
+        indices = np.array([i for i,a in enumerate(records) if a['label'] == label], dtype=int)
+        if len(indices) < 3:
+            raise ValueError('stratified_hit requires >=3 independent hits per class')
+        indices = rng.permutation(indices)
+        held = max(1, int(len(indices) * .2))
+        parts['test'].extend(indices[:held])
+        parts['validation'].extend(indices[held:2*held])
+        parts['train'].extend(indices[2*held:])
+    ids = {name: rng.permutation(np.asarray(ix, dtype=int)) for name,ix in parts.items()}
+    partition = {name: [sample_ids[i] for i in ix] for name,ix in ids.items()}
+    return ids, partition
 
 
 def dataset_hash(records):

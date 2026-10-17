@@ -4,6 +4,28 @@
 
 ## 安装与第一次运行
 
+当前默认输入为 **8000Hz、2400点、300毫秒、单通道**，触发点索引256，即32毫秒预触发。
+保留完整窗口，不补点、不截断、不重采样；减整窗均值，再固定除2048。
+训练适配版本升级为TIME_V0_2 / SPECTRUM_V0_2，原始记录仍使用WOOD_IMPACT_V1。
+旧TIME_V0_1模型及配置仍可明确选择16kHz、1024点；新旧记录和权重不会静默混用。
+
+| 模型 | 输入 | 参数量 | 浮点权重字节 | 推理中间缓冲字节 | 卷积和全连接乘加次数 |
+|---|---|---:|---:|---:|---:|
+| 时域 | 2400×1 | 2370 | 9480 | 76800 | 931264 |
+| 频谱 | 1201×1 | 11970 | 47880 | 38656 | 477512 |
+
+频谱频点间隔为8000/2400≈3.333Hz，最高频率4000Hz；频谱参考预处理用直接DFT，额外存储19200字节Hann窗，未计入上表运算数。
+ESP32的总内存和时延仍需实测；采集固件和展示固件没有在本次适配中更新。
+默认学习率从0.003调整为0.0003：扩展到300毫秒后，频谱幅值较小，旧步长在固定模拟回归中使网络停在两类各猜一半；较小步长恢复了可学习性。真实数据仍需用验证集检查，模拟结果不代表实测准确率。
+
+从本克隆目录读取现有采集数据示例：
+
+```powershell
+py -m luo_analysis prepare --data ../The-woodpecker/pc_collector/collected_data/20261017_1737_WOOD01_P01_N020.jsonl --out luo_analysis/runs/current_capture_01
+```
+
+读取不需要猜测类别。正式训练仍需确认两类标签和真实来源；只有一类时不生成两分类模型。
+
 需要Python 3.10+；Windows PowerShell：
 
 ```powershell
@@ -20,15 +42,15 @@ py -m venv .venv
 
 | 备选 | 输入 | 导出目录 |
 |---|---|---|
-| time | 完整1024点TIME_V0_1时域信号，float32 `[1024,1]` | 输出目录/time |
-| spectrum | 同一完整信号减均值除2048后，Hann窗、RFFT幅值除1024，float32 `[513,1]` | 输出目录/spectrum |
+| time | 完整2400点TIME_V0_2时域信号，float32 `[2400,1]` | 输出目录/time |
+| spectrum | 同一完整信号减均值除2048后，Hann窗、RFFT幅值除2400，float32 `[1201,1]` | 输出目录/spectrum |
 
-时域版保留全部触发前与触发后采样，不另截窗；频谱版包含DC到Nyquist全部513频点。
-频谱不是波形PNG，也不是250Hz预览；没有保留相位、不做log或逐样本峰值归一化，不额外将单边幅值乘2。
+时域版保留全部触发前与触发后采样，不另截窗；频谱版包含DC到Nyquist全部1201频点。
+频谱不是波形PNG，也不是125Hz预览；没有保留相位、不做log或逐样本峰值归一化，不额外将单边幅值乘2。
 两套模型均用三层小型1D CNN，分别训练权重。时域版用全局平均池化；频谱版Flatten保留频率位置，再接两类输出。
 频谱峰的位置可能是类别依据，因此避免用全局平均池化抹掉它。两套不能混用输入或模型文件。
 默认train/demo同时训练两套；--input-mode time或--input-mode spectrum可单独跑。
-两套使用同一数据、标签、装夹划分与随机种子；candidate_comparison.json并排显示结果，不自动淘汰任何备选。
+两套使用同一数据、标签、划分策略与随机种子；candidate_comparison.json并排显示结果，不自动淘汰任何备选。
 最终选择依据验证集、稳定性和部署代价；不要根据测试集挑版本后仍把该测试集称为未参与选择的独立验收。
 
 ## 已经有王的文件：先确认能读取
@@ -37,10 +59,10 @@ JSONL是一行一次敲击；JSON是单次敲击。两种均可读，同时提�
 同编号内容不同会停止整次操作，需核对实验编号；不会静默选择一个。
 
 ```powershell
-.\.venv\Scripts\python.exe -m luo_analysis prepare --data pc_collector/examples/WOOD_IMPACT_V1_example.jsonl --out luo_analysis/runs/interface_01
+.\.venv\Scripts\python.exe -m luo_analysis prepare --data luo_analysis/runs/demo_01/demo_data/demo.jsonl --out luo_analysis/runs/interface_01
 ```
 
-已有固定示例通过三条，只证明协议读取。它是模拟器示例，不能作为实测数据。
+上述模拟数据仅用于检查读取。pc_collector/examples里的旧16kHz、1024点示例与当前默认配置不匹配，会被拒收；不能作为当前实测数据。
 实际文件直接传给--data，或放到luo_analysis/data/real目录。
 多个文件用空格分隔；带空格的路径用引号。
 
@@ -80,12 +102,16 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 .\.venv\Scripts\python.exe -m luo_analysis train --config luo_analysis/config_real.json --data pc_collector/collected_data --manifest luo_analysis/data/manifest_real.csv --out luo_analysis/runs/two_class_01
 ```
 
-至少5个独立实验/装夹组；建议更多并保持两类和位置均衡。
-使用 `(experiment_batch,reclamp_batch)` 为全局保守分组，跨木棍、跨位置也不拆开。
-同组只进入训练、验证、测试中的一个；不会因为数据少就改为随机分敲击。
-每个分区必须有两类；验证集选择最优轮次；测试集不参与选模型。
-分组划分仅检查类别覆盖，不查看波形或模型分数。
-若E/R编号在实验中重复，需先核对并用真实的唯一实验编号重新导出，不要为凑分区造批次。
+默认配置使用 `split_strategy: "stratified_hit"`，对应固定木板、相同采集条件下的识别实验。
+每类独立敲击按约60%训练、20%验证、20%测试分层划分，不要求更换木板或凑装夹批次。
+同一次敲击的JSON/JSONL副本先去重；完整敲击只属于一个分区，增强或切片必须在划分之后进行且留在原分区。
+每类至少3次才能划分，但这是程序下限，不是有效评估所需数量；建议每类先采100～200次。
+这种结果只评价已知木板、相似采集条件下的新敲击，不说明能识别新木板或重新装夹后的数据。
+
+若需要评估装夹变化，在配置中改为 `split_strategy: "group"`。
+该模式保留原来的全局 `(experiment_batch,reclamp_batch)` 隔离，至少5个真实独立实验/装夹组；同组跨木棍、跨位置也不拆开。
+两种策略均要求每个分区含两类，验证集选择最优轮次，测试集不参与选模型。
+不要为凑分区虚构批次。split_groups.json在敲击划分模式保存sample_id，在分组模式保存E/R组名；evaluation.json记录策略。
 
 对照包括：简单信号特征分类器、只看振幅的分类器、去除振幅后的形状分类器。
 它们用于检查CNN是否有优势、区别是否主要来自振幅，不会自动证明因果或泛化。
@@ -102,7 +128,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 | candidate_comparison.json | 两套CNN输入约定、状态和对照结果；默认不选定最终方案 |
 | signal_analysis.png / signal_features.csv | 波形、频域、振幅、衰减指标 |
 | signal_report.json / early_signal_report.md | 信号分析统计与待完成结论 |
-| split_groups.json / split_manifest.csv | 核对批次隔离和每条样本所属集合 |
+| split_groups.json / split_manifest.csv | 核对敲击或批次隔离和每条样本所属集合 |
 | training_curves.png / history.json | 学习曲线、最优轮次依据 |
 | confusion_matrix.png / evaluation.json | 独立测试、错误分布、对照与子组结果 |
 | error_samples.json | 需检查的错误样本定位与分数 |
@@ -111,7 +137,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 | fixed_test_vectors.json | 最多10组原始信号、预处理和电脑预期输出 |
 | deployment_budget.json | 参数、MAC和缓冲内存估算 |
 
-真实可分性和模型效果不能只看训练准确率。优先看按装夹隔离的test、各位置/批次/释放方式分组结果以及错误波形。
+真实可分性和模型效果不能只看训练准确率。优先看与所选策略对应的test、各位置/批次/释放方式分组结果以及错误波形。
 每组数目太少、不同类释放方式不一致或电气质量未确认时，不能给出可靠验收结论。
 
 ## 单次预测

@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 import numpy as np
-from luo_analysis.core import config, preprocess, load, split, model_input, input_contract
+from luo_analysis.core import config, preprocess, load, split, model_input, input_contract, validate_config
 from luo_analysis.network import CNN, windows, fit_centroid, centroid_predict
 from luo_analysis.__main__ import demo_data, predict, train, train_candidates
 from luo_analysis.export import export
@@ -14,15 +14,19 @@ class PipelineTests(unittest.TestCase):
     def setUp(self):
         self.c=config()
         p=Path(__file__).resolve().parents[2]/'pc_collector'/'examples'/'WOOD_IMPACT_V1_example.jsonl'
-        self.r=json.loads(p.read_text().splitlines()[0])
+        self.legacy_record=json.loads(p.read_text().splitlines()[0])
+        self.r=copy.deepcopy(self.legacy_record)
+        self.r.update(sample_rate_hz=8000, sample_count=2400)
+        t=np.maximum((np.arange(2400)-256)/8000, 0)
+        self.r['raw']=np.rint(2000+700*np.exp(-40*t)*np.sin(2*np.pi*650*t)).astype(int).tolist()
 
     def test_exact_preprocessing_firmware_contract(self):
         x=preprocess(self.r,self.c)
         raw=np.array(self.r['raw'])
-        expected=((raw-sum(self.r['raw'])/1024)/2048).astype(np.float32).reshape(1024,1)
+        expected=((raw.astype(np.float32)-np.float32(sum(self.r['raw'])/2400))/2048).reshape(2400,1)
         np.testing.assert_array_equal(x,expected)
         self.assertEqual(x.dtype,np.float32)
-        self.assertEqual(x.nbytes,4096)
+        self.assertEqual(x.nbytes,9600)
 
     def test_adc_offset_invariance(self):
         shifted=copy.deepcopy(self.r)
@@ -31,7 +35,7 @@ class PipelineTests(unittest.TestCase):
 
     def test_reject_quality_and_protocol(self):
         cases=[]
-        for key,value in [('sample_rate_hz',8000),('sample_count',1023),('anomaly_flags',['WEAK_SIGNAL']),('raw',[2048]*1024)]:
+        for key,value in [('sample_rate_hz',16000),('sample_count',2399),('anomaly_flags',['WEAK_SIGNAL']),('raw',[2048]*2400)]:
             r=copy.deepcopy(self.r); r[key]=value; cases.append(r)
         for value in [-1,4096,0,4095,True,float('nan')]:
             r=copy.deepcopy(self.r); r['raw'][0]=value; cases.append(r)
@@ -67,8 +71,9 @@ class PipelineTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             data,manifest=demo_data(self.c,Path(folder))
             a,_,_=load([data],self.c,manifest)
-            ids,groups=split(a,self.c)
-            self.assertEqual(groups,split(a,self.c)[1])
+            c={**self.c,'split_strategy':'group'}
+            ids,groups=split(a,c)
+            self.assertEqual(groups,split(a,c)[1])
             for one,two in [('train','test'),('train','validation'),('validation','test')]:
                 self.assertFalse(set(groups[one])&set(groups[two]))
             self.assertEqual(sum(len(ix) for ix in ids.values()),len(a))
@@ -102,15 +107,15 @@ class PipelineTests(unittest.TestCase):
         c={**self.c,'input_mode':'spectrum'}
         t=preprocess(self.r,c)[None,:,:]
         spectrum=model_input(t,c)
-        self.assertEqual(spectrum.shape,(1,513,1))
+        self.assertEqual(spectrum.shape,(1,1201,1))
         self.assertEqual(spectrum.dtype,np.float32)
-        windowed=t[0,:,0].astype(float)*np.hanning(1024)
-        for k in [0,1,53,256,512]:
-            at=np.arange(1024)
-            re=np.sum(windowed*np.cos(2*np.pi*k*at/1024))
-            im=-np.sum(windowed*np.sin(2*np.pi*k*at/1024))
-            self.assertAlmostEqual(float(spectrum[0,k,0]),np.hypot(re,im)/1024,delta=1e-8)
-        self.assertEqual(input_contract(c)['version'],'SPECTRUM_V0_1')
+        windowed=t[0,:,0].astype(float)*np.hanning(2400)
+        for k in [0,1,53,600,1200]:
+            at=np.arange(2400)
+            re=np.sum(windowed*np.cos(2*np.pi*k*at/2400))
+            im=-np.sum(windowed*np.sin(2*np.pi*k*at/2400))
+            self.assertAlmostEqual(float(spectrum[0,k,0]),np.hypot(re,im)/2400,delta=1e-8)
+        self.assertEqual(input_contract(c)['version'],'SPECTRUM_V0_2')
         self.assertEqual(CNN(c).forward(spectrum).shape,(1,2))
 
     def test_both_pending_candidates_retained(self):
@@ -131,11 +136,11 @@ class PipelineTests(unittest.TestCase):
             np.testing.assert_array_equal(result['scores'],expected)
             export(m,p)
             budget=json.loads((p/'deployment_budget.json').read_text())
-            self.assertEqual(budget['input_bytes'],513*4)
+            self.assertEqual(budget['input_bytes'],1201*4)
             header=(p/'model_weights.h').read_text()
             self.assertIn('namespace wood_model_spectrum',header)
-            self.assertIn('conv(input,513,1',header)
-            self.assertIn('for(int c=0;c<2080;++c) scores',header)
+            self.assertIn('conv(input,1201,1',header)
+            self.assertIn('for(int c=0;c<4832;++c) scores',header)
             m['input_contract']=input_contract(self.c)
             (p/'model.json').write_text(json.dumps(m))
             with self.assertRaises(ValueError): predict(p/'model.json',p/'record.json')
@@ -214,6 +219,92 @@ class PipelineTests(unittest.TestCase):
             m['weights']={k:v.tolist() for k,v in net.p.items()}; m['config']['confidence_threshold']=.99
             (p/'model.json').write_text(json.dumps(m))
             self.assertEqual(predict(p/'model.json',p/'record.json')['status'],'LOW_CONFIDENCE')
+
+
+    def test_new_and_legacy_sampling_profiles_are_distinct(self):
+        old={**self.c, 'interface_version':'TIME_V0_1', 'sample_rate_hz':16000, 'sample_count':1024}
+        validate_config(old)
+        self.assertEqual(preprocess(self.legacy_record,old).shape,(1024,1))
+        self.assertEqual(input_contract({**old,'input_mode':'spectrum'})['shape'],[513,1])
+        self.assertEqual(sum(v.size for v in CNN(old).p.values()),2370)
+        with self.assertRaises(ValueError): preprocess(self.legacy_record,self.c)
+        with self.assertRaises(ValueError): preprocess(self.r,old)
+        for key,value in [('sample_rate_hz',16000),('sample_count',1024),('trigger_index',32),('split_strategy','unknown')]:
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                validate_config({**self.c,key:value})
+
+    def test_same_board_same_batch_hits_are_disjoint_and_stratified(self):
+        with tempfile.TemporaryDirectory() as folder:
+            data,manifest=demo_data(self.c,Path(folder))
+            a,_,_=load([data],self.c,manifest)
+            a=[r for r in a if r['group']=='E01-R00']
+            ids,parts=split(a,self.c)
+            self.assertEqual(parts,split(a,self.c)[1])
+            self.assertEqual(sum(map(len,ids.values())),len(a))
+            for one,two in [('train','test'),('train','validation'),('validation','test')]:
+                self.assertFalse(set(parts[one]) & set(parts[two]))
+            for ix in ids.values():
+                self.assertEqual({a[i]['label'] for i in ix},set(self.c['classes']))
+            with self.assertRaises(ValueError): split(a+[a[0]],self.c)
+            with self.assertRaises(ValueError): split(a,{**self.c,'split_strategy':'group'})
+            with self.assertRaises(ValueError): split(a[:2],self.c)
+
+    def test_complete_window_and_physical_frequency_scale(self):
+        x=preprocess(self.r,self.c)
+        self.assertNotEqual(float(x[-1,0]),0.)
+        self.assertEqual(input_contract(self.c)['shape'],[2400,1])
+        c={**self.c,'input_mode':'spectrum'}
+        contract=input_contract(c)
+        self.assertAlmostEqual(contract['bin_spacing_hz'],8000/2400)
+        tone=np.sin(2*np.pi*400*np.arange(2400)/8000).astype(np.float32).reshape(1,2400,1)
+        self.assertEqual(model_input(tone,c)[0,:,0].argmax(),120)
+        with self.assertRaises(ValueError): model_input(tone[:,:1024,:],c)
+
+    def test_full_size_gradients_and_export_budgets(self):
+        for mode,parameters,macs,scratch in [('time',2370,931264,76800),('spectrum',11970,477512,38656)]:
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory() as folder:
+                c={**self.c,'input_mode':mode}; net=CNN(c)
+                x=model_input(preprocess(self.r,c)[None,:,:],c)
+                loss,grad=net.gradients(x,np.array([0]))
+                self.assertTrue(np.isfinite(loss))
+                self.assertTrue(all(np.isfinite(g).all() for g in grad.values()))
+                m={'config':c,'weights':{k:v.tolist() for k,v in net.p.items()}}
+                export(m,Path(folder))
+                budget=json.loads((Path(folder)/'deployment_budget.json').read_text())
+                self.assertEqual(budget['parameters'],parameters)
+                self.assertEqual(budget['conv_dense_macs'],macs)
+                self.assertEqual(budget['scratch_bytes'],scratch)
+                self.assertEqual(budget['raw_input_bytes'],4800)
+                header=(Path(folder)/'model_weights.h').read_text()
+                self.assertIn('i<2400',header)
+                self.assertIn('/2400.0f',header)
+                self.assertNotIn('i<1024',header)
+                if mode=='spectrum':
+                    self.assertIn('hann[2400]',header)
+                    self.assertIn('k<1201',header)
+                    self.assertEqual(budget['spectrum_hann_reference_bytes'],19200)
+
+    def test_exported_model_rejects_mixed_profile(self):
+        from luo_analysis.__main__ import config_from_model
+        with self.assertRaises(ValueError):
+            config_from_model({'config':{**self.c,'sample_count':1024}})
+
+    def test_two_candidate_training_on_separable_synthetic_signals(self):
+        # The two known synthetic frequencies must remain learnable after resizing.
+        with tempfile.TemporaryDirectory() as folder:
+            out=Path(folder)
+            data,manifest=demo_data(self.c,out)
+            records,rejected,_=load([data],self.c,manifest)
+            self.assertFalse(rejected)
+            train_candidates(records,self.c,out,demo=True)
+            for mode,shape in [('time',[2400,1]),('spectrum',[1201,1])]:
+                report=json.loads((out/mode/'evaluation.json').read_text())
+                self.assertEqual(report['status'],'DEMO_ONLY')
+                self.assertEqual(report['input_contract']['shape'],shape)
+                self.assertEqual(report['split_strategy'],'stratified_hit')
+                self.assertGreaterEqual(report['results']['validation']['cnn']['balanced_accuracy'],.9)
+            self.assertEqual(json.loads((out/'time'/'split_groups.json').read_text()),
+                             json.loads((out/'spectrum'/'split_groups.json').read_text()))
 
 
 if __name__=='__main__': unittest.main()

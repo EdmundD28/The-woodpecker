@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sys
 import numpy as np
-from .core import ROOT, config, dump, load, preprocess, split, dataset_hash, model_input, input_contract
+from .core import ROOT, config, validate_config, dump, load, preprocess, split, dataset_hash, model_input, input_contract
 from .network import CNN, signal_features, fit_centroid, centroid_predict
 from .reporting import analyze, metrics, training_plots
 from .export import export
@@ -32,8 +32,8 @@ def prepare(paths,c,manifest,out):
                             sample_ids=np.array([a['record']['sample_id'] for a in records]),
                             labels=np.array([a['label'] or '' for a in records]),
                             groups=np.array([a['group'] for a in records]),
-                            spectrum_preprocessing_version=np.array('SPECTRUM_V0_1'),
-                            preprocessing_version=np.array('TIME_V0_1'))
+                            spectrum_preprocessing_version=np.array(input_contract({**c,'input_mode':'spectrum'})['version']),
+                            preprocessing_version=np.array(c['interface_version']))
     analyze(records,c,out)
     return records
 
@@ -110,7 +110,10 @@ def train(records,c,out,demo=False):
               'electrical_verified':electrical,'best_epoch':min(history,key=lambda r:r['validation_loss'])['epoch'],
               'classes':c['classes'],'results':results,
               'warning':'Synthetic metrics only check code execution' if demo else 'Scores are not calibrated; review errors, sampling confounds and subgroup counts',
-              'split_note':'Conservative global E/R groups, never random hits. Test set never used for checkpoint selection.',
+              'split_strategy':c.get('split_strategy','group'),
+              'split_note':('Stratified independent hits on known boards; no claim for new boards or remounts. '
+                            if c.get('split_strategy','group') == 'stratified_hit' else
+                            'Conservative global E/R groups. ') + 'Test set never used for checkpoint selection.',
               'confidence_threshold':c['confidence_threshold']}
     dump(out/'evaluation.json',report)
     training_plots(history,results,c,out,('DEMO ONLY' if demo else 'REAL CANDIDATE')+' / '+c.get('input_mode','time'))
@@ -129,7 +132,8 @@ def train(records,c,out,demo=False):
             for i in ix:
                 a=records[i]; w.writerow([a['record']['sample_id'],a['label'],a['group'],name,a['source'],a['release_method']])
     card = f"# 两分类模型交付\n\n状态：{status}\n\n版本：{version}\n\n"
-    card += "原始输入为16kHz、1024点、单通道，减整窗均值后除2048，float32。\n\n"
+    card += f"原始输入为{c['sample_rate_hz']}Hz、{c['sample_count']}点、单通道，减整窗均值后除2048，float32。\n\n"
+    card += f"数据划分：{report['split_strategy']}。{report['split_note']}\n\n"
     card += f"本模型输入约定：{json.dumps(input_contract(c),ensure_ascii=False)}。时域和频谱模型不能互换输入。\n\n"
     head='保留频率位置并Flatten' if c.get('input_mode')=='spectrum' else '全局平均池化'
     card += f"模型：Conv1D(8,9,2) → ReLU → Conv1D(16,5,2) → ReLU → Conv1D(32,3,2) → ReLU → {head} → 两类softmax。SAME补零，左侧取总补零数的一半向下取整。\n\n"
@@ -147,7 +151,7 @@ def train(records,c,out,demo=False):
 def demo_data(c,out):
     rng = np.random.default_rng(c['seed'])
     data,meta = [],[]
-    t = (np.arange(1024)-256)/16000
+    t = (np.arange(c['sample_count'])-c['trigger_index'])/c['sample_rate_hz']
     post = np.maximum(t,0)
     for group in range(12):
         perturb = rng.uniform(.96,1.04)
@@ -158,11 +162,11 @@ def demo_data(c,out):
                 signal = rng.uniform(650,1000)*np.exp(-(45+label*15)*post)*np.sin(2*np.pi*frequency*post)
                 signal += 150*np.exp(-60*post)*np.sin(2*np.pi*(frequency*1.7)*post)
                 signal[t<0]=0
-                raw = np.rint(2048+signal+rng.normal(0,10,1024)).astype(int).tolist()
+                raw = np.rint(2048+signal+rng.normal(0,10,c['sample_count'])).astype(int).tolist()
                 sid = build_sample_id(stick,1,group,position,hit)
                 data.append({'protocol_version':'WOOD_IMPACT_V1','sample_id':sid,'stick_id':stick,
                              'experiment_batch':1,'reclamp_batch':group,'impact_point_id':position,
-                             'strike_id':hit,'sample_rate_hz':16000,'sample_count':1024,'anomaly_flags':[],'raw':raw})
+                             'strike_id':hit,'sample_rate_hz':c['sample_rate_hz'],'sample_count':c['sample_count'],'anomaly_flags':[],'raw':raw})
                 meta.append([sid,c['classes'][label],'synthetic','manual','false'])
     folder = out/'demo_data'; folder.mkdir()
     path = folder/'demo.jsonl'
@@ -204,25 +208,14 @@ def predict(model_path,record_path):
 
 
 def config_from_model(m):
-    # Reuse full config validation without filesystem side effects.
-    c=m['config']
-    if any(c.get(k)!=v for k,v in {'interface_version':'TIME_V0_1','sample_rate_hz':16000,'sample_count':1024,
-                                  'channels':1,'scale_divisor':2048.0,'trigger_index':256}.items()):
-        raise ValueError('exported preprocessing contract mismatch')
-    if len(c['classes'])!=2 or len(set(c['classes']))!=2:
-        raise ValueError('invalid class order')
-    if c.get('input_mode','time') not in ['time','spectrum']:
-        raise ValueError('invalid model input mode')
-    threshold=c.get('confidence_threshold')
-    if threshold is not None and (not np.isfinite(threshold) or not 0<=threshold<=1):
-        raise ValueError('invalid model confidence threshold')
-    return c
+    return validate_config(m['config'])
 
 
 def train_candidates(records,c,out,mode='both',demo=False):
     modes=['time','spectrum'] if mode=='both' else [mode]
     summary={'status':'PENDING','selection':'UNDECIDED - use validation and deployment constraints; do not select using test results',
-             'same_records':True,'same_group_split_seed':c['seed'],'candidates':{}}
+             'same_records':True,'same_group_split_seed':c['seed'],
+             'split_strategy':c.get('split_strategy','group'),'candidates':{}}
     for choice in modes:
         child=out/choice; child.mkdir()
         candidate_config={**c,'input_mode':choice}
