@@ -6,6 +6,7 @@
 #include <math.h>
 #include "wood_classifier.h"
 #include "touch_permission.h"
+#include "oled_anim.h"
 
 constexpr size_t N=wood_classifier::sample_count, PRE=256, BLOCK=128;
 constexpr uint32_t FS=wood_classifier::sample_rate_hz;
@@ -25,8 +26,9 @@ void updateRunStatus() {
 }
 constexpr adc1_channel_t CHANNEL=ADC1_CHANNEL_6; // Protected piezo -> GPIO34
 constexpr i2s_port_t PORT=I2S_NUM_0;
-// Use 100 kHz for both commands and frame transfers, including cold startup.
-Adafruit_SSD1306 oled(128,64,&Wire,-1,100000,100000);
+// 400 kHz keeps a full frame near 25 ms so the woodpecker animations run smoothly.
+constexpr uint32_t OLED_I2C_HZ=400000;
+Adafruit_SSD1306 oled(128,64,&Wire,-1,OLED_I2C_HZ,OLED_I2C_HZ);
 QueueHandle_t events=nullptr;
 uint16_t raw[N], ring[PRE], dma[BLOCK];
 size_t head=0, filled=0, next=PRE, discard=256, lossHistory=0;
@@ -36,6 +38,11 @@ bool readyShown=false;
 float baseline=0;
 uint32_t rearmAt=0, resumeAt=0, captureDeadline=0;
 uint8_t accepted=0;
+// Last group's verdict while it waits for a fresh hold: 0 = none or model
+// error, otherwise the wood class (1 solid, 2 hollow).
+int resultWood=0;
+uint8_t resultPhase=0;
+uint32_t resultAt=0;
 TouchPermission touchPermission;
 enum class GateView { Unknown, Locked, Arming, Ready, Used };
 GateView gateView=GateView::Unknown;
@@ -48,21 +55,16 @@ void traceBoot(const char* stage) {
 #endif
 }
 bool due(uint32_t deadline) { return int32_t(millis()-deadline)>=0; }
-const char* nextPoint() {
-    return accepted==0?"Tap first endpoint":accepted==1?"Tap middle point":"Tap other endpoint";
-}
 
-void screen(const char* state,const char* detail="",int cls=0) {
-    oled.clearDisplay(); oled.setTextSize(1); oled.setTextColor(SSD1306_WHITE);
-    oled.setCursor(0,0); oled.printf("WOOD %s CNN\n",wood_classifier::mode);
-    oled.println(state); oled.printf("Valid taps: %u/3\n",unsigned(accepted));
-    oled.println(detail);
-    if(cls) { oled.setTextSize(2); oled.printf("WOOD: %d",cls); }
-    oled.display();
+// Animations block; once setup is done, keep the GPIO25 liveness output
+// ticking while they run (it stays low during boot, as before).
+bool setupDone=false;
+void animWait(uint32_t ms) {
+    while(ms) { uint32_t step=ms>20?20:ms; delay(step); ms-=step; if(setupDone) updateRunStatus(); }
 }
 void fatal(const char* reason) {
     digitalWrite(RUN_STATUS_PIN,LOW);
-    Serial.printf("#FATAL,%s\n",reason); screen("ERROR",reason);
+    Serial.printf("#FATAL,%s\n",reason); oled_ui::error(oled,reason);
     while(true) delay(1000);
 }
 void markLoss() { if(active) loss=true; lossHistory=PRE; }
@@ -106,7 +108,7 @@ void restartAdc() {
     active=loss=baselineReady=requested=false;
     readyShown=false;
     gateView=GateView::Unknown;
-    screen("Preparing","Please wait...");
+    oled_ui::preparing(oled,accepted,"");
     if(i2s_start(PORT)!=ESP_OK || i2s_adc_enable(PORT)!=ESP_OK) fatal("ADC_RESTART_FAILED");
     running=true; rearmAt=millis()+500;
 }
@@ -120,7 +122,7 @@ bool pollTouch() {
     }
     if(active && !touchPermission.held()) {
         stopAdc(); active=requested=false; readyShown=false;
-        screen("Tap cancelled","Hold touch to retry");
+        oled_ui::cancelled(oled,accepted,"");
         Serial.printf("#CANCELLED,TOUCH_RELEASED,valid=%u/3\n",unsigned(accepted));
         resumeAt=millis()+700; finishedBlock=true;
         return false;
@@ -140,10 +142,10 @@ void updateGateScreen() {
     }
     if(wanted==gateView) return;
     stopAdc();
-    const char* state=wanted==GateView::Locked?"Hold touch to arm":
-                      wanted==GateView::Used?"Release, then hold":
-                      wanted==GateView::Arming?"Hold for 1 second":"Ready - keep holding";
-    screen(state,nextPoint());
+    if(wanted==GateView::Locked) oled_ui::locked(oled,accepted,"");
+    else if(wanted==GateView::Used) oled_ui::releaseFirst(oled,accepted,"");
+    else if(wanted==GateView::Arming) oled_ui::arming(oled,accepted,"");
+    else oled_ui::ready(oled,accepted,"");
     // Discard everything queued during display I/O, including before this hold.
     size_t stale=0;
     for(unsigned i=0;i<8;++i) {
@@ -178,29 +180,35 @@ void finishCapture() {
     if(!problem && !wood_classifier::store_point(raw,accepted)) problem="PREPROCESS_ERROR";
     if(problem) {
         Serial.printf("#INVALID,%s,valid=%u/3\n",problem,unsigned(accepted));
-        screen("Invalid - retry",problem); resumeAt=millis()+1500;
+        oled_ui::invalid(oled,animWait,accepted,problem,"");
+        resumeAt=millis()+1200;
     } else {
         ++accepted;
         Serial.printf("#TAP,accepted=%u/3,model=%s,preprocess_ms=%lu\n",
                       unsigned(accepted),wood_classifier::mode,
                       static_cast<unsigned long>(millis()-processingStart));
+        oled_ui::accepted(oled,animWait,accepted,"");
         if(accepted<3) {
-            screen("Tap accepted",nextPoint()); resumeAt=millis()+700;
+            resumeAt=millis()+200;
         } else {
-            screen("Classifying...","Three points ready");
+            oled_ui::thinking(oled,"");
             float scores[2];
             uint32_t inferenceStart=millis();
             if(wood_classifier::classify(scores)) {
                 int winner=scores[1]>scores[0]?1:0;
-                screen("Three-point result","Known woods 1 / 2",winner+1);
                 Serial.printf("#RESULT,wood=%d,score1=%.7f,score2=%.7f,model=%s,version=%s,infer_ms=%lu\n",
                               winner+1,double(scores[0]),double(scores[1]),wood_classifier::mode,
                               wood_classifier::version,static_cast<unsigned long>(millis()-inferenceStart));
+                // The class number stays on serial; the screen says SOLID or HOLLOW.
+                resultWood=winner+1;
+                oled_ui::result(oled,animWait,resultWood==1,0);
+                resultPhase=0; resultAt=millis();
             } else {
-                screen("Model error","Restart group (R)");
+                resultWood=0;
+                oled_ui::modelError(oled);
                 Serial.println("#INVALID,INFERENCE_ERROR,group_discarded=1");
             }
-            resumeAt=millis()+5000;
+            // Keep the completed group on screen until a fresh one-second hold.
         }
     }
     active=requested=false; finishedBlock=true;
@@ -229,7 +237,7 @@ bool initialiseDisplay() {
     for(unsigned attempt=1;attempt<=6;++attempt) {
         Wire.end();
         Wire.begin(OLED_SDA,OLED_SCL);
-        Wire.setClock(100000); Wire.setTimeOut(50);
+        Wire.setClock(OLED_I2C_HZ); Wire.setTimeOut(50);
         Wire.beginTransmission(OLED_ADDRESS);
         int status=Wire.endTransmission();
         bool initialised=false;
@@ -264,15 +272,15 @@ void setup() {
         delay(1000);
     }
     traceBoot("OLED_READY");
-    screen("Initialising",wood_classifier::mode);
+    oled_ui::boot(oled,animWait,wood_classifier::mode);
     traceBoot("MODEL_ALLOCATE");
     if(!wood_classifier::initialise()) fatal("MODEL_MEMORY_FAILED");
     traceBoot("MODEL_READY");
     delay(1000);
-    screen("Preparing","Please wait...");
+    oled_ui::preparing(oled,accepted,"");
     if(!initAdc()) fatal("ADC_INIT_FAILED");
     running=true; rearmAt=millis()+500;
-    traceBoot("RUNNING");
+    traceBoot("RUNNING"); setupDone=true;
     Serial.printf("#INIT,model=%s,version=%s,FS=%lu,N=%u,PRE=%u,threshold=%d,order=end-middle-end,touch_pin=27,touch_active=%d,hold_ms=1000\n",
                   wood_classifier::mode,wood_classifier::version,static_cast<unsigned long>(FS),
                   unsigned(N),unsigned(PRE),THRESHOLD,TOUCH_ACTIVE_LEVEL);
@@ -286,17 +294,27 @@ void loop() {
                                 bootStage,int(running),int(active),digitalRead(TOUCH_PIN),unsigned(accepted));
         if((c=='C'||c=='c') && running && !active && readyShown &&
            touchPermission.canStart(millis())) requested=true;
-        if((c=='R'||c=='r') && !active) {
+        if((c=='R'||c=='r') && !active && accepted<3) {
             if(running) stopAdc();
             accepted=0; requested=false; resumeAt=millis()+300;
-            screen("Group reset","Start at an endpoint");
+            oled_ui::groupReset(oled,"");
             Serial.println("#RESET,accepted=0/3");
         }
     }
     if(!running) {
-        if(due(resumeAt)) {
-            if(accepted==3) accepted=0;
+        // The final capture consumed its hold, so release/rehold is required.
+        if(accepted==3 ? touchPermission.canStart(millis()) : due(resumeAt)) {
+            if(accepted==3) {
+                // The hold that starts the next group first patches the holes.
+                if(resultWood) oled_ui::patch(oled,animWait,resultWood==1);
+                accepted=0; resultWood=0;
+            }
             restartAdc();
+        } else if(accepted==3 && resultWood && due(resultAt)) {
+            // Result stays up; its decoration takes turns with a "hold" hint.
+            static const uint16_t idleMs[4]={500,500,700,700};
+            oled_ui::resultIdle(oled,resultWood==1,resultPhase);
+            resultAt=millis()+idleMs[resultPhase]; resultPhase=(resultPhase+1)%4;
         }
         delay(1); return;
     }
@@ -307,8 +325,10 @@ void loop() {
     if(result!=ESP_OK || bytes==0 || bytes%sizeof(uint16_t) || (active && due(captureDeadline))) {
         markLoss();
         if(active) {
-            stopAdc(); active=false; screen("Invalid - retry","SAMPLE_LOSS");
-            Serial.println("#INVALID,SAMPLE_LOSS"); resumeAt=millis()+1500;
+            stopAdc(); active=false;
+            Serial.println("#INVALID,SAMPLE_LOSS");
+            oled_ui::invalid(oled,animWait,accepted,"SAMPLE_LOSS","");
+            resumeAt=millis()+1200;
         }
         return;
     }

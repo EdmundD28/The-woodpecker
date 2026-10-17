@@ -33,6 +33,8 @@ int main() {
     reset(); fakeTouchLevel=LOW; setup();
     assert(N==2400 && FS==8000 && PRE==256 && THRESHOLD==500);
     assert(oled.text.find("Preparing")!=std::string::npos && !readyShown);
+    assert(oled.frames>30); // boot animation played before the first screen
+    assert(oled.text.find("WOOD")==std::string::npos && oled.text.find("TIME")==std::string::npos);
     assert(OLED_SDA==21 && OLED_SCL==22 && OLED_ADDRESS==0x3C);
     assert(fakeInputPin==27 && fakeInputMode==INPUT_PULLDOWN);
     assert(fakeOutputs[25]==LOW);
@@ -65,12 +67,43 @@ int main() {
             }
         }
         int winner=expected_scores[row][1]>expected_scores[row][0]?2:1;
-        assert(oled.text.find("WOOD: "+std::to_string(winner))!=std::string::npos);
+        // The class number is for the back end only; the screen says the meaning.
+        const char* verdict=winner==1?"SOLID":"HOLLOW";
+        auto resultShown=[&] {
+            return accepted==3 && !running && oled.text.find(verdict)!=std::string::npos &&
+                   oled.text.find("WOOD")==std::string::npos;
+        };
+        assert(resultShown());
         assert(Serial.text.find("#RESULT,wood="+std::to_string(winner))!=std::string::npos);
-        fakeNow=resumeAt-1; loop(); assert(accepted==3 && !running);
-        ++fakeNow; loop(); assert(accepted==0 && running && !readyShown);
+        int framesBefore=oled.frames;
+        // Neither elapsed time nor the final capture's continuing hold restarts.
+        for(uint32_t wait:{5000u,60000u,0x80000000u}) {
+            fakeNow+=wait; loop();
+            assert(resultShown());
+        }
+        assert(oled.frames>framesBefore); // the result page keeps animating
+        Serial.commands={'R','r','C','c'}; loop();
+        assert(resultShown() && !requested);
+        fakeTouchLevel=LOW; loop();
+        uint32_t holdStart=fakeNow;
+        fakeTouchLevel=HIGH; loop();
+        fakeNow=holdStart+999; loop();
+        assert(resultShown());
+        // A short touch must not contribute time to the next hold.
+        fakeTouchLevel=LOW; loop();
+        fakeNow=0xFFFFFF00u;
+        holdStart=fakeNow;
+        fakeTouchLevel=HIGH; loop();
+        fakeNow=holdStart+999; loop();
+        assert(resultShown());
+        framesBefore=oled.frames;
+        fakeNow=holdStart+1000; loop();
+        assert(oled.frames-framesBefore>=15); // the holes were patched first
+        assert(accepted==0 && running && !readyShown && !active && !requested);
+        assert(oled.text.find("Preparing")!=std::string::npos);
+        assert(touchPermission.canStart(fakeNow) && filled==0 && discard==PRE);
     }
-    std::cout<<"PASS triplet flow, no per-hit classification, five-second reset\n";
+    std::cout<<"PASS triplet flow, persistent result, fresh one-second restart, short-touch rejection and timer wrap\n";
 
     for(int kind=0;kind<3;++kind) {
         reset(); captureReference(0,0); readyAgain();
@@ -80,7 +113,9 @@ int main() {
         if(kind==2) waveform(10);
         finishCapture(); assert(accepted==1 && wood_classifier::input[0]==saved);
         const char* expected=kind==0?"CLIPPED":kind==1?"SAMPLE_LOSS":"WEAK_SIGNAL";
-        assert(oled.text.find(expected)!=std::string::npos);
+        const char* shown=kind==0?"too hard!":kind==1?"missed it":"too soft";
+        assert(Serial.text.find(std::string("#INVALID,")+expected)!=std::string::npos);
+        assert(oled.text.find(shown)!=std::string::npos);
         readyAgain(); captureReference(0,1); readyAgain(); captureReference(0,2);
         assert(accepted==3 && Serial.text.find("#RESULT,wood=1")!=std::string::npos);
     }
@@ -99,7 +134,7 @@ int main() {
     requested=true; sample(2048); assert(active);
     waveform(0); loss=false; finishCapture(); assert(accepted==0);
     reset(); active=true; next=PRE+1; captureDeadline=fakeNow-1; loop();
-    assert(!active && !running && accepted==0 && oled.text.find("SAMPLE_LOSS")!=std::string::npos);
+    assert(!active && !running && accepted==0 && oled.text.find("missed it")!=std::string::npos);
     std::cout<<"PASS software trigger, weak-signal rejection and incomplete capture timeout\n";
 
     reset(); active=true; next=PRE; captureDeadline=fakeNow+600;
@@ -107,7 +142,7 @@ int main() {
     reset(); readyShown=false; gateView=GateView::Arming; rearmAt=fakeNow+500;
     for(size_t i=0;i<PRE;++i) sample(2048);
     sample(3000); assert(!active);
-    fakeNow=rearmAt; loop(); assert(readyShown && oled.text.find("first endpoint")!=std::string::npos);
+    fakeNow=rearmAt; loop(); assert(readyShown && oled.text.find("first end")!=std::string::npos);
     reset(); markLoss(); assert(lossHistory==PRE);
     for(size_t i=0;i<PRE;++i) sample(2048);
     assert(lossHistory==0);
@@ -118,6 +153,21 @@ int main() {
     assert(accepted==0 && !running && !requested && Serial.text.find("#RESET")!=std::string::npos);
     fakeNow=resumeAt; loop(); assert(running && !readyShown);
     std::cout<<"PASS manual group reset\n";
+
+    // Every rejection, cancel and fatal reason has its own wording on screen.
+    for(const char* reason:{"CLIPPED","WEAK_SIGNAL","SAMPLE_LOSS","PREPROCESS_ERROR"}) {
+        oled_ui::Problem p=oled_ui::problemFor(reason);
+        assert(std::strcmp(p.line1,reason)!=0);
+        reset(); oled_ui::invalid(oled,animWait,1,reason,"");
+        assert(oled.text.find("OOPS!")!=std::string::npos && oled.text.find(p.line1)!=std::string::npos);
+    }
+    for(const char* reason:{"ADC_INIT_FAILED","ADC_STOP_FAILED","ADC_RESTART_FAILED","MODEL_MEMORY_FAILED"}) {
+        reset(); oled_ui::error(oled,reason);
+        assert(oled.text.find(reason)!=std::string::npos && oled.text.find("restart me")!=std::string::npos);
+        assert(std::strcmp(oled_ui::errorHint(reason),"glitch")!=0);
+    }
+    reset(); oled_ui::modelError(oled); assert(oled.text.find("can't decide")!=std::string::npos);
+    std::cout<<"PASS every invalid, cancel and fatal reason has its own screen\n";
 
     TouchPermission gate;
     gate.update(true,0); gate.update(true,10000); assert(!gate.canStart(10000));
@@ -149,7 +199,7 @@ int main() {
     fakeTouchLevel=LOW; sample(2048);
     assert(!active && !running && accepted==1 && wood_classifier::input[0]==saved);
     assert(Serial.text.find("#CANCELLED,TOUCH_RELEASED")!=std::string::npos);
-    assert(oled.text.find("cancelled")!=std::string::npos);
+    assert(oled.text.find("let go early")!=std::string::npos);
     std::cout<<"PASS release mid-capture cancels without increment or losing earlier point\n";
 
     // Capture one attempt, keep holding through processing, and verify lockout.
@@ -182,7 +232,7 @@ int main() {
     reset(); Wire.probeResults={2,2,0,0};
     uint32_t bootStart=fakeNow;
     assert(initialiseDisplay());
-    assert(Wire.ends==3 && Wire.clock==100000 && oled.beginCalls==2);
+    assert(Wire.ends==3 && Wire.clock==400000 && oled.beginCalls==2);
     assert(fakeNow-bootStart>=1650);
     assert(Serial.text.find("attempt=3,i2c_status=0,init=1")!=std::string::npos);
     reset(); Wire.probeResults={2,2,2,2,2,2};
