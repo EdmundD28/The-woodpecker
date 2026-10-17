@@ -1,14 +1,9 @@
+param([string]$Compiler, [string]$Run)
 $ErrorActionPreference = 'Stop'
-$testCompiler = Join-Path $PSScriptRoot '../../work/b-test-tools/ziglang/zig.exe'
-if (!(Test-Path -LiteralPath $testCompiler)) {
-    throw 'Local test compiler missing. See README for a C++17 compiler command.'
-}
-Push-Location $PSScriptRoot
-try {
-    & $testCompiler c++ -std=c++17 -I test/host test/host/test_firmware.cpp -o test/host/test_firmware.exe
-    if ($LASTEXITCODE -ne 0) { throw 'Host test build failed.' }
-    & ./test/host/test_firmware.exe
-    if ($LASTEXITCODE -ne 0) { throw 'Host test assertions failed.' }
-} finally {
-    Pop-Location
-}
+$testPython = Join-Path $PSScriptRoot '../.venv/Scripts/python.exe'
+if (!(Test-Path -LiteralPath $testPython)) { $testPython = 'python' }
+$testArgs = @((Join-Path $PSScriptRoot 'test/verify_models.py'))
+if ($Compiler) { $testArgs += @('--compiler', $Compiler) }
+if ($Run) { $testArgs += @('--run', $Run) }
+& $testPython @testArgs
+if ($LASTEXITCODE -ne 0) { throw 'Firmware/model host verification failed.' }

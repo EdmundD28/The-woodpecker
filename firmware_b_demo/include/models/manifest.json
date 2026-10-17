@@ -1,0 +1,21 @@
+{
+  "source_run": "The-woodpecker-model/luo_analysis/runs/20261017_three_point_wood_id",
+  "sample_rate_hz": 8000,
+  "sample_count": 2400,
+  "classes": [
+    "WOOD01",
+    "WOOD02"
+  ],
+  "default": "time",
+  "selection_note": "Spectrum was selected by validation before testing. Time is the rehearsal default after observing held-out results; this is a deployment choice, not an unbiased new test. No retraining or deletion.",
+  "models": {
+    "time": {
+      "version": "REAL-TRIPLET-beecd884647a",
+      "header_sha256": "bb6547010c6fcffa2e450a37041aebc0a07944b1dbf286268e7669bdf04f774d"
+    },
+    "spectrum": {
+      "version": "REAL-TRIPLET-f392163987d7",
+      "header_sha256": "5280b865791a6e528e9f4dda29b7749c78eff95183b7bb1fdae0e2b3d17d4597"
+    }
+  }
+}
