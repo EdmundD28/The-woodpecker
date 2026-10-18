@@ -1,0 +1,2 @@
+firmware_b_demo/include/models/*.h text eol=lf
+firmware_b_demo/test/fixtures/** text eol=lf

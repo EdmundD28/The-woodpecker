@@ -1,0 +1,17 @@
+{
+  "source_model_sha256": "d3fb5d19acd28ba7bf7889deb086a87b5be35b0ae2826b43f4fedad97d9173b0",
+  "feature_count": 27,
+  "reference_count": 176,
+  "reference_and_scaling_float_bytes": 19440,
+  "fft_constants_float_bytes": 25728,
+  "workspace_bytes": 34304,
+  "strict_features": 27,
+  "venue_features": 25,
+  "venue_threshold_multiplier": 1.5,
+  "venue_base_thresholds": {
+    "endpoint": 0.683948608555978,
+    "middle": 0.8526718888150576
+  },
+  "venue_calibration": "same 58 normal calibration records only; no abnormal fitting",
+  "selection_limit": "venue profile designed after synthetic perturbation audit; existing holdouts are development evidence, not fresh validation"
+}

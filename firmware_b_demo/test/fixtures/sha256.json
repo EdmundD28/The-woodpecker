@@ -1,0 +1,9 @@
+{
+  "quality/abnormal_test.jsonl": "021a42165eb7d27161f799e4bb4c2ee7d19c63e5a020bf3c6d6bf7a6422fca58",
+  "quality/calibration.jsonl": "4de679888ba240ebcc74348ef758393b2b49c887f09916ea7388d926cfd2e6a4",
+  "quality/normal_test.jsonl": "68450a51fe75b94511fd4be3c6649cba35278033eb3c748348377c951a2854f4",
+  "quality/quality_model.json": "3cf9a32175101ed0195f92e91d7cdf4771622b5e3a59b3f92ae02c3c5d6dd3d3",
+  "quality/train.jsonl": "6e33eedcf7c6b259155aa5002248552bc82b687e3b6eb8a83a3acaad95b0f655",
+  "recognition/spectrum/fixed_test_vectors.json": "ec442246bcc29187cc24583c4941e3dd00b0e44140ccd6c93f6a982bc43bfe1c",
+  "recognition/time/fixed_test_vectors.json": "9d392ff1fd27b41ef4e807f56189d155c4e54a66b04f26fe0d42b7316e5af4c4"
+}

@@ -1,0 +1,10 @@
+**/.pio/
+**/.host_tests/
+**/.vscode/
+**/__pycache__/
+**/*.pyc
+**/collected_data/
+luo_analysis/runs/
+luo_analysis/*.log
+.venv/
+.test-tmp/
