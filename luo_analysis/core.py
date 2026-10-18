@@ -32,6 +32,11 @@ def validate_config(c):
         raise ValueError('split_strategy must be group or stratified_hit')
     if c.get('input_mode', 'time') not in ['time','spectrum']:
         raise ValueError('input_mode must be time or spectrum')
+    if 'spectrum_preparation' in c:
+        from .spectrum_preparation import validate
+        if c.get('input_mode')!='spectrum':
+            raise ValueError('fitted spectrum preparation requires spectrum mode')
+        validate(c['spectrum_preparation'])
     if len(c['classes']) != 2 or len(set(c['classes'])) != 2:
         raise ValueError('10/09 scope requires exactly two distinct classes')
     if len(c['class_display_names']) != 2:

@@ -22,6 +22,9 @@ def inputs(time, c):
         raise ValueError('three inputs required: one endpoint, middle, other endpoint')
     if c['input_mode'] == 'time':
         return time.astype(np.float32, copy=False)
+    if 'spectrum_preparation' in c:
+        from .spectrum_preparation import rms_log
+        return rms_log(time,c,c['spectrum_preparation'])
     windowed = time.astype(np.float64)*np.hanning(c['sample_count'])[None, :, None]
     return (np.abs(np.fft.rfft(windowed, axis=1))/c['sample_count']).astype(np.float32)
 
@@ -131,12 +134,16 @@ def assemble(time, groups, rows):
 
 def contract(c):
     length = c['sample_count'] if c['input_mode'] == 'time' else c['sample_count']//2+1
-    return {'version': FORMAT, 'mode': c['input_mode'], 'shape': [length, 3],
+    result = {'version': FORMAT, 'mode': c['input_mode'], 'shape': [length, 3],
             'sample_rate_hz': c['sample_rate_hz'], 'raw_shape': [3, c['sample_count']],
             'positions': 'endpoint / middle / other endpoint; P01/P02/P03 or P03/P02/P01',
             'direction_fusion': 'arithmetic mean of forward and endpoint-reversed softmax scores',
             'preprocessing': 'independent whole-window mean removal and /2048 for each hit',
             'spectrum': 'symmetric Hann, abs(rfft)/sample_count, no phase or peak normalization' if c['input_mode']=='spectrum' else None}
+    if 'spectrum_preparation' in c:
+        result.update(version='WOOD_TRIPLET_RMS_LOG_V1',spectrum='per-hit RMS normalization, symmetric Hann, abs(rfft)/sample_count, fitted log1p compression',
+                      spectrum_preparation=c['spectrum_preparation'])
+    return result
 
 
 def export_triplet(model, out):
@@ -145,6 +152,9 @@ def export_triplet(model, out):
     length = model['input_contract']['shape'][0]
     header_path = out/'model_weights.h'
     header = header_path.read_text(encoding='utf-8')
+    if 'spectrum_preparation' in model['config']:
+        from .export_rms_log import patch_header
+        header=patch_header(header,model)
     wrapper = f'''// Use this entry point for direction-independent three-hit classification.
 // reverse_input requires {length*3} floats, separate from input and scratch.
 inline void infer_either_direction(const float* input,float* scores,float* scratch,float* reverse_input) {{
@@ -160,6 +170,9 @@ inline void infer_either_direction(const float* input,float* scores,float* scrat
     budget.update(direction_invariant_conv_dense_macs=budget['conv_dense_macs']*2,
                   reverse_input_bytes=length*3*4, namespace='wood_triplet_'+mode,
                   required_inference='preprocess_three then infer_either_direction')
+    if 'spectrum_preparation' in model['config']:
+        budget.update(spectrum_preparation=model['config']['spectrum_preparation'],
+                      fitted_preparation_constant_bytes=72,additional_runtime_scratch_bytes=0)
     dump(out/'deployment_budget.json', budget)
 
 

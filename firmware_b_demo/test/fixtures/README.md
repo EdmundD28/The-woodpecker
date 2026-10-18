@@ -2,7 +2,7 @@
 
 这些文件是已部署模型的复现依赖，不是新增采集或独立验收集。
 
-- `recognition/time`、`recognition/spectrum`：来自 `20261017_three_point_wood_id` 导出目录的固定三点输入、预处理和预期分数，每种模型六组。
+- `recognition/time`、`recognition/spectrum`：两种模型各六组固定三点输入。时域来自`20261017_three_point_wood_id`；新频谱沿用此前已公开的同一批原始波形，使用`REAL-RMSLOG-fb6b2bf9d8ef`重算归一化＋对数输入与预期分数，没有新增采集记录。
 - `quality`：来自 `20261018_normal_only_quality_v1` 的质量模型及训练、校准、正常测试、异常测试四个互不重叠的记录文件，共300条。
 - `sha256.json`：以上文件的 SHA-256，用于确认复制完整性。
 

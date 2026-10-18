@@ -6,8 +6,8 @@
     "WOOD01",
     "WOOD02"
   ],
-  "default": "time",
-  "selection_note": "Spectrum was selected by validation before testing. Time is the rehearsal default after observing held-out results; this is a deployment choice, not an unbiased new test. No retraining or deletion.",
+  "default": "spectrum",
+  "selection_note": "User adopted the RMS-normalized log-spectrum CNN after retrospective transfer experiments. The deployed seed42 model is trained jointly on table and carpet. No independent new acceptance data or hardware flashing in this change.",
   "models": {
     "time": {
       "version": "REAL-TRIPLET-beecd884647a",
@@ -15,10 +15,32 @@
       "original_manifest_header_sha256": "bb6547010c6fcffa2e450a37041aebc0a07944b1dbf286268e7669bdf04f774d"
     },
     "spectrum": {
-      "version": "REAL-TRIPLET-f392163987d7",
-      "header_sha256": "9f4033f2959c378a16c566592fb44b68704feca0a460e3ea6fe36cfcc55c49db",
-      "original_manifest_header_sha256": "5280b865791a6e528e9f4dda29b7749c78eff95183b7bb1fdae0e2b3d17d4597"
+      "version": "REAL-RMSLOG-fb6b2bf9d8ef",
+      "source_run": "The-woodpecker-model/luo_analysis/runs/20261019_adopted_rms_log_v1",
+      "header_sha256": "f68cdeb090ed74771587ddc060dc793067c11d0e665502efc46322c93d96cf9e",
+      "preprocessing_version": "WOOD_SPECTRUM_RMS_LOG_V1",
+      "model_json": "firmware_b_demo/include/models/spectrum_model.json",
+      "previous_version": "REAL-TRIPLET-f392163987d7"
     }
   },
-  "packaging_note": "Header hashes refreshed for the actual delivered headers, copied byte-for-byte from the local integration. Original manifest hashes retained for provenance. Numerical oracle tests passed for both models; no retraining."
+  "packaging_note": "Header hashes cover shipped LF bytes. Python model and C++ weights share the same version and fitted preparation. Existing published recognition raw fixtures are reused, with spectrum inputs and scores regenerated for the adopted model.",
+  "spectrum_preparation": {
+    "rms_target": [
+      0.1252489377812345,
+      0.0959337002410415,
+      0.1252489377812345
+    ],
+    "log_reference": [
+      0.0006071118345404663,
+      0.00044434018210265337,
+      0.0006071118345404663
+    ],
+    "log_gain": [
+      0.0018870087158430944,
+      0.0013993044042203892,
+      0.0018870087158430944
+    ],
+    "version": "WOOD_SPECTRUM_RMS_LOG_V1"
+  },
+  "independent_new_acceptance": false
 }

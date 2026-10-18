@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 #ifndef WOOD_USE_SPECTRUM
-#define WOOD_USE_SPECTRUM 0
+#define WOOD_USE_SPECTRUM 1
 #endif
 
 #if WOOD_USE_SPECTRUM
@@ -21,7 +21,7 @@ constexpr size_t point_length=WOOD_USE_SPECTRUM ? 1201 : 2400;
 constexpr size_t scratch_count=WOOD_USE_SPECTRUM ? 9664 : 19200;
 #if WOOD_USE_SPECTRUM
 constexpr char mode[]="SPECTRUM";
-constexpr char version[]="REAL-TRIPLET-f392163987d7";
+constexpr const char* version=wood_triplet_spectrum::model_version;
 #else
 constexpr char mode[]="TIME";
 constexpr char version[]="REAL-TRIPLET-beecd884647a";
@@ -82,14 +82,24 @@ inline bool store_point(const uint16_t* raw,size_t point) {
     for(size_t i=0;i<sample_count;++i) sum+=raw[i];
     float mean=float(sum)/float(sample_count);
 #if WOOD_USE_SPECTRUM
+    double energy=0;
     for(size_t i=0;i<sample_count;++i) {
         float time=(float(raw[i])-mean)/2048.0f;
-        fft_input[i]={float(double(time)*wood_triplet_spectrum::hann[i]),0};
+        energy+=double(time)*double(time);
+    }
+    double denominator=std::sqrt(energy/double(sample_count));
+    if(denominator<1e-12) denominator=1e-12;
+    for(size_t i=0;i<sample_count;++i) {
+        float time=(float(raw[i])-mean)/2048.0f;
+        float normalized=float(double(time)*wood_triplet_spectrum::rms_target[point]/denominator);
+        fft_input[i]={float(double(normalized)*wood_triplet_spectrum::hann[i]),0};
     }
     fft(fft_input,fft_output,sample_count,1);
     for(size_t k=0;k<point_length;++k) {
         float re=fft_output[k].re, im=fft_output[k].im;
         float value=std::sqrt(re*re+im*im)/float(sample_count);
+        value=float(std::log1p(double(value)/wood_triplet_spectrum::log_reference[point])*
+                    wood_triplet_spectrum::log_gain[point]);
         if(!std::isfinite(value)) return false;
         input[k*3+point]=value;
     }

@@ -4,6 +4,8 @@ ESP32 木材敲击展示系统。`main` 以本次固件 B 和神经模型交付�
 
 模型只识别当前两根已知木头，不能据此判断木材品种、实心空心或缺陷。已完成电脑端验证和固件编译；本次未烧录，实机采样时序、内存峰值及新场地效果仍需测量。
 
+当前默认模型为`REAL-RMSLOG-fb6b2bf9d8ef`，采用逐击均方根归一化与幅值谱对数压缩。Python模型保存在[模型文件](firmware_b_demo/include/models/spectrum_model.json)，端点共享预处理参数；网络仍为三层步长2卷积与展平头，共12114参数。
+
 ## 分支约定
 
 - `main`：固件 B、部署模型、训练与分析源码、测试和交付说明。
@@ -15,7 +17,7 @@ ESP32 木材敲击展示系统。`main` 以本次固件 B 和神经模型交付�
 | 路径 | 内容 |
 |---|---|
 | [firmware_b_demo](firmware_b_demo/README.md) | 展示固件、接线、烧录、操作和质量档位 |
-| [部署模型](firmware_b_demo/include/models/manifest.json) | 默认时域模型、可选频谱模型及来源散列 |
+| [部署模型](firmware_b_demo/include/models/manifest.json) | 默认归一化＋对数频谱模型、可选旧时域模型及来源散列 |
 | [验证记录](firmware_b_demo/VERIFICATION.md) | 编译、数值对照、实机验证边界 |
 | [luo_analysis](luo_analysis/README.md) | 训练、导出、质量检查、跨支撑面实验及测试 |
 | [协议校验](pc_collector/protocol.py) | 模型读取数据所需的固定协议校验模块 |
@@ -32,7 +34,7 @@ ESP32 木材敲击展示系统。`main` 以本次固件 B 和神经模型交付�
 py -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r luo_analysis/requirements.txt
 ./.venv/Scripts/python.exe -m unittest discover -s luo_analysis/tests -v
-pio run -d firmware_b_demo -e esp32dev -e esp32dev_spectrum
+pio run -d firmware_b_demo -e esp32dev -e esp32dev_time
 ./firmware_b_demo/run_host_tests.ps1 -Compiler 'C:/工具目录/zig.exe'
 ```
 

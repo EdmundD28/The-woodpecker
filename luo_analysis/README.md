@@ -1,5 +1,16 @@
 # 信号分析、神经网络训练与质量检查
 
+## 当前采用的频谱模型
+
+默认部署模型为`REAL-RMSLOG-fb6b2bf9d8ef`，文件为`../firmware_b_demo/include/models/spectrum_model.json`。它采用逐击均方根归一化＋对数压缩，三层2/2/2步长卷积与展平头不变，共12114参数。
+
+`triplet.predict`自动读取新模型中的`WOOD_TRIPLET_RMS_LOG_V1`输入约定及拟合参数。新预处理不能与旧权重混用；端点统计共享，中点单独拟合。模型JSON中的来源路径只保留文件名，训练文件散列保留。
+
+本批重训入口为`py -m luo_analysis.adopt_rms_log --out luo_analysis/runs/新的采用版目录`。该入口需要本机未发布的既有跨场地实验目录与采集数据，只生成模型，不自动覆盖固件。旧`triplet train`及单点入口继续用于历史对照。
+
+部署版将桌面与地毯共同训练，174/56/65条敲击分为训练/验证/开发留出；归一化和对数参数只拟合训练池，5条指定异常排除。630个开发留出组合及16个不复用组均判对，但不是独立新场地验收。完整方法比较及采用边界见[模型说明](../firmware_b_demo/include/models/README.md)。
+
+
 从仓库根目录运行命令。无需连接ESP32，采集工作仍由王的pc_collector负责。
 
 ## 单次敲击质量：只学习正常范围

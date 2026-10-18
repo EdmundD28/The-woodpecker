@@ -1,5 +1,6 @@
 """Verify actual firmware against all six saved training-export oracle triplets."""
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -22,8 +23,19 @@ def main():
     env = {**os.environ, 'ZIG_GLOBAL_CACHE_DIR': str(out/'zig-global'),
            'ZIG_LOCAL_CACHE_DIR': str(out/'zig-local'), 'TEMP': str(temp), 'TMP': str(temp)}
     reports = []
+    manifest=json.loads((root/'include/models/manifest.json').read_text(encoding='utf-8'))
     for mode, flag in [('time', '0'), ('spectrum', '1')]:
+        header=root/'include/models'/f'{mode}_weights.h'
+        if hashlib.sha256(header.read_bytes()).hexdigest()!=manifest['models'][mode]['header_sha256']:
+            raise ValueError('deployed header hash mismatch: '+mode)
+        model_json=manifest['models'][mode].get('model_json')
+        if model_json:
+            model=json.loads((root.parent/model_json).read_text(encoding='utf-8'))
+            if model['model_version']!=manifest['models'][mode]['version']:
+                raise ValueError('Python model version mismatch: '+mode)
         vectors = json.loads((args.run/mode/'fixed_test_vectors.json').read_text(encoding='utf-8'))
+        if any(v.get('model_version',manifest['models'][mode]['version'])!=manifest['models'][mode]['version'] for v in vectors):
+            raise ValueError('oracle model version mismatch: '+mode)
         raw = ',\n'.join('{'+','.join('{'+','.join(map(str, r['raw']))+'}' for r in v['records'])+'}' for v in vectors)
         inputs = ',\n'.join('{'+','.join(f'{x:.9e}f' for row in v['preprocessed_input'] for x in row)+'}' for v in vectors)
         scores = ',\n'.join('{'+','.join(f'{x:.9e}f' for x in v['expected_scores'])+'}' for v in vectors)
