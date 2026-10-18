@@ -48,7 +48,7 @@ constexpr int ADC_MIN_VALUE = 0;
 constexpr int ADC_MAX_VALUE = 4095;
 constexpr int CLIP_LOW = 10;
 constexpr int CLIP_HIGH = 4085;
-constexpr int TRIGGER_THRESHOLD = 500;
+constexpr int TRIGGER_THRESHOLD = 600;
 constexpr int WEAK_SIGNAL_THRESHOLD = 100;
 
 // 避免一次敲击的余振被识别成多次敲击
