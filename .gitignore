@@ -4,6 +4,6 @@
 **/*.pyc
 collected_data/
 **/collected_data/
-luo_analysis/runs/
+cnn_analysis/runs/
 .venv/
 

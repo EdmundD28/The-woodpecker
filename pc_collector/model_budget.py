@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 
-config = json.loads((Path(__file__).resolve().parents[1]/'luo_analysis'/'config.json').read_text(encoding='utf-8'))
+config = json.loads((Path(__file__).resolve().parents[1]/'cnn_analysis'/'config.json').read_text(encoding='utf-8'))
 input_length = config['sample_count']
 input_channels = config['channels']
 
