@@ -11,7 +11,7 @@ def main():
     workspace = root.parents[1]
     parser = argparse.ArgumentParser()
     parser.add_argument('--compiler', type=Path, default=workspace/'tmp/model-cpp/ziglang/zig.exe')
-    parser.add_argument('--run', type=Path, default=workspace/'The-woodpecker-model/luo_analysis/runs/20261017_three_point_wood_id')
+    parser.add_argument('--run', type=Path, default=workspace/'The-woodpecker-model/cnn_analysis/runs/20261017_three_point_wood_id')
     args = parser.parse_args()
     out = root/'.host_tests'
     out.mkdir(exist_ok=True)

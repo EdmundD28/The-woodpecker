@@ -1,5 +1,5 @@
 {
-  "source_run": "The-woodpecker-model/luo_analysis/runs/20261017_three_point_wood_id",
+  "source_run": "The-woodpecker-model/cnn_analysis/runs/20261017_three_point_wood_id",
   "sample_rate_hz": 8000,
   "sample_count": 2400,
   "classes": [

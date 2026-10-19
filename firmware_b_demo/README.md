@@ -47,7 +47,7 @@
 
 模型工作缓冲区在开机时一次申请，时域 76800 字节、频域 38656 字节；运行时不反复分配。输入两端原地交换后恢复，省去第二份输入缓冲区。频域另外静态保留变换缓冲和旋转因子。编译器报告的静态内存不包含这些开机申请、DMA、OLED 和运行栈，不能据此声称峰值内存或真机稳定性已验证。
 
-权重直接复制自 `The-woodpecker-model/luo_analysis/runs/20261017_three_point_wood_id/{time,spectrum}/model_weights.h`，没有重新训练或删除异常样本；原始版本与校验值记录在 `include/models/manifest.json`。
+权重直接复制自 `The-woodpecker-model/cnn_analysis/runs/20261017_three_point_wood_id/{time,spectrum}/model_weights.h`，没有重新训练或删除异常样本；原始版本与校验值记录在 `include/models/manifest.json`。
 
 ## 已验证与待验证
 
