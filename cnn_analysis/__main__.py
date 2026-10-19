@@ -9,7 +9,7 @@ from .core import ROOT, config, validate_config, dump, load, preprocess, split, 
 from .network import CNN, signal_features, fit_centroid, centroid_predict
 from .reporting import analyze, metrics, training_plots
 from .export import export
-from pc_collector.protocol import build_sample_id
+from cnn_analysis.protocol import build_sample_id
 
 
 def new_output(path):

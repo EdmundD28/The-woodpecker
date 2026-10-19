@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import numpy as np
-from pc_collector.protocol import validate_record
+from cnn_analysis.protocol import validate_record
 
 ROOT = Path(__file__).resolve().parent
 

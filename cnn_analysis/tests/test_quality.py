@@ -5,7 +5,7 @@ import numpy as np
 from cnn_analysis.core import config
 from cnn_analysis.quality import (EXCLUDED, FEATURE_NAMES, position_group, partition,
                                   features, fit, calibrate, novelty_score, predict)
-from pc_collector.protocol import build_sample_id
+from cnn_analysis.protocol import build_sample_id
 
 
 class QualityTests(unittest.TestCase):

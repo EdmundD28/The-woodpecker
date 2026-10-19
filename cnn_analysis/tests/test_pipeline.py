@@ -13,7 +13,7 @@ from cnn_analysis.export import export
 class PipelineTests(unittest.TestCase):
     def setUp(self):
         self.c=config()
-        p=Path(__file__).resolve().parents[2]/'pc_collector'/'examples'/'WOOD_IMPACT_V1_example.jsonl'
+        p=Path(__file__).resolve().parent/'fixtures'/'WOOD_IMPACT_V1_example.jsonl'
         self.legacy_record=json.loads(p.read_text().splitlines()[0])
         self.r=copy.deepcopy(self.legacy_record)
         self.r.update(sample_rate_hz=8000, sample_count=2400)

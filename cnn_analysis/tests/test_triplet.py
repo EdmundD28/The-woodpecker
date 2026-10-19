@@ -10,7 +10,7 @@ from cnn_analysis.core import config, preprocess, dump
 from cnn_analysis.network import CNN
 from cnn_analysis.triplet import (FORMAT, POINTS, inputs, probabilities, combinations,
                                   assemble, partition, contract, predict, export_triplet, features)
-from pc_collector.protocol import build_sample_id
+from cnn_analysis.protocol import build_sample_id
 
 
 class TripletTests(unittest.TestCase):

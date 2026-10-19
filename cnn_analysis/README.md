@@ -20,7 +20,7 @@ $env:OPENBLAS_NUM_THREADS='1'
 下文的旧模型数字、输入约定和默认模式属于历史实验，各模型文件仍按自己的输入版本读取。
 
 
-从仓库根目录运行命令。无需连接ESP32，采集工作仍由王的pc_collector负责。
+从仓库根目录运行命令。无需连接ESP32，采集工作由 `wjy` 分支的 `pc_collector` 配合固件 A 完成。模型读取校验使用本目录的 `protocol.py`，无需导入采集工程。
 
 ## 单次敲击质量：只学习正常范围
 
@@ -86,7 +86,7 @@ ESP32的总内存和时延仍需实测；采集固件和展示固件没有在本
 从本克隆目录读取现有采集数据示例：
 
 ```powershell
-py -m cnn_analysis prepare --data ../The-woodpecker/pc_collector/collected_data/20261017_1737_WOOD01_P01_N020.jsonl --out cnn_analysis/runs/current_capture_01
+py -m cnn_analysis prepare --data ../The-woodpecker-wjy/pc_collector/collected_data/20261017_1737_WOOD01_P01_N020.jsonl --out cnn_analysis/runs/current_capture_01
 ```
 
 读取不需要猜测类别。正式训练仍需确认两类标签和真实来源；只有一类时不生成两分类模型。
@@ -127,7 +127,7 @@ JSONL是一行一次敲击；JSON是单次敲击。两种均可读，同时提�
 .\.venv\Scripts\python.exe -m cnn_analysis prepare --data cnn_analysis/runs/demo_01/demo_data/demo.jsonl --out cnn_analysis/runs/interface_01
 ```
 
-上述模拟数据仅用于检查读取。pc_collector/examples里的旧16kHz、1024点示例与当前默认配置不匹配，会被拒收；不能作为当前实测数据。
+上述模拟数据仅用于检查读取。cnn_analysis/tests/fixtures 里的旧16kHz、1024点示例与当前默认配置不匹配，会被拒收；不能作为当前实测数据。
 实际文件直接传给--data，或放到cnn_analysis/data/real目录。
 多个文件用空格分隔；带空格的路径用引号。
 
@@ -153,7 +153,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 ## 信号分析（10月5日）
 
 ```powershell
-.\.venv\Scripts\python.exe -m cnn_analysis analyze --config cnn_analysis/config_real.json --data pc_collector/collected_data --manifest cnn_analysis/data/manifest_real.csv --out cnn_analysis/runs/early_01
+.\.venv\Scripts\python.exe -m cnn_analysis analyze --config cnn_analysis/config_real.json --data ../The-woodpecker-wjy/pc_collector/collected_data --manifest cnn_analysis/data/manifest_real.csv --out cnn_analysis/runs/early_01
 ```
 
 输出时域/频域图、振幅对照、衰减描述指标、按装夹批次的统计及early_signal_report.md。
@@ -164,7 +164,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 ## 两分类训练和独立测试（10月9日）
 
 ```powershell
-.\.venv\Scripts\python.exe -m cnn_analysis train --config cnn_analysis/config_real.json --data pc_collector/collected_data --manifest cnn_analysis/data/manifest_real.csv --out cnn_analysis/runs/two_class_01
+.\.venv\Scripts\python.exe -m cnn_analysis train --config cnn_analysis/config_real.json --data ../The-woodpecker-wjy/pc_collector/collected_data --manifest cnn_analysis/data/manifest_real.csv --out cnn_analysis/runs/two_class_01
 ```
 
 默认配置使用 `split_strategy: "stratified_hit"`，对应固定木板、相同采集条件下的识别实验。
@@ -210,7 +210,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 输入应是王保存的单次JSON，不需要训练标签。
 
 ```powershell
-.\.venv\Scripts\python.exe -m cnn_analysis predict --model cnn_analysis/runs/two_class_01/time/model.json --record pc_collector/collected_data/samples/实际样本编号.json
+.\.venv\Scripts\python.exe -m cnn_analysis predict --model cnn_analysis/runs/two_class_01/time/model.json --record ../The-woodpecker-wjy/pc_collector/collected_data/samples/实际样本编号.json
 ```
 
 异常返回INVALID_SIGNAL；分数并列或低于已配置阈值返回LOW_CONFIDENCE。演示模型始终标记DEMO_ONLY。
