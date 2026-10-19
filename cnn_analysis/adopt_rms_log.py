@@ -94,5 +94,5 @@ def run(base,out):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--base',default='luo_analysis/runs/20261019_cross_surface_v1');p.add_argument('--out',required=True)
+    p=argparse.ArgumentParser();p.add_argument('--base',default='cnn_analysis/runs/20261019_cross_surface_v1');p.add_argument('--out',required=True)
     a=p.parse_args();run(a.base,a.out)

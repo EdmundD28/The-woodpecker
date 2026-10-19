@@ -291,7 +291,7 @@ def chart(out,rows):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(); p.add_argument('--base',default='luo_analysis/runs/20261019_cross_surface_v1');p.add_argument('--out',required=True);p.add_argument('--evaluate-only',action='store_true')
+    p=argparse.ArgumentParser(); p.add_argument('--base',default='cnn_analysis/runs/20261019_cross_surface_v1');p.add_argument('--out',required=True);p.add_argument('--evaluate-only',action='store_true')
     args=p.parse_args()
     if args.evaluate_only: evaluate(args.base,args.out)
     else: run(args.base,args.out)

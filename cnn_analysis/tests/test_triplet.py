@@ -6,9 +6,9 @@ import unittest
 
 import numpy as np
 
-from luo_analysis.core import config, preprocess, dump
-from luo_analysis.network import CNN
-from luo_analysis.triplet import (FORMAT, POINTS, inputs, probabilities, combinations,
+from cnn_analysis.core import config, preprocess, dump
+from cnn_analysis.network import CNN
+from cnn_analysis.triplet import (FORMAT, POINTS, inputs, probabilities, combinations,
                                   assemble, partition, contract, predict, export_triplet, features)
 from pc_collector.protocol import build_sample_id
 

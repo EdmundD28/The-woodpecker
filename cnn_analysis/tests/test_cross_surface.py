@@ -3,9 +3,9 @@ import unittest
 
 import numpy as np
 
-from luo_analysis.cross_surface import SEEDS, combinations, assemble, split_records
-from luo_analysis.quality import EXCLUDED, position_group
-from luo_analysis.surface_audit import surface
+from cnn_analysis.cross_surface import SEEDS, combinations, assemble, split_records
+from cnn_analysis.quality import EXCLUDED, position_group
+from cnn_analysis.surface_audit import surface
 
 
 class CrossSurfaceTests(unittest.TestCase):

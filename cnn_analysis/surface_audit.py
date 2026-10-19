@@ -27,8 +27,8 @@ def classify_surfaces(ids, metadata):
 
 def run(repo,out):
     repo=Path(repo).resolve(); out=Path(out); out.mkdir(parents=True,exist_ok=False)
-    identity=repo/'luo_analysis/runs/20261017_three_point_wood_id'
-    quality=repo/'luo_analysis/runs/20261018_normal_only_quality_v1'
+    identity=repo/'cnn_analysis/runs/20261017_three_point_wood_id'
+    quality=repo/'cnn_analysis/runs/20261018_normal_only_quality_v1'
     sources=json.loads((identity/'data_audit.json').read_text(encoding='utf-8'))['files']
     meta={}; files=[]
     for source in sources:

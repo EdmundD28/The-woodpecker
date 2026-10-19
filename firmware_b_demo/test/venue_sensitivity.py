@@ -7,8 +7,8 @@ import numpy as np
 
 def main():
     repo=Path(__file__).resolve().parents[2]; sys.path.insert(0,str(repo))
-    from luo_analysis.quality import predict
-    from luo_analysis.export_quality import venue_model
+    from cnn_analysis.quality import predict
+    from cnn_analysis.export_quality import venue_model
     run=repo/'firmware_b_demo/test/fixtures/quality'
     model=json.loads((run/'quality_model.json').read_text(encoding='utf-8'))
     venue_profile=venue_model(run/'quality_model.json')

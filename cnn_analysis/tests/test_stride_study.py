@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
-from luo_analysis.core import config
-from luo_analysis.network import CNN
-from luo_analysis.stride_study import StudyCNN, resources
+from cnn_analysis.core import config
+from cnn_analysis.network import CNN
+from cnn_analysis.stride_study import StudyCNN, resources
 
 
 class StrideStudyTests(unittest.TestCase):

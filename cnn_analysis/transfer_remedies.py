@@ -399,7 +399,7 @@ def stability_chart(out,rows):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--base',default='luo_analysis/runs/20261019_cross_surface_v1');p.add_argument('--out',required=True);p.add_argument('--evaluate-only',action='store_true');p.add_argument('--report-only',action='store_true')
+    p=argparse.ArgumentParser();p.add_argument('--base',default='cnn_analysis/runs/20261019_cross_surface_v1');p.add_argument('--out',required=True);p.add_argument('--evaluate-only',action='store_true');p.add_argument('--report-only',action='store_true')
     a=p.parse_args()
     if a.report_only: report(Path(a.out))
     elif a.evaluate_only: evaluate(a.base,a.out)

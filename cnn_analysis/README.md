@@ -6,7 +6,7 @@
 
 `triplet.predict`自动读取新模型中的`WOOD_TRIPLET_RMS_LOG_V1`输入约定及拟合参数。新预处理不能与旧权重混用；端点统计共享，中点单独拟合。模型JSON中的来源路径只保留文件名，训练文件散列保留。
 
-本批重训入口为`py -m luo_analysis.adopt_rms_log --out luo_analysis/runs/新的采用版目录`。该入口需要本机未发布的既有跨场地实验目录与采集数据，只生成模型，不自动覆盖固件。旧`triplet train`及单点入口继续用于历史对照。
+本批重训入口为`py -m cnn_analysis.adopt_rms_log --out cnn_analysis/runs/新的采用版目录`。该入口需要本机未发布的既有跨场地实验目录与采集数据，只生成模型，不自动覆盖固件。旧`triplet train`及单点入口继续用于历史对照。
 
 部署版将桌面与地毯共同训练，174/56/65条敲击分为训练/验证/开发留出；归一化和对数参数只拟合训练池，5条指定异常排除。630个开发留出组合及16个不复用组均判对，但不是独立新场地验收。完整方法比较及采用边界见[模型说明](../firmware_b_demo/include/models/README.md)。
 
@@ -20,8 +20,8 @@
 这不覆盖或修改历史识别模型、训练产物或原始采集文件；实验目录分别保存四个互不重叠的数据文件与划分清单。
 
 ```powershell
-py -m luo_analysis.quality train --data 采集文件1.jsonl 采集文件2.jsonl 其他采集文件.jsonl --out luo_analysis/runs/新的质量实验目录
-py -m luo_analysis.quality predict --model 实验目录/quality_model.json --record 单次敲击.json
+py -m cnn_analysis.quality train --data 采集文件1.jsonl 采集文件2.jsonl 其他采集文件.jsonl --out cnn_analysis/runs/新的质量实验目录
+py -m cnn_analysis.quality predict --model 实验目录/quality_model.json --record 单次敲击.json
 ```
 
 模型存储正常参考特征，比较新波形与最近5条参考的距离。位置1和3共用端点池，位置2使用中点池；每池均覆盖两根木头，预测不需要木头编号。
@@ -40,7 +40,7 @@ py -m luo_analysis.quality predict --model 实验目录/quality_model.json --rec
 从仓库根目录运行三点训练：
 
 ```powershell
-py -m luo_analysis.triplet train --data 位置1文件.jsonl 位置2文件.jsonl 位置3文件.jsonl 第二根位置1文件.jsonl 第二根位置2文件.jsonl 第二根位置3文件.jsonl --out luo_analysis/runs/新的三点实验目录
+py -m cnn_analysis.triplet train --data 位置1文件.jsonl 位置2文件.jsonl 位置3文件.jsonl 第二根位置1文件.jsonl 第二根位置2文件.jsonl 第二根位置3文件.jsonl --out cnn_analysis/runs/新的三点实验目录
 ```
 
 按相同H编号形成基础三点组，再按木头编号分层划分，原始敲击不会跨训练、验证、测试。
@@ -51,12 +51,12 @@ py -m luo_analysis.triplet train --data 位置1文件.jsonl 位置2文件.jsonl 
 三条新记录的预测入口：
 
 ```powershell
-py -m luo_analysis.triplet predict --model 实验目录/spectrum/model.json --records 第一个端点.json 中点.json 另一个端点.json
+py -m cnn_analysis.triplet predict --model 实验目录/spectrum/model.json --records 第一个端点.json 中点.json 另一个端点.json
 ```
 
 预测只读取波形，不以记录内的木头编号决定类别。123和321有效，缺点、重复点和其他中点位置会拒收。
 三点C++入口为`wood_triplet_time`或`wood_triplet_spectrum`中的`preprocess_three`及`infer_either_direction`；缓冲预算见deployment_budget.json。
-可用`py -m luo_analysis.verify_export 实验目录/spectrum --compiler c++`编译核对导出，仍不代表ESP32实机已验证。
+可用`py -m cnn_analysis.verify_export 实验目录/spectrum --compiler c++`编译核对导出，仍不代表ESP32实机已验证。
 
 ## 安装与第一次运行
 
@@ -77,7 +77,7 @@ ESP32的总内存和时延仍需实测；采集固件和展示固件没有在本
 从本克隆目录读取现有采集数据示例：
 
 ```powershell
-py -m luo_analysis prepare --data ../The-woodpecker/pc_collector/collected_data/20261017_1737_WOOD01_P01_N020.jsonl --out luo_analysis/runs/current_capture_01
+py -m cnn_analysis prepare --data ../The-woodpecker/pc_collector/collected_data/20261017_1737_WOOD01_P01_N020.jsonl --out cnn_analysis/runs/current_capture_01
 ```
 
 读取不需要猜测类别。正式训练仍需确认两类标签和真实来源；只有一类时不生成两分类模型。
@@ -86,8 +86,8 @@ py -m luo_analysis prepare --data ../The-woodpecker/pc_collector/collected_data/
 
 ```powershell
 py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r luo_analysis/requirements.txt
-.\.venv\Scripts\python.exe -m luo_analysis demo --out luo_analysis/runs/demo_01
+.\.venv\Scripts\python.exe -m pip install -r cnn_analysis/requirements.txt
+.\.venv\Scripts\python.exe -m cnn_analysis demo --out cnn_analysis/runs/demo_01
 ```
 
 程序生成288次模拟敲击、12个独立装夹组、两类、三个位置；两套CNN分别跑通整个流程。
@@ -115,11 +115,11 @@ JSONL是一行一次敲击；JSON是单次敲击。两种均可读，同时提�
 同编号内容不同会停止整次操作，需核对实验编号；不会静默选择一个。
 
 ```powershell
-.\.venv\Scripts\python.exe -m luo_analysis prepare --data luo_analysis/runs/demo_01/demo_data/demo.jsonl --out luo_analysis/runs/interface_01
+.\.venv\Scripts\python.exe -m cnn_analysis prepare --data cnn_analysis/runs/demo_01/demo_data/demo.jsonl --out cnn_analysis/runs/interface_01
 ```
 
 上述模拟数据仅用于检查读取。pc_collector/examples里的旧16kHz、1024点示例与当前默认配置不匹配，会被拒收；不能作为当前实测数据。
-实际文件直接传给--data，或放到luo_analysis/data/real目录。
+实际文件直接传给--data，或放到cnn_analysis/data/real目录。
 多个文件用空格分隔；带空格的路径用引号。
 
 ## 李交真实数据后：填写类别和来源
@@ -144,7 +144,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 ## 信号分析（10月5日）
 
 ```powershell
-.\.venv\Scripts\python.exe -m luo_analysis analyze --config luo_analysis/config_real.json --data pc_collector/collected_data --manifest luo_analysis/data/manifest_real.csv --out luo_analysis/runs/early_01
+.\.venv\Scripts\python.exe -m cnn_analysis analyze --config cnn_analysis/config_real.json --data pc_collector/collected_data --manifest cnn_analysis/data/manifest_real.csv --out cnn_analysis/runs/early_01
 ```
 
 输出时域/频域图、振幅对照、衰减描述指标、按装夹批次的统计及early_signal_report.md。
@@ -155,7 +155,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 ## 两分类训练和独立测试（10月9日）
 
 ```powershell
-.\.venv\Scripts\python.exe -m luo_analysis train --config luo_analysis/config_real.json --data pc_collector/collected_data --manifest luo_analysis/data/manifest_real.csv --out luo_analysis/runs/two_class_01
+.\.venv\Scripts\python.exe -m cnn_analysis train --config cnn_analysis/config_real.json --data pc_collector/collected_data --manifest cnn_analysis/data/manifest_real.csv --out cnn_analysis/runs/two_class_01
 ```
 
 默认配置使用 `split_strategy: "stratified_hit"`，对应固定木板、相同采集条件下的识别实验。
@@ -201,7 +201,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 输入应是王保存的单次JSON，不需要训练标签。
 
 ```powershell
-.\.venv\Scripts\python.exe -m luo_analysis predict --model luo_analysis/runs/two_class_01/time/model.json --record pc_collector/collected_data/samples/实际样本编号.json
+.\.venv\Scripts\python.exe -m cnn_analysis predict --model cnn_analysis/runs/two_class_01/time/model.json --record pc_collector/collected_data/samples/实际样本编号.json
 ```
 
 异常返回INVALID_SIGNAL；分数并列或低于已配置阈值返回LOW_CONFIDENCE。演示模型始终标记DEMO_ONLY。
@@ -212,7 +212,7 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 ## 验证
 
 ```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s luo_analysis/tests -v
+.\.venv\Scripts\python.exe -m unittest discover -s cnn_analysis/tests -v
 ```
 
 导出的C++参考未在ESP32执行验证。使用fixed_test_vectors核对电脑和固件；真机内存、时延、一致性属于后续集成。
@@ -221,8 +221,8 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 若本机已有C++编译器，可对每套导出包执行电脑端C++核对：
 
 ```powershell
-.\.venv\Scripts\python.exe -m luo_analysis.verify_export luo_analysis/runs/demo_01/time --compiler c++
-.\.venv\Scripts\python.exe -m luo_analysis.verify_export luo_analysis/runs/demo_01/spectrum --compiler c++
+.\.venv\Scripts\python.exe -m cnn_analysis.verify_export cnn_analysis/runs/demo_01/time --compiler c++
+.\.venv\Scripts\python.exe -m cnn_analysis.verify_export cnn_analysis/runs/demo_01/spectrum --compiler c++
 ```
 
 该检查实际编译头文件、运行10组信号，对照预处理与分数，结果写入cpp_checks/verification.json。
@@ -236,12 +236,12 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 不自动覆盖固件模型。场地标签按用户说明映射，原始文件散列依赖`20261019_surface_labels_audit`审核结果。
 
 ```powershell
-& '../The-woodpecker/.venv/Scripts/python.exe' -m luo_analysis.cross_surface --out luo_analysis/runs/新的实验目录
-& '../The-woodpecker/.venv/Scripts/python.exe' -m luo_analysis.cross_surface_report --run luo_analysis/runs/新的实验目录
-& '../The-woodpecker/.venv/Scripts/python.exe' -m luo_analysis.cross_surface_verify --run luo_analysis/runs/新的实验目录
+& '../The-woodpecker/.venv/Scripts/python.exe' -m cnn_analysis.cross_surface --out cnn_analysis/runs/新的实验目录
+& '../The-woodpecker/.venv/Scripts/python.exe' -m cnn_analysis.cross_surface_report --run cnn_analysis/runs/新的实验目录
+& '../The-woodpecker/.venv/Scripts/python.exe' -m cnn_analysis.cross_surface_verify --run cnn_analysis/runs/新的实验目录
 ```
 
-本轮结果：`luo_analysis/runs/20261019_cross_surface_v1/report.md`。
+本轮结果：`cnn_analysis/runs/20261019_cross_surface_v1/report.md`。
 `summary.json`含全部指标；`verification.json`记录重新加载权重、重建源场地质量参考与阈值、划分隔离及预测复核。
 随机组合之间共享原始记录，组合数不能当成独立采集量；木头1点1只有5条地毯记录。
 宽松质量档误拦较少不代表识别已经稳定跨场地，完整结论和逐条待复核波形见报告。
@@ -254,10 +254,10 @@ manifest是旁表，不改变王冻结的采样协议。未填写来源视为unk
 改变步长也改变感受野，直接展平还增加参数，因此不能把所有变化都解释成频率细节的作用。
 
 ```powershell
-& '../The-woodpecker/.venv/Scripts/python.exe' -m luo_analysis.stride_study --out luo_analysis/runs/新的步长实验目录
-& '../The-woodpecker/.venv/Scripts/python.exe' -m luo_analysis.stride_study_verify --run luo_analysis/runs/新的步长实验目录
+& '../The-woodpecker/.venv/Scripts/python.exe' -m cnn_analysis.stride_study --out cnn_analysis/runs/新的步长实验目录
+& '../The-woodpecker/.venv/Scripts/python.exe' -m cnn_analysis.stride_study_verify --run cnn_analysis/runs/新的步长实验目录
 ```
 
-本轮目录：`luo_analysis/runs/20261019_stride_ablation_v1/`。`protocol_locked.json`为固定实验规则；各划分的`selection_locked.json`记录仅按源场地验证损失选型；`all_models_frozen.json`记录目标测试前全部权重散列。
+本轮目录：`cnn_analysis/runs/20261019_stride_ablation_v1/`。`protocol_locked.json`为固定实验规则；各划分的`selection_locked.json`记录仅按源场地验证损失选型；`all_models_frozen.json`记录目标测试前全部权重散列。
 完成后`report.md`报告每种结构、每个种子、两根木头的结果，`verification.json`记录权重重载、预测重算、端点交换一致性和原结构复现核验。实验不替换固件。
 本轮结果：减少或取消步长降采样没有稳定改善双向迁移。完全无降采样的平均平衡准确率在两个方向均下降；等参数晚压缩在地毯→桌面仅提高1.22个百分点且只有一个种子改善，不复用组均值与原结构相同；桌面→地毯下降0.82个百分点。未替换固件。当前环境与前轮NumPy版本不同，比较使用本轮同环境重训基线；旧环境单组复现的训练历史及权重与前轮完全一致，详见实验报告。

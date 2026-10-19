@@ -19,7 +19,7 @@ ESP32 木材敲击展示系统。`main` 以本次固件 B 和神经模型交付�
 | [firmware_b_demo](firmware_b_demo/README.md) | 展示固件、接线、烧录、操作和质量档位 |
 | [部署模型](firmware_b_demo/include/models/manifest.json) | 默认归一化＋对数频谱模型、可选旧时域模型及来源散列 |
 | [验证记录](firmware_b_demo/VERIFICATION.md) | 编译、数值对照、实机验证边界 |
-| [luo_analysis](luo_analysis/README.md) | 训练、导出、质量检查、跨支撑面实验及测试 |
+| [cnn_analysis](cnn_analysis/README.md) | 训练、导出、质量检查、跨支撑面实验及测试 |
 | [协议校验](pc_collector/protocol.py) | 模型读取数据所需的固定协议校验模块 |
 | [协议示例](pc_collector/examples/protocol.md) | 协议说明与旧采样规格的回归测试示例 |
 | [固定测试材料](firmware_b_demo/test/fixtures/README.md) | 部署模型的数值对照输入 |
@@ -32,8 +32,8 @@ ESP32 木材敲击展示系统。`main` 以本次固件 B 和神经模型交付�
 
 ```powershell
 py -m venv .venv
-./.venv/Scripts/python.exe -m pip install -r luo_analysis/requirements.txt
-./.venv/Scripts/python.exe -m unittest discover -s luo_analysis/tests -v
+./.venv/Scripts/python.exe -m pip install -r cnn_analysis/requirements.txt
+./.venv/Scripts/python.exe -m unittest discover -s cnn_analysis/tests -v
 pio run -d firmware_b_demo -e esp32dev -e esp32dev_time
 ./firmware_b_demo/run_host_tests.ps1 -Compiler 'C:/工具目录/zig.exe'
 ```

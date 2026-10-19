@@ -4,7 +4,7 @@
 **/__pycache__/
 **/*.pyc
 **/collected_data/
-luo_analysis/runs/
-luo_analysis/*.log
+cnn_analysis/runs/
+cnn_analysis/*.log
 .venv/
 .test-tmp/

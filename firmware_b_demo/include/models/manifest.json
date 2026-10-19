@@ -1,5 +1,5 @@
 {
-  "source_run": "The-woodpecker-model/luo_analysis/runs/20261017_three_point_wood_id",
+  "source_run": "The-woodpecker-model/cnn_analysis/runs/20261017_three_point_wood_id",
   "sample_rate_hz": 8000,
   "sample_count": 2400,
   "classes": [
@@ -16,7 +16,7 @@
     },
     "spectrum": {
       "version": "REAL-RMSLOG-fb6b2bf9d8ef",
-      "source_run": "The-woodpecker-model/luo_analysis/runs/20261019_adopted_rms_log_v1",
+      "source_run": "The-woodpecker-model/cnn_analysis/runs/20261019_adopted_rms_log_v1",
       "header_sha256": "f68cdeb090ed74771587ddc060dc793067c11d0e665502efc46322c93d96cf9e",
       "preprocessing_version": "WOOD_SPECTRUM_RMS_LOG_V1",
       "model_json": "firmware_b_demo/include/models/spectrum_model.json",

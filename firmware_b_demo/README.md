@@ -86,7 +86,7 @@
 
 冷启动重试另通过模拟测试：前几次设备未响应、全部失败后下一轮恢复、初始化失败、初始化后总线不再响应。实物出现烧录后或电池冷启动黑屏、手动复位后恢复，尚未确定根因；用户确认稳压 5V 接 VIN。本次修复必须在重新烧录后拔除 USB、完全断电再用电池启动验证，不能用串口自动复位替代冷启动验收。
 
-质量实现见`include/signal_quality.h`，数据由`luo_analysis/export_quality.py`导出。`test/verify_quality.py`对全部300条原始记录逐项比较Python与C++特征、异常分数及两档重测决定；`test/venue_sensitivity.py`复现上面的扰动诊断。当前5条异常在两档均被拦截，但不能保证发现所有未来误采。
+质量实现见`include/signal_quality.h`，数据由`cnn_analysis/export_quality.py`导出。`test/verify_quality.py`对全部300条原始记录逐项比较Python与C++特征、异常分数及两档重测决定；`test/venue_sensitivity.py`复现上面的扰动诊断。当前5条异常在两档均被拦截，但不能保证发现所有未来误采。
 
 启动诊断版新增 `#BOOT_STAGE` 与 `#HEAP`：分别记录 OLED、模型内存申请、ADC 驱动安装与启动；进入主循环后发送 `?` 可查看 `#STATUS`。这是定位工具，不代表冷启动故障已解决。用户报告显示 Initialising 后接回 USB 即恢复，尚未获得电池供电时的故障日志。
 

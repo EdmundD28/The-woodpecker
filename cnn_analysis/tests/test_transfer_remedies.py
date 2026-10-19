@@ -1,9 +1,9 @@
 import unittest
 import numpy as np
-from luo_analysis.core import config
-from luo_analysis.network import CNN
-from luo_analysis.transfer_remedies import transform, RemedyCNN, band_features, METHODS
-from luo_analysis.triplet import inputs
+from cnn_analysis.core import config
+from cnn_analysis.network import CNN
+from cnn_analysis.transfer_remedies import transform, RemedyCNN, band_features, METHODS
+from cnn_analysis.triplet import inputs
 
 
 class TransferRemedyTests(unittest.TestCase):

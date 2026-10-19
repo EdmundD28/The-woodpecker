@@ -2,8 +2,8 @@ import copy
 import unittest
 import numpy as np
 
-from luo_analysis.core import config
-from luo_analysis.quality import (EXCLUDED, FEATURE_NAMES, position_group, partition,
+from cnn_analysis.core import config
+from cnn_analysis.quality import (EXCLUDED, FEATURE_NAMES, position_group, partition,
                                   features, fit, calibrate, novelty_score, predict)
 from pc_collector.protocol import build_sample_id
 

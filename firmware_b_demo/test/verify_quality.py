@@ -12,8 +12,8 @@ import numpy as np
 def main():
     root=Path(__file__).resolve().parents[1]; repo=root.parent
     sys.path.insert(0,str(repo))
-    from luo_analysis.quality import features, predict
-    from luo_analysis.export_quality import venue_model
+    from cnn_analysis.quality import features, predict
+    from cnn_analysis.export_quality import venue_model
     parser=argparse.ArgumentParser()
     parser.add_argument('--compiler',type=Path,default=repo.parent/'tmp/model-cpp/ziglang/zig.exe')
     parser.add_argument('--run',type=Path,default=root/'test/fixtures/quality')

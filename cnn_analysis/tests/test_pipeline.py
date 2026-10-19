@@ -4,10 +4,10 @@ from pathlib import Path
 import tempfile
 import unittest
 import numpy as np
-from luo_analysis.core import config, preprocess, load, split, model_input, input_contract, validate_config
-from luo_analysis.network import CNN, windows, fit_centroid, centroid_predict
-from luo_analysis.__main__ import demo_data, predict, train, train_candidates
-from luo_analysis.export import export
+from cnn_analysis.core import config, preprocess, load, split, model_input, input_contract, validate_config
+from cnn_analysis.network import CNN, windows, fit_centroid, centroid_predict
+from cnn_analysis.__main__ import demo_data, predict, train, train_candidates
+from cnn_analysis.export import export
 
 
 class PipelineTests(unittest.TestCase):
@@ -285,7 +285,7 @@ class PipelineTests(unittest.TestCase):
                     self.assertEqual(budget['spectrum_hann_reference_bytes'],19200)
 
     def test_exported_model_rejects_mixed_profile(self):
-        from luo_analysis.__main__ import config_from_model
+        from cnn_analysis.__main__ import config_from_model
         with self.assertRaises(ValueError):
             config_from_model({'config':{**self.c,'sample_count':1024}})
 

@@ -1,10 +1,10 @@
 import copy
 import unittest
 import numpy as np
-from luo_analysis.core import config,validate_config
-from luo_analysis.spectrum_preparation import VERSION
-from luo_analysis.triplet import inputs,contract
-from luo_analysis.transfer_remedies import transform
+from cnn_analysis.core import config,validate_config
+from cnn_analysis.spectrum_preparation import VERSION
+from cnn_analysis.triplet import inputs,contract
+from cnn_analysis.transfer_remedies import transform
 
 
 class AdoptedPreparationTests(unittest.TestCase):
