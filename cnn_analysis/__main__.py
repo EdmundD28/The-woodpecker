@@ -237,7 +237,7 @@ def train_candidates(records,c,out,mode='both',demo=False):
 
 
 def main():
-    p=argparse.ArgumentParser(description='Luo 09/28-10/09 offline pipeline')
+    p=argparse.ArgumentParser(description='CNN training and signal analysis pipeline')
     p.add_argument('command',choices=['prepare','analyze','train','demo','predict'])
     p.add_argument('--config',default=str(ROOT/'config.json'))
     p.add_argument('--data',nargs='+',default=[str(ROOT/'data'/'real')])

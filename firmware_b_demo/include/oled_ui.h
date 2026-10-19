@@ -17,7 +17,7 @@ using woodpecker_art::Pose;
 constexpr int16_t W=128, H=64;
 constexpr int16_t TRUNK_W=12, HOLE_X=6, HOLE_R=3;
 constexpr int16_t HOLE_Y[3]={23,33,43};
-constexpr int16_t BIRD_X=10, BEAK_DY=10; // beak tip row inside the sprite
+constexpr int16_t BIRD_X=10, BEAK_DY=13; // beak tip row inside the sprite
 constexpr int16_t TEXT_X=46, TEXT_W=W-TEXT_X;
 constexpr uint16_t ON=1, OFF=0;
 

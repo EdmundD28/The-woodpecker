@@ -8,6 +8,7 @@ constexpr int SSD1306_WHITE=1,SSD1306_SWITCHCAPVCC=2;
 // preview renders, not here.
 struct Adafruit_SSD1306:TextSink {
     int beginCalls=0, frames=0;
+    std::string displayedText;
     std::deque<bool> beginResults;
     Adafruit_SSD1306(int,int,MockWire*,int,uint32_t=400000,uint32_t=100000) {}
     void clearDisplay() { text.clear(); }
@@ -29,7 +30,7 @@ struct Adafruit_SSD1306:TextSink {
     void fillRoundRect(int16_t,int16_t,int16_t,int16_t,int16_t,uint16_t) {}
     void drawTriangle(int16_t,int16_t,int16_t,int16_t,int16_t,int16_t,uint16_t) {}
     void fillTriangle(int16_t,int16_t,int16_t,int16_t,int16_t,int16_t,uint16_t) {}
-    void display() { ++frames; }
+    void display() { ++frames; displayedText+=text; }
     bool begin(int,int,bool,bool) {
         ++beginCalls;
         if(beginResults.empty()) return true;

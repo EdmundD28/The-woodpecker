@@ -22170,31 +22170,30 @@
   "status": "ADOPTED_HOST_VERIFIED_ESP32_BUILD_PASSED_HARDWARE_PENDING",
   "source_audit": [
     {
-      "path": "20261017_1832_WOOD01_P01_N050.jsonl",
+      "path": "D:\\AI\\myProject\\build-a-thon\\The-woodpecker\\pc_collector\\collected_data\\20261017_1832_WOOD01_P01_N050.jsonl",
       "sha256": "4beaec212ef62abaac42bf77de009b71e23e47b6e6f240d899989b2fa8a6b08c"
     },
     {
-      "path": "20261017_1844_WOOD01_P02_N050.jsonl",
+      "path": "D:\\AI\\myProject\\build-a-thon\\The-woodpecker\\pc_collector\\collected_data\\20261017_1844_WOOD01_P02_N050.jsonl",
       "sha256": "a4fc7492ddd998258bc80a52661ee9eeb3deedafd8fe34ada6052664e7b1d90c"
     },
     {
-      "path": "20261017_1855_WOOD01_P03_N050.jsonl",
+      "path": "D:\\AI\\myProject\\build-a-thon\\The-woodpecker\\pc_collector\\collected_data\\20261017_1855_WOOD01_P03_N050.jsonl",
       "sha256": "328d6bb35cc660044756b1f0946346ed3ec9df5b14e13dd91ec015de9a65e07e"
     },
     {
-      "path": "20261017_1915_WOOD02_P01_N050.jsonl",
+      "path": "D:\\AI\\myProject\\build-a-thon\\The-woodpecker\\pc_collector\\collected_data\\20261017_1915_WOOD02_P01_N050.jsonl",
       "sha256": "5ffd7658b82ad12692d09a4ecf368dabd0ef03621a9ec84a64fff9bfb6df8aec"
     },
     {
-      "path": "20261017_1922_WOOD02_P02_N050.jsonl",
+      "path": "D:\\AI\\myProject\\build-a-thon\\The-woodpecker\\pc_collector\\collected_data\\20261017_1922_WOOD02_P02_N050.jsonl",
       "sha256": "b7e59d8eb93c24c149aae4e42151d87aa13fa2816656b3ff4876707f09d9fb87"
     },
     {
-      "path": "20261017_1932_WOOD02_P03_N050.jsonl",
+      "path": "D:\\AI\\myProject\\build-a-thon\\The-woodpecker\\pc_collector\\collected_data\\20261017_1932_WOOD02_P03_N050.jsonl",
       "sha256": "b2da6debedaedc827af7a62c4de88194c48649c42c2c9445c966737ec325f3ea"
     }
   ],
   "adoption_basis": "User selected RMS normalization + log spectrum based on retrospective transfer study.",
-  "independent_new_acceptance": false,
-  "packaging_note": "Training audit paths reduced to file names; hashes, fitted preparation and weights are unchanged. Full raw acquisition and experiment directories are not shipped."
+  "independent_new_acceptance": false
 }

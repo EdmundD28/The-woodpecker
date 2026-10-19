@@ -33,10 +33,13 @@ void captureReference(size_t row,size_t point) {
     finishCapture();
 }
 int main() {
-    reset(); fakeTouchLevel=LOW; setup();
+    reset(); fakeTouchLevel=LOW; oled.displayedText.clear(); setup();
     assert(N==2400 && FS==8000 && PRE==256 && THRESHOLD==600);
     assert(oled.text.find("Preparing")!=std::string::npos && !readyShown);
     assert(oled.frames>30); // boot animation played before the first screen
+    assert(oled.displayedText.find(wood_classifier::mode)!=std::string::npos);
+    assert(oled.displayedText.find(WOOD_USE_SPECTRUM ? "TIME" : "SPECTRUM")==std::string::npos);
+    assert(Serial.text.find(std::string("#INIT,model=")+wood_classifier::mode+",version="+wood_classifier::version)!=std::string::npos);
     assert(oled.text.find("WOOD")==std::string::npos && oled.text.find("TIME")==std::string::npos);
     assert(OLED_SDA==21 && OLED_SCL==22 && OLED_ADDRESS==0x3C);
     assert(fakeInputPin==27 && fakeInputMode==INPUT_PULLDOWN);

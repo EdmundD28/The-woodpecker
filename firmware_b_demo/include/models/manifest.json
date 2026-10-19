@@ -1,5 +1,5 @@
 {
-  "source_run": "The-woodpecker-model/cnn_analysis/runs/20261017_three_point_wood_id",
+  "source_run": "The-woodpecker-model/cnn_analysis/runs/20261019_adopted_rms_log_v1",
   "sample_rate_hz": 8000,
   "sample_count": 2400,
   "classes": [
@@ -7,23 +7,20 @@
     "WOOD02"
   ],
   "default": "spectrum",
-  "selection_note": "User adopted the RMS-normalized log-spectrum CNN after retrospective transfer experiments. The deployed seed42 model is trained jointly on table and carpet. No independent new acceptance data or hardware flashing in this change.",
+  "selection_note": "User adopted per-hit RMS normalization plus log-compressed spectrum CNN after retrospective transfer study. Mixed-support seed42 deployment model trained with source-only fitted preparation. Development holdouts are not independent new acceptance data. Hardware has not been flashed by this adoption task.",
   "models": {
     "time": {
       "version": "REAL-TRIPLET-beecd884647a",
       "header_sha256": "b9589f699405ce89fe8d42d8391eb3fa746f7e3cedab6098a21889e82538a8ec",
-      "original_manifest_header_sha256": "bb6547010c6fcffa2e450a37041aebc0a07944b1dbf286268e7669bdf04f774d"
+      "source_run": "The-woodpecker-model/cnn_analysis/runs/20261017_three_point_wood_id"
     },
     "spectrum": {
       "version": "REAL-RMSLOG-fb6b2bf9d8ef",
       "source_run": "The-woodpecker-model/cnn_analysis/runs/20261019_adopted_rms_log_v1",
-      "header_sha256": "f68cdeb090ed74771587ddc060dc793067c11d0e665502efc46322c93d96cf9e",
-      "preprocessing_version": "WOOD_SPECTRUM_RMS_LOG_V1",
-      "model_json": "firmware_b_demo/include/models/spectrum_model.json",
-      "previous_version": "REAL-TRIPLET-f392163987d7"
+      "header_sha256": "262a780c7d2a246bb463aefa8856b3e26c5140c1e6e34a57495396d98c9f18d3",
+      "preprocessing_version": "WOOD_SPECTRUM_RMS_LOG_V1"
     }
   },
-  "packaging_note": "Header hashes cover shipped LF bytes. Python model and C++ weights share the same version and fitted preparation. Existing published recognition raw fixtures are reused, with spectrum inputs and scores regenerated for the adopted model.",
   "spectrum_preparation": {
     "rms_target": [
       0.1252489377812345,
