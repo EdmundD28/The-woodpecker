@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "recognition_recipes_and_seeds": 12,
+  "prediction_sets": 204,
+  "actual_bad_waveforms_in_recognition_train_or_validation": 0,
+  "critical_cases_in_quality_guard_fit": 0,
+  "runtime_quality_records_verified": 600,
+  "strict_runs": 0,
+  "firmware_changed": false
+}

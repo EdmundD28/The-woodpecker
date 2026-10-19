@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "reloaded_prediction_triplets": 408,
+  "training_only_linear_heads_refitted": 24,
+  "endpoint_exchange_invariance": true,
+  "gain_invariance": true,
+  "no_id_feature": true,
+  "quality_model_unchanged": true,
+  "held_scenes_excluded_from_each_scope_training_and_selection": true,
+  "real_abnormal_used_to_fit_or_select": 0
+}

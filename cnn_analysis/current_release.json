@@ -1,0 +1,37 @@
+{
+  "release_id": "20261019_guarded_broad_mild_point_vote_v1",
+  "release_directory": "releases/20261019_guarded_broad_mild_point_vote_v1",
+  "status": "USER_APPROVED_REMOTE_MODEL_DELIVERY",
+  "default_frequency": "frequency_seed123.json",
+  "frequency_models": {
+    "frequency_seed42.json": {
+      "seed": 42,
+      "validation_loss": 0.04631654545664787,
+      "sha256": "d3ed6819d2582319352bbd722218e41b3d799a566458bd5cac37c15f2c3c412a"
+    },
+    "frequency_seed123.json": {
+      "seed": 123,
+      "validation_loss": 0.02800029143691063,
+      "sha256": "330e2845022db83bc0bdb576aab0b2b87b721da6c88c167e2c833c8e1af98295"
+    },
+    "frequency_seed2026.json": {
+      "seed": 2026,
+      "validation_loss": 0.03678532689809799,
+      "sha256": "035450df8c158f2ec0976c3407881d016b1bbaf21fc5ace0e1c0523c5843a4e9"
+    }
+  },
+  "quality_file": "quality.json",
+  "quality_sha256": "8f998b68de7616dd0689356c6faa0b52f13a906721588885801b798f96ec3caa",
+  "default_selection": "lowest existing clean source-validation cross entropy among three optimized mild-response seeds; no retraining or real-abnormal tuning",
+  "adopted_frequency_recipe": "mild_response",
+  "rejected_recipes": [
+    "V2 quality revision",
+    "mild_plus_bands"
+  ],
+  "classification_acceptance": "90% minimum and95% target apply to quality-usable inputs; forced abnormal insertion is a comparative stress test, not a release veto",
+  "firmware_updated": false,
+  "hardware_flashed": false,
+  "strict_profile_enabled": false,
+  "quality_before_classification": true,
+  "limits": "retrospective two-specimen/three-condition evidence; novel real scenes and abnormal families not guaranteed; forced abnormal insertion scores are reported separately"
+}

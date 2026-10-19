@@ -1,0 +1,3 @@
+# Frozen model checksums require identical bytes on Windows and Unix checkouts.
+cnn_analysis/releases/**/*.json -text whitespace=cr-at-eol
+cnn_analysis/current_release.json -text whitespace=cr-at-eol

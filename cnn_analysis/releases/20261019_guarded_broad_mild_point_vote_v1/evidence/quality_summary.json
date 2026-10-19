@@ -1,0 +1,32 @@
+{
+  "normal": 589,
+  "bad_unique": 11,
+  "original_false_reject": 33,
+  "original_missed_bad": 0,
+  "guarded_crossfit_false_reject": 20,
+  "guarded_bad_missed_by_fold": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "critical_missed_by_fold": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "new_scene_original_false_reject": 32,
+  "new_scene_guarded_crossfit_false_reject": 20,
+  "final_profile_false_reject": 19,
+  "final_profile_missed_bad": 0,
+  "guard_fit_bad_count": 9,
+  "critical_not_in_guard_fit": 2,
+  "threshold_factors": {
+    "endpoint": 1.2453239849795228,
+    "middle": 1.1052468703910356
+  },
+  "strict_profile_runs": 0
+}

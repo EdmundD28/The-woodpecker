@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "quality_records_replayed": 600,
+  "known_abnormal_groups_rejected": 33,
+  "frequency_triplets_replayed": 336,
+  "max_probability_error": 4.76837158203125e-07,
+  "all_tested_predicted_classes_identical": true,
+  "quality_file_byte_identical_to_approved": true,
+  "optimized_mild_response_weights_unchanged": true,
+  "firmware_modified": false,
+  "strict_profile_run": false
+}

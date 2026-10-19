@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "tests_passed": 32,
+  "tested_from_staged_files_only": true,
+  "frequency_recipe": "mild_response",
+  "models_load_with_byte_checksums": true,
+  "firmware_or_hardware_updated": false
+}

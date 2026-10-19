@@ -1,0 +1,22 @@
+{
+  "abnormal_ids": [
+    "WOOD01-E02-R00-P01-H017",
+    "WOOD01-E02-R00-P02-H027",
+    "WOOD01-E02-R00-P02-H041",
+    "WOOD01-E02-R00-P02-H042",
+    "WOOD02-E01-R00-P01-H009",
+    "WOOD02-E01-R00-P01-H027",
+    "WOOD02-E01-R00-P01-H038",
+    "WOOD02-E01-R00-P02-H036",
+    "WOOD02-E01-R00-P02-H037",
+    "WOOD02-E02-R00-P01-H020",
+    "WOOD02-E02-R00-P02-H021"
+  ],
+  "released_suspect_ids": [
+    "WOOD01-E02-R00-P03-H013",
+    "WOOD02-E02-R00-P01-H001"
+  ],
+  "label_rule": "prior held-out 3-seed mean conditional wood accuracy <95% => task abnormal; >=95% => usable",
+  "scope": "operational model-derived labels, not independent physical ground truth",
+  "remaining_records": "assumed usable; not evidence of no unknown faults"
+}

@@ -1,5 +1,7 @@
 # 信号分析、神经网络训练与质量检查
 
+当前远端模型交付见[质量优化版与优化频域权重](releases/README.md)，默认清单为`current_release.json`，预测使用`python -m cnn_analysis.release_predict --records 新三点记录.jsonl`。采用质量优化版与轻微增强后的频域权重；90%保底、95%目标针对质量合格数据，异常混入仅作压力对照；频带融合不采用。本轮更新电脑端模型交付，固件B与开发板未更新。
+
 从仓库根目录运行命令。无需连接ESP32，采集工作仍由王的pc_collector负责。
 
 ## 安装与第一次运行

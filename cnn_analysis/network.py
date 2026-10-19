@@ -22,7 +22,7 @@ class CNN:
         self.head = 'flatten' if c.get('input_mode','time')=='spectrum' else 'global_average'
         rng = np.random.default_rng(c['seed'])
         self.p = {}
-        channels = 1
+        channels = c['channels']
         for i,(cout,k,s) in enumerate(self.layers):
             self.p[f'w{i}'] = (rng.normal(size=(k,channels,cout))*np.sqrt(2/(k*channels))).astype(np.float32)
             self.p[f'b{i}'] = np.zeros(cout,dtype=np.float32)

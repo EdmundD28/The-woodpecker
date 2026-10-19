@@ -1,0 +1,6116 @@
+[
+  {
+    "scope": "mixed",
+    "seed": 42,
+    "selected": "control",
+    "normal": {
+      "table": {
+        "random": {
+          "control": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.02058144472539425
+          },
+          "mild_response": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.03051099367439747
+          },
+          "mild_plus_bands": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.057935360819101334
+          },
+          "original_frozen": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.004831293597817421
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.01824350841343403
+          },
+          "mild_response": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.022863272577524185
+          },
+          "mild_plus_bands": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.048029836267232895
+          },
+          "original_frozen": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.0010680443374440074
+          }
+        }
+      },
+      "carpet": {
+        "random": {
+          "control": {
+            "count": 210,
+            "accuracy": 0.9714285714285714,
+            "balanced_accuracy": 0.9833333333333334,
+            "per_class_recall": [
+              1.0,
+              0.9666666666666667
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                6,
+                174
+              ]
+            ],
+            "cross_entropy": 0.13697658479213715
+          },
+          "mild_response": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.0843111127614975
+          },
+          "mild_plus_bands": {
+            "count": 210,
+            "accuracy": 0.9904761904761905,
+            "balanced_accuracy": 0.9666666666666667,
+            "per_class_recall": [
+              0.9333333333333333,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                28,
+                2
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.0937611535191536
+          },
+          "original_frozen": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.017432617023587227
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.09481830149888992
+          },
+          "mild_response": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.06765473634004593
+          },
+          "mild_plus_bands": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.07096493989229202
+          },
+          "original_frozen": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.007230571936815977
+          }
+        }
+      },
+      "new_pad": {
+        "random": {
+          "control": {
+            "count": 2000,
+            "accuracy": 0.941,
+            "balanced_accuracy": 0.9410000000000001,
+            "per_class_recall": [
+              1.0,
+              0.882
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                118,
+                882
+              ]
+            ],
+            "cross_entropy": 0.12732593715190887
+          },
+          "mild_response": {
+            "count": 2000,
+            "accuracy": 0.957,
+            "balanced_accuracy": 0.9570000000000001,
+            "per_class_recall": [
+              1.0,
+              0.914
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                86,
+                914
+              ]
+            ],
+            "cross_entropy": 0.09350407868623734
+          },
+          "mild_plus_bands": {
+            "count": 2000,
+            "accuracy": 0.957,
+            "balanced_accuracy": 0.9570000000000001,
+            "per_class_recall": [
+              1.0,
+              0.914
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                86,
+                914
+              ]
+            ],
+            "cross_entropy": 0.12115651369094849
+          },
+          "original_frozen": {
+            "count": 2000,
+            "accuracy": 0.9235,
+            "balanced_accuracy": 0.9235,
+            "per_class_recall": [
+              1.0,
+              0.847
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                153,
+                847
+              ]
+            ],
+            "cross_entropy": 0.19281400740146637
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 20,
+            "accuracy": 0.9,
+            "balanced_accuracy": 0.9,
+            "per_class_recall": [
+              1.0,
+              0.8
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                2,
+                8
+              ]
+            ],
+            "cross_entropy": 0.1620265394449234
+          },
+          "mild_response": {
+            "count": 20,
+            "accuracy": 0.95,
+            "balanced_accuracy": 0.95,
+            "per_class_recall": [
+              1.0,
+              0.9
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                1,
+                9
+              ]
+            ],
+            "cross_entropy": 0.11865923553705215
+          },
+          "mild_plus_bands": {
+            "count": 20,
+            "accuracy": 0.95,
+            "balanced_accuracy": 0.95,
+            "per_class_recall": [
+              1.0,
+              0.9
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                1,
+                9
+              ]
+            ],
+            "cross_entropy": 0.14959929883480072
+          },
+          "original_frozen": {
+            "count": 20,
+            "accuracy": 0.95,
+            "balanced_accuracy": 0.95,
+            "per_class_recall": [
+              1.0,
+              0.9
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                1,
+                9
+              ]
+            ],
+            "cross_entropy": 0.2645445466041565
+          }
+        }
+      }
+    },
+    "stress": {
+      "table": {
+        "control": {
+          "clean": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.02058144472539425
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.03051099367439747
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.057935360819101334
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                0.9537037037037037,
+                0.9444444444444444
+              ],
+              "mean": 0.9660493827160493,
+              "worst_position": 0.9444444444444444
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                0.9888888888888889
+              ],
+              "mean": 0.9962962962962963,
+              "worst_position": 0.9888888888888889
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                1.0,
+                0.9444444444444444,
+                0.9444444444444444
+              ],
+              "mean": 0.9629629629629629,
+              "worst_position": 0.9444444444444444
+            }
+          }
+        }
+      },
+      "carpet": {
+        "control": {
+          "clean": {
+            "count": 210,
+            "accuracy": 0.9714285714285714,
+            "balanced_accuracy": 0.9833333333333334,
+            "per_class_recall": [
+              1.0,
+              0.9666666666666667
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                6,
+                174
+              ]
+            ],
+            "cross_entropy": 0.13697658479213715
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.8166666666666667,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8833333333333333,
+              "worst_position": 0.8166666666666667
+            },
+            "tone": {
+              "positions": [
+                0.9833333333333334,
+                0.9833333333333334,
+                0.9833333333333334
+              ],
+              "mean": 0.9833333333333334,
+              "worst_position": 0.9833333333333334
+            },
+            "echo": {
+              "positions": [
+                0.9833333333333334,
+                1.0,
+                0.95
+              ],
+              "mean": 0.9777777777777779,
+              "worst_position": 0.95
+            },
+            "response": {
+              "positions": [
+                0.9833333333333334,
+                0.9833333333333334,
+                0.9833333333333334
+              ],
+              "mean": 0.9833333333333334,
+              "worst_position": 0.9833333333333334
+            },
+            "opposite_point": {
+              "positions": [
+                0.6666666666666666,
+                0.9166666666666667,
+                0.7833333333333333
+              ],
+              "mean": 0.7888888888888889,
+              "worst_position": 0.6666666666666666
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.0843111127614975
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.8333333333333333,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8888888888888888,
+              "worst_position": 0.8333333333333333
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                0.9666666666666667
+              ],
+              "mean": 0.9888888888888889,
+              "worst_position": 0.9666666666666667
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                0.9666666666666667
+              ],
+              "mean": 0.9888888888888889,
+              "worst_position": 0.9666666666666667
+            },
+            "opposite_point": {
+              "positions": [
+                0.75,
+                1.0,
+                0.75
+              ],
+              "mean": 0.8333333333333334,
+              "worst_position": 0.75
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 210,
+            "accuracy": 0.9904761904761905,
+            "balanced_accuracy": 0.9666666666666667,
+            "per_class_recall": [
+              0.9333333333333333,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                28,
+                2
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.0937611535191536
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.7666666666666666,
+                0.9,
+                0.8333333333333333
+              ],
+              "mean": 0.8333333333333334,
+              "worst_position": 0.7666666666666666
+            },
+            "tone": {
+              "positions": [
+                0.9666666666666667,
+                0.95,
+                0.9666666666666667
+              ],
+              "mean": 0.9611111111111111,
+              "worst_position": 0.95
+            },
+            "echo": {
+              "positions": [
+                0.9666666666666667,
+                0.9666666666666667,
+                0.9666666666666667
+              ],
+              "mean": 0.9666666666666667,
+              "worst_position": 0.9666666666666667
+            },
+            "response": {
+              "positions": [
+                0.9666666666666667,
+                0.95,
+                0.9666666666666667
+              ],
+              "mean": 0.9611111111111111,
+              "worst_position": 0.95
+            },
+            "opposite_point": {
+              "positions": [
+                0.6833333333333333,
+                0.9166666666666667,
+                0.7666666666666666
+              ],
+              "mean": 0.7888888888888889,
+              "worst_position": 0.6833333333333333
+            }
+          }
+        }
+      },
+      "new_pad": {
+        "control": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 0.941,
+            "balanced_accuracy": 0.9410000000000001,
+            "per_class_recall": [
+              1.0,
+              0.882
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                118,
+                882
+              ]
+            ],
+            "cross_entropy": 0.12732593715190887
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.975,
+                0.973,
+                0.984
+              ],
+              "mean": 0.9773333333333333,
+              "worst_position": 0.973
+            },
+            "tone": {
+              "positions": [
+                0.9239999999999999,
+                0.9225,
+                0.9410000000000001
+              ],
+              "mean": 0.9291666666666666,
+              "worst_position": 0.9225
+            },
+            "echo": {
+              "positions": [
+                0.975,
+                0.9570000000000001,
+                0.984
+              ],
+              "mean": 0.972,
+              "worst_position": 0.9570000000000001
+            },
+            "response": {
+              "positions": [
+                0.9590000000000001,
+                0.9570000000000001,
+                0.9555
+              ],
+              "mean": 0.9571666666666667,
+              "worst_position": 0.9555
+            },
+            "opposite_point": {
+              "positions": [
+                0.79,
+                0.7865,
+                0.8335
+              ],
+              "mean": 0.8033333333333333,
+              "worst_position": 0.7865
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 0.957,
+            "balanced_accuracy": 0.9570000000000001,
+            "per_class_recall": [
+              1.0,
+              0.914
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                86,
+                914
+              ]
+            ],
+            "cross_entropy": 0.09350407868623734
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.9405,
+                0.9299999999999999,
+                0.9924999999999999
+              ],
+              "mean": 0.9543333333333331,
+              "worst_position": 0.9299999999999999
+            },
+            "tone": {
+              "positions": [
+                0.973,
+                0.9225,
+                0.9570000000000001
+              ],
+              "mean": 0.9508333333333333,
+              "worst_position": 0.9225
+            },
+            "echo": {
+              "positions": [
+                0.9875,
+                0.9570000000000001,
+                0.9924999999999999
+              ],
+              "mean": 0.9790000000000001,
+              "worst_position": 0.9570000000000001
+            },
+            "response": {
+              "positions": [
+                0.973,
+                0.9570000000000001,
+                0.9685
+              ],
+              "mean": 0.9661666666666667,
+              "worst_position": 0.9570000000000001
+            },
+            "opposite_point": {
+              "positions": [
+                0.796,
+                0.745,
+                0.8935
+              ],
+              "mean": 0.8115,
+              "worst_position": 0.745
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 0.957,
+            "balanced_accuracy": 0.9570000000000001,
+            "per_class_recall": [
+              1.0,
+              0.914
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                86,
+                914
+              ]
+            ],
+            "cross_entropy": 0.12115651369094849
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.9875,
+                0.973,
+                0.9924999999999999
+              ],
+              "mean": 0.9843333333333334,
+              "worst_position": 0.973
+            },
+            "tone": {
+              "positions": [
+                0.973,
+                0.9225,
+                0.9685
+              ],
+              "mean": 0.9546666666666667,
+              "worst_position": 0.9225
+            },
+            "echo": {
+              "positions": [
+                0.9875,
+                0.9570000000000001,
+                0.9924999999999999
+              ],
+              "mean": 0.9790000000000001,
+              "worst_position": 0.9570000000000001
+            },
+            "response": {
+              "positions": [
+                0.973,
+                0.9570000000000001,
+                0.9685
+              ],
+              "mean": 0.9661666666666667,
+              "worst_position": 0.9570000000000001
+            },
+            "opposite_point": {
+              "positions": [
+                0.8215,
+                0.7865,
+                0.869
+              ],
+              "mean": 0.8256666666666668,
+              "worst_position": 0.7865
+            }
+          }
+        }
+      }
+    },
+    "real_abnormal": {
+      "WOOD01-E02-R00-P01-H017": {
+        "control": {
+          "count": 100,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.12285837531089783
+        },
+        "mild_response": {
+          "count": 100,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            0.9,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              90,
+              10
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.15533524751663208
+        },
+        "mild_plus_bands": {
+          "count": 100,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.1637062430381775
+        },
+        "original_frozen": {
+          "count": 100,
+          "accuracy": 0.7,
+          "balanced_accuracy": 0.7,
+          "per_class_recall": [
+            0.7,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              70,
+              30
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.7084608674049377
+        }
+      },
+      "WOOD01-E02-R00-P02-H027": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.10445939749479294
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            0.9,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              99,
+              11
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.14876586198806763
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.15465210378170013
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.7545454545454545,
+          "balanced_accuracy": 0.7545454545454545,
+          "per_class_recall": [
+            0.7545454545454545,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              83,
+              27
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.6088311672210693
+        }
+      },
+      "WOOD01-E02-R00-P02-H041": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.10811088234186172
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            0.9,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              99,
+              11
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.14876586198806763
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.15465210378170013
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            0.9,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              99,
+              11
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.196712926030159
+        }
+      },
+      "WOOD01-E02-R00-P02-H042": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.02543906681239605
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.04352964460849762
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.061546534299850464
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.9727272727272728,
+          "balanced_accuracy": 0.9727272727272728,
+          "per_class_recall": [
+            0.9727272727272728,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              107,
+              3
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.0860576406121254
+        }
+      },
+      "WOOD02-E01-R00-P01-H009": {
+        "control": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.004594485741108656
+        },
+        "mild_response": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.0034259462263435125
+        },
+        "mild_plus_bands": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.015805430710315704
+        },
+        "original_frozen": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 1.4781956281240127e-07
+        }
+      },
+      "WOOD02-E01-R00-P01-H027": {
+        "control": {
+          "count": 30,
+          "accuracy": 0.9666666666666667,
+          "balanced_accuracy": 0.9666666666666667,
+          "per_class_recall": [
+            null,
+            0.9666666666666667
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              29
+            ]
+          ],
+          "cross_entropy": 0.14351296424865723
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.07951955497264862
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.07815251499414444
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 7.87980025052093e-06
+        }
+      },
+      "WOOD02-E01-R00-P01-H038": {
+        "control": {
+          "count": 30,
+          "accuracy": 0.6666666666666666,
+          "balanced_accuracy": 0.6666666666666666,
+          "per_class_recall": [
+            null,
+            0.6666666666666666
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              10,
+              20
+            ]
+          ],
+          "cross_entropy": 0.5687443017959595
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 0.8333333333333334,
+          "balanced_accuracy": 0.8333333333333334,
+          "per_class_recall": [
+            null,
+            0.8333333333333334
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              5,
+              25
+            ]
+          ],
+          "cross_entropy": 0.3680155575275421
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 0.8333333333333334,
+          "balanced_accuracy": 0.8333333333333334,
+          "per_class_recall": [
+            null,
+            0.8333333333333334
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              5,
+              25
+            ]
+          ],
+          "cross_entropy": 0.3545560836791992
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 0.0,
+          "balanced_accuracy": 0.0,
+          "per_class_recall": [
+            null,
+            0.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              30,
+              0
+            ]
+          ],
+          "cross_entropy": 8.529967308044434
+        }
+      },
+      "WOOD02-E01-R00-P02-H036": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.3430592119693756
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.18335668742656708
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.16078819334506989
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.0017301553161814809
+        }
+      },
+      "WOOD02-E01-R00-P02-H037": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.17674694955348969
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.1344950944185257
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.14122143387794495
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.0005280440091155469
+        }
+      },
+      "WOOD02-E02-R00-P01-H020": {
+        "control": {
+          "count": 110,
+          "accuracy": 0.5727272727272728,
+          "balanced_accuracy": 0.5727272727272728,
+          "per_class_recall": [
+            null,
+            0.5727272727272728
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              47,
+              63
+            ]
+          ],
+          "cross_entropy": 0.9807960987091064
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 0.6363636363636364,
+          "balanced_accuracy": 0.6363636363636364,
+          "per_class_recall": [
+            null,
+            0.6363636363636364
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              40,
+              70
+            ]
+          ],
+          "cross_entropy": 0.7288195490837097
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 0.6363636363636364,
+          "balanced_accuracy": 0.6363636363636364,
+          "per_class_recall": [
+            null,
+            0.6363636363636364
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              40,
+              70
+            ]
+          ],
+          "cross_entropy": 0.6874780654907227
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.5,
+          "per_class_recall": [
+            null,
+            0.5
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              55,
+              55
+            ]
+          ],
+          "cross_entropy": 1.7854326963424683
+        }
+      },
+      "WOOD02-E02-R00-P02-H021": {
+        "control": {
+          "count": 110,
+          "accuracy": 0.9454545454545454,
+          "balanced_accuracy": 0.9454545454545454,
+          "per_class_recall": [
+            null,
+            0.9454545454545454
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              6,
+              104
+            ]
+          ],
+          "cross_entropy": 0.23518246412277222
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 0.9454545454545454,
+          "balanced_accuracy": 0.9454545454545454,
+          "per_class_recall": [
+            null,
+            0.9454545454545454
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              6,
+              104
+            ]
+          ],
+          "cross_entropy": 0.1796017587184906
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 0.9454545454545454,
+          "balanced_accuracy": 0.9454545454545454,
+          "per_class_recall": [
+            null,
+            0.9454545454545454
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              6,
+              104
+            ]
+          ],
+          "cross_entropy": 0.2625993490219116
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.7272727272727273,
+          "balanced_accuracy": 0.7272727272727273,
+          "per_class_recall": [
+            null,
+            0.7272727272727273
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              30,
+              80
+            ]
+          ],
+          "cross_entropy": 0.871130108833313
+        }
+      }
+    }
+  },
+  {
+    "scope": "mixed",
+    "seed": 123,
+    "selected": "control",
+    "normal": {
+      "table": {
+        "random": {
+          "control": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.026228424161672592
+          },
+          "mild_response": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.03055054321885109
+          },
+          "mild_plus_bands": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.06650333106517792
+          },
+          "original_frozen": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.001626698300242424
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.028884124010801315
+          },
+          "mild_response": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.03771784156560898
+          },
+          "mild_plus_bands": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.06906690448522568
+          },
+          "original_frozen": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.003251636866480112
+          }
+        }
+      },
+      "carpet": {
+        "random": {
+          "control": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.018258821219205856
+          },
+          "mild_response": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.02942548878490925
+          },
+          "mild_plus_bands": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.04509370028972626
+          },
+          "original_frozen": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.0013419610913842916
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.015771718695759773
+          },
+          "mild_response": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.029228562489151955
+          },
+          "mild_plus_bands": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.03893614187836647
+          },
+          "original_frozen": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.0014109892072156072
+          }
+        }
+      },
+      "new_pad": {
+        "random": {
+          "control": {
+            "count": 2000,
+            "accuracy": 0.991,
+            "balanced_accuracy": 0.991,
+            "per_class_recall": [
+              1.0,
+              0.982
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                18,
+                982
+              ]
+            ],
+            "cross_entropy": 0.05056077986955643
+          },
+          "mild_response": {
+            "count": 2000,
+            "accuracy": 0.991,
+            "balanced_accuracy": 0.991,
+            "per_class_recall": [
+              1.0,
+              0.982
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                18,
+                982
+              ]
+            ],
+            "cross_entropy": 0.06198985502123833
+          },
+          "mild_plus_bands": {
+            "count": 2000,
+            "accuracy": 0.991,
+            "balanced_accuracy": 0.991,
+            "per_class_recall": [
+              1.0,
+              0.982
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                18,
+                982
+              ]
+            ],
+            "cross_entropy": 0.08873989433050156
+          },
+          "original_frozen": {
+            "count": 2000,
+            "accuracy": 0.9685,
+            "balanced_accuracy": 0.9685,
+            "per_class_recall": [
+              1.0,
+              0.937
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                63,
+                937
+              ]
+            ],
+            "cross_entropy": 0.08530507236719131
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 20,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "cross_entropy": 0.04089706763625145
+          },
+          "mild_response": {
+            "count": 20,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "cross_entropy": 0.05232026427984238
+          },
+          "mild_plus_bands": {
+            "count": 20,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "cross_entropy": 0.07646822184324265
+          },
+          "original_frozen": {
+            "count": 20,
+            "accuracy": 0.95,
+            "balanced_accuracy": 0.95,
+            "per_class_recall": [
+              1.0,
+              0.9
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                1,
+                9
+              ]
+            ],
+            "cross_entropy": 0.08080019801855087
+          }
+        }
+      }
+    },
+    "stress": {
+      "table": {
+        "control": {
+          "clean": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.026228424161672592
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.03055054321885109
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.06650333106517792
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            }
+          }
+        }
+      },
+      "carpet": {
+        "control": {
+          "clean": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.018258821219205856
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.8333333333333333,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8888888888888888,
+              "worst_position": 0.8333333333333333
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                0.8333333333333333,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8888888888888888,
+              "worst_position": 0.8333333333333333
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.02942548878490925
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.8333333333333333,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8888888888888888,
+              "worst_position": 0.8333333333333333
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                0.8333333333333333,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8888888888888888,
+              "worst_position": 0.8333333333333333
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.04509370028972626
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.8333333333333333,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8888888888888888,
+              "worst_position": 0.8333333333333333
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "opposite_point": {
+              "positions": [
+                0.8333333333333333,
+                1.0,
+                0.8333333333333333
+              ],
+              "mean": 0.8888888888888888,
+              "worst_position": 0.8333333333333333
+            }
+          }
+        }
+      },
+      "new_pad": {
+        "control": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 0.991,
+            "balanced_accuracy": 0.991,
+            "per_class_recall": [
+              1.0,
+              0.982
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                18,
+                982
+              ]
+            ],
+            "cross_entropy": 0.05056077986955643
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                0.991,
+                1.0
+              ],
+              "mean": 0.997,
+              "worst_position": 0.991
+            },
+            "tone": {
+              "positions": [
+                0.9895,
+                0.991,
+                0.991
+              ],
+              "mean": 0.9905,
+              "worst_position": 0.9895
+            },
+            "echo": {
+              "positions": [
+                0.9944999999999999,
+                0.991,
+                1.0
+              ],
+              "mean": 0.9951666666666666,
+              "worst_position": 0.991
+            },
+            "response": {
+              "positions": [
+                0.986,
+                0.991,
+                0.991
+              ],
+              "mean": 0.9893333333333333,
+              "worst_position": 0.986
+            },
+            "opposite_point": {
+              "positions": [
+                0.9490000000000001,
+                0.873,
+                0.915
+              ],
+              "mean": 0.9123333333333333,
+              "worst_position": 0.873
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 0.991,
+            "balanced_accuracy": 0.991,
+            "per_class_recall": [
+              1.0,
+              0.982
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                18,
+                982
+              ]
+            ],
+            "cross_entropy": 0.06198985502123833
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                0.991,
+                1.0
+              ],
+              "mean": 0.997,
+              "worst_position": 0.991
+            },
+            "tone": {
+              "positions": [
+                0.9844999999999999,
+                0.991,
+                0.991
+              ],
+              "mean": 0.9888333333333333,
+              "worst_position": 0.9844999999999999
+            },
+            "echo": {
+              "positions": [
+                0.9944999999999999,
+                0.991,
+                1.0
+              ],
+              "mean": 0.9951666666666666,
+              "worst_position": 0.991
+            },
+            "response": {
+              "positions": [
+                0.986,
+                0.991,
+                0.991
+              ],
+              "mean": 0.9893333333333333,
+              "worst_position": 0.986
+            },
+            "opposite_point": {
+              "positions": [
+                0.9490000000000001,
+                0.873,
+                0.915
+              ],
+              "mean": 0.9123333333333333,
+              "worst_position": 0.873
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 0.991,
+            "balanced_accuracy": 0.991,
+            "per_class_recall": [
+              1.0,
+              0.982
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                18,
+                982
+              ]
+            ],
+            "cross_entropy": 0.08873989433050156
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                0.991,
+                1.0
+              ],
+              "mean": 0.997,
+              "worst_position": 0.991
+            },
+            "tone": {
+              "positions": [
+                0.9844999999999999,
+                0.991,
+                0.991
+              ],
+              "mean": 0.9888333333333333,
+              "worst_position": 0.9844999999999999
+            },
+            "echo": {
+              "positions": [
+                0.9944999999999999,
+                0.991,
+                1.0
+              ],
+              "mean": 0.9951666666666666,
+              "worst_position": 0.991
+            },
+            "response": {
+              "positions": [
+                0.986,
+                0.991,
+                0.991
+              ],
+              "mean": 0.9893333333333333,
+              "worst_position": 0.986
+            },
+            "opposite_point": {
+              "positions": [
+                0.9490000000000001,
+                0.873,
+                0.915
+              ],
+              "mean": 0.9123333333333333,
+              "worst_position": 0.873
+            }
+          }
+        }
+      }
+    },
+    "real_abnormal": {
+      "WOOD01-E02-R00-P01-H017": {
+        "control": {
+          "count": 100,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.05901012569665909
+        },
+        "mild_response": {
+          "count": 100,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.056212201714515686
+        },
+        "mild_plus_bands": {
+          "count": 100,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.0799521654844284
+        },
+        "original_frozen": {
+          "count": 100,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            0.9,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              90,
+              10
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.2905883491039276
+        }
+      },
+      "WOOD01-E02-R00-P02-H027": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.017466725781559944
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.0208762064576149
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.048617422580718994
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            0.9,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              99,
+              11
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.2346324473619461
+        }
+      },
+      "WOOD01-E02-R00-P02-H041": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.017466725781559944
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.0208762064576149
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.05582927539944649
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.9818181818181818,
+          "balanced_accuracy": 0.9818181818181818,
+          "per_class_recall": [
+            0.9818181818181818,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              108,
+              2
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.048172641545534134
+        }
+      },
+      "WOOD01-E02-R00-P02-H042": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.013196397572755814
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.015839708968997
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.04148029908537865
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.01706845872104168
+        }
+      },
+      "WOOD02-E01-R00-P01-H009": {
+        "control": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.014805530197918415
+        },
+        "mild_response": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.015301687642931938
+        },
+        "mild_plus_bands": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.03153835982084274
+        },
+        "original_frozen": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 7.867822091611743e-07
+        }
+      },
+      "WOOD02-E01-R00-P01-H027": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.004222221672534943
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.004507491365075111
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.01718745566904545
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 2.0047066300321603e-06
+        }
+      },
+      "WOOD02-E01-R00-P01-H038": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.09394355118274689
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.10364937782287598
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.0908089205622673
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 0.0,
+          "balanced_accuracy": 0.0,
+          "per_class_recall": [
+            null,
+            0.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              30,
+              0
+            ]
+          ],
+          "cross_entropy": 6.680089473724365
+        }
+      },
+      "WOOD02-E01-R00-P02-H036": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.09604188054800034
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.10971713066101074
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.09923570603132248
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.00020865240367129445
+        }
+      },
+      "WOOD02-E01-R00-P02-H037": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.04052021726965904
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.058716967701911926
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.09575441479682922
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 5.965902528259903e-05
+        }
+      },
+      "WOOD02-E02-R00-P01-H020": {
+        "control": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            null,
+            0.9
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              11,
+              99
+            ]
+          ],
+          "cross_entropy": 0.2600756287574768
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            null,
+            0.9
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              11,
+              99
+            ]
+          ],
+          "cross_entropy": 0.2925374209880829
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            null,
+            0.9
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              11,
+              99
+            ]
+          ],
+          "cross_entropy": 0.26149827241897583
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.42727272727272725,
+          "balanced_accuracy": 0.42727272727272725,
+          "per_class_recall": [
+            null,
+            0.42727272727272725
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              63,
+              47
+            ]
+          ],
+          "cross_entropy": 1.1939103603363037
+        }
+      },
+      "WOOD02-E02-R00-P02-H021": {
+        "control": {
+          "count": 110,
+          "accuracy": 0.9818181818181818,
+          "balanced_accuracy": 0.9818181818181818,
+          "per_class_recall": [
+            null,
+            0.9818181818181818
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              108
+            ]
+          ],
+          "cross_entropy": 0.180932879447937
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 0.9818181818181818,
+          "balanced_accuracy": 0.9818181818181818,
+          "per_class_recall": [
+            null,
+            0.9818181818181818
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              108
+            ]
+          ],
+          "cross_entropy": 0.22662299871444702
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 0.9818181818181818,
+          "balanced_accuracy": 0.9818181818181818,
+          "per_class_recall": [
+            null,
+            0.9818181818181818
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              108
+            ]
+          ],
+          "cross_entropy": 0.27205729484558105
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.7727272727272727,
+          "balanced_accuracy": 0.7727272727272727,
+          "per_class_recall": [
+            null,
+            0.7727272727272727
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              25,
+              85
+            ]
+          ],
+          "cross_entropy": 0.46709394454956055
+        }
+      }
+    }
+  },
+  {
+    "scope": "mixed",
+    "seed": 2026,
+    "selected": "control",
+    "normal": {
+      "table": {
+        "random": {
+          "control": {
+            "count": 420,
+            "accuracy": 0.9714285714285714,
+            "balanced_accuracy": 0.9777777777777779,
+            "per_class_recall": [
+              0.9555555555555556,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                258,
+                12
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.06328698247671127
+          },
+          "mild_response": {
+            "count": 420,
+            "accuracy": 0.9714285714285714,
+            "balanced_accuracy": 0.9777777777777779,
+            "per_class_recall": [
+              0.9555555555555556,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                258,
+                12
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.06807839870452881
+          },
+          "mild_plus_bands": {
+            "count": 420,
+            "accuracy": 0.9571428571428572,
+            "balanced_accuracy": 0.9666666666666667,
+            "per_class_recall": [
+              0.9333333333333333,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                252,
+                18
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.08259904384613037
+          },
+          "original_frozen": {
+            "count": 420,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                270,
+                0
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.004047932103276253
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.03287741169333458
+          },
+          "mild_response": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.03508630022406578
+          },
+          "mild_plus_bands": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.05048400163650513
+          },
+          "original_frozen": {
+            "count": 10,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                5,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.0004858055617660284
+          }
+        }
+      },
+      "carpet": {
+        "random": {
+          "control": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.025022974237799644
+          },
+          "mild_response": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.025085395202040672
+          },
+          "mild_plus_bands": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.04418238624930382
+          },
+          "original_frozen": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.007581788115203381
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.03403874486684799
+          },
+          "mild_response": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.027952535077929497
+          },
+          "mild_plus_bands": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.045146796852350235
+          },
+          "original_frozen": {
+            "count": 6,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "cross_entropy": 0.011260668747127056
+          }
+        }
+      },
+      "new_pad": {
+        "random": {
+          "control": {
+            "count": 2000,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                0,
+                1000
+              ]
+            ],
+            "cross_entropy": 0.06570979207754135
+          },
+          "mild_response": {
+            "count": 2000,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                0,
+                1000
+              ]
+            ],
+            "cross_entropy": 0.06499215960502625
+          },
+          "mild_plus_bands": {
+            "count": 2000,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                0,
+                1000
+              ]
+            ],
+            "cross_entropy": 0.10125252604484558
+          },
+          "original_frozen": {
+            "count": 2000,
+            "accuracy": 0.9665,
+            "balanced_accuracy": 0.9664999999999999,
+            "per_class_recall": [
+              0.988,
+              0.945
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                988,
+                12
+              ],
+              [
+                55,
+                945
+              ]
+            ],
+            "cross_entropy": 0.0801481381058693
+          }
+        },
+        "disjoint": {
+          "control": {
+            "count": 20,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "cross_entropy": 0.0790918692946434
+          },
+          "mild_response": {
+            "count": 20,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "cross_entropy": 0.07583226263523102
+          },
+          "mild_plus_bands": {
+            "count": 20,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                10,
+                0
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "cross_entropy": 0.11390034854412079
+          },
+          "original_frozen": {
+            "count": 20,
+            "accuracy": 0.95,
+            "balanced_accuracy": 0.95,
+            "per_class_recall": [
+              0.9,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                9,
+                1
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "cross_entropy": 0.075472891330719
+          }
+        }
+      }
+    },
+    "stress": {
+      "table": {
+        "control": {
+          "clean": {
+            "count": 420,
+            "accuracy": 0.9714285714285714,
+            "balanced_accuracy": 0.9777777777777779,
+            "per_class_recall": [
+              0.9555555555555556,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                258,
+                12
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.06328698247671127
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.9,
+                0.8944444444444444,
+                0.8888888888888888
+              ],
+              "mean": 0.8944444444444444,
+              "worst_position": 0.8888888888888888
+            },
+            "tone": {
+              "positions": [
+                0.9777777777777779,
+                0.9777777777777779,
+                1.0
+              ],
+              "mean": 0.9851851851851853,
+              "worst_position": 0.9777777777777779
+            },
+            "echo": {
+              "positions": [
+                0.9666666666666667,
+                0.9777777777777779,
+                0.9777777777777779
+              ],
+              "mean": 0.9740740740740742,
+              "worst_position": 0.9666666666666667
+            },
+            "response": {
+              "positions": [
+                0.9555555555555555,
+                0.9777777777777779,
+                0.9777777777777779
+              ],
+              "mean": 0.9703703703703704,
+              "worst_position": 0.9555555555555555
+            },
+            "opposite_point": {
+              "positions": [
+                0.9,
+                0.8111111111111111,
+                0.8888888888888888
+              ],
+              "mean": 0.8666666666666667,
+              "worst_position": 0.8111111111111111
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 420,
+            "accuracy": 0.9714285714285714,
+            "balanced_accuracy": 0.9777777777777779,
+            "per_class_recall": [
+              0.9555555555555556,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                258,
+                12
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.06807839870452881
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.9,
+                0.95,
+                0.8888888888888888
+              ],
+              "mean": 0.912962962962963,
+              "worst_position": 0.8888888888888888
+            },
+            "tone": {
+              "positions": [
+                0.9777777777777779,
+                0.9777777777777779,
+                1.0
+              ],
+              "mean": 0.9851851851851853,
+              "worst_position": 0.9777777777777779
+            },
+            "echo": {
+              "positions": [
+                0.9666666666666667,
+                0.9777777777777779,
+                0.9777777777777779
+              ],
+              "mean": 0.9740740740740742,
+              "worst_position": 0.9666666666666667
+            },
+            "response": {
+              "positions": [
+                0.9555555555555555,
+                0.9777777777777779,
+                0.9777777777777779
+              ],
+              "mean": 0.9703703703703704,
+              "worst_position": 0.9555555555555555
+            },
+            "opposite_point": {
+              "positions": [
+                0.9,
+                0.8111111111111111,
+                0.8888888888888888
+              ],
+              "mean": 0.8666666666666667,
+              "worst_position": 0.8111111111111111
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 420,
+            "accuracy": 0.9571428571428572,
+            "balanced_accuracy": 0.9666666666666667,
+            "per_class_recall": [
+              0.9333333333333333,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                252,
+                18
+              ],
+              [
+                0,
+                150
+              ]
+            ],
+            "cross_entropy": 0.08259904384613037
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.9,
+                0.9333333333333333,
+                0.8333333333333333
+              ],
+              "mean": 0.888888888888889,
+              "worst_position": 0.8333333333333333
+            },
+            "tone": {
+              "positions": [
+                0.9666666666666667,
+                0.9666666666666667,
+                1.0
+              ],
+              "mean": 0.9777777777777779,
+              "worst_position": 0.9666666666666667
+            },
+            "echo": {
+              "positions": [
+                0.9666666666666667,
+                0.9666666666666667,
+                0.9666666666666667
+              ],
+              "mean": 0.9666666666666667,
+              "worst_position": 0.9666666666666667
+            },
+            "response": {
+              "positions": [
+                0.9555555555555555,
+                0.9666666666666667,
+                0.9666666666666667
+              ],
+              "mean": 0.9629629629629629,
+              "worst_position": 0.9555555555555555
+            },
+            "opposite_point": {
+              "positions": [
+                0.9,
+                0.7666666666666666,
+                0.8333333333333333
+              ],
+              "mean": 0.8333333333333334,
+              "worst_position": 0.7666666666666666
+            }
+          }
+        }
+      },
+      "carpet": {
+        "control": {
+          "clean": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.025022974237799644
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                0.9833333333333334
+              ],
+              "mean": 0.9944444444444445,
+              "worst_position": 0.9833333333333334
+            },
+            "opposite_point": {
+              "positions": [
+                0.9166666666666667,
+                1.0,
+                0.9166666666666667
+              ],
+              "mean": 0.9444444444444445,
+              "worst_position": 0.9166666666666667
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.025085395202040672
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                0.9833333333333334
+              ],
+              "mean": 0.9944444444444445,
+              "worst_position": 0.9833333333333334
+            },
+            "opposite_point": {
+              "positions": [
+                0.9166666666666667,
+                1.0,
+                0.9166666666666667
+              ],
+              "mean": 0.9444444444444445,
+              "worst_position": 0.9166666666666667
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 210,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                30,
+                0
+              ],
+              [
+                0,
+                180
+              ]
+            ],
+            "cross_entropy": 0.04418238624930382
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "response": {
+              "positions": [
+                1.0,
+                1.0,
+                0.9833333333333334
+              ],
+              "mean": 0.9944444444444445,
+              "worst_position": 0.9833333333333334
+            },
+            "opposite_point": {
+              "positions": [
+                0.9166666666666667,
+                1.0,
+                0.9166666666666667
+              ],
+              "mean": 0.9444444444444445,
+              "worst_position": 0.9166666666666667
+            }
+          }
+        }
+      },
+      "new_pad": {
+        "control": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                0,
+                1000
+              ]
+            ],
+            "cross_entropy": 0.06570979207754135
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.904,
+                0.9415,
+                1.0
+              ],
+              "mean": 0.9485,
+              "worst_position": 0.904
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                0.9904999999999999,
+                1.0,
+                1.0
+              ],
+              "mean": 0.9968333333333333,
+              "worst_position": 0.9904999999999999
+            },
+            "response": {
+              "positions": [
+                0.977,
+                1.0,
+                1.0
+              ],
+              "mean": 0.9923333333333333,
+              "worst_position": 0.977
+            },
+            "opposite_point": {
+              "positions": [
+                0.8560000000000001,
+                0.8560000000000001,
+                1.0
+              ],
+              "mean": 0.904,
+              "worst_position": 0.8560000000000001
+            }
+          }
+        },
+        "mild_response": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                0,
+                1000
+              ]
+            ],
+            "cross_entropy": 0.06499215960502625
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.904,
+                0.98,
+                1.0
+              ],
+              "mean": 0.9613333333333333,
+              "worst_position": 0.904
+            },
+            "tone": {
+              "positions": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "mean": 1.0,
+              "worst_position": 1.0
+            },
+            "echo": {
+              "positions": [
+                0.982,
+                1.0,
+                1.0
+              ],
+              "mean": 0.9940000000000001,
+              "worst_position": 0.982
+            },
+            "response": {
+              "positions": [
+                0.986,
+                0.996,
+                1.0
+              ],
+              "mean": 0.9940000000000001,
+              "worst_position": 0.986
+            },
+            "opposite_point": {
+              "positions": [
+                0.8560000000000001,
+                0.8560000000000001,
+                1.0
+              ],
+              "mean": 0.904,
+              "worst_position": 0.8560000000000001
+            }
+          }
+        },
+        "mild_plus_bands": {
+          "clean": {
+            "count": 2000,
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "per_class_recall": [
+              1.0,
+              1.0
+            ],
+            "confusion_matrix_rows_actual_columns_predicted": [
+              [
+                1000,
+                0
+              ],
+              [
+                0,
+                1000
+              ]
+            ],
+            "cross_entropy": 0.10125252604484558
+          },
+          "stress": {
+            "noise": {
+              "positions": [
+                0.904,
+                0.99,
+                1.0
+              ],
+              "mean": 0.9646666666666667,
+              "worst_position": 0.904
+            },
+            "tone": {
+              "positions": [
+                0.9775,
+                1.0,
+                1.0
+              ],
+              "mean": 0.9925,
+              "worst_position": 0.9775
+            },
+            "echo": {
+              "positions": [
+                0.9915,
+                1.0,
+                1.0
+              ],
+              "mean": 0.9971666666666668,
+              "worst_position": 0.9915
+            },
+            "response": {
+              "positions": [
+                0.986,
+                0.996,
+                1.0
+              ],
+              "mean": 0.9940000000000001,
+              "worst_position": 0.986
+            },
+            "opposite_point": {
+              "positions": [
+                0.8560000000000001,
+                0.8560000000000001,
+                1.0
+              ],
+              "mean": 0.904,
+              "worst_position": 0.8560000000000001
+            }
+          }
+        }
+      }
+    },
+    "real_abnormal": {
+      "WOOD01-E02-R00-P01-H017": {
+        "control": {
+          "count": 100,
+          "accuracy": 0.8,
+          "balanced_accuracy": 0.8,
+          "per_class_recall": [
+            0.8,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              80,
+              20
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.627112627029419
+        },
+        "mild_response": {
+          "count": 100,
+          "accuracy": 0.8,
+          "balanced_accuracy": 0.8,
+          "per_class_recall": [
+            0.8,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              80,
+              20
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.5508835911750793
+        },
+        "mild_plus_bands": {
+          "count": 100,
+          "accuracy": 0.8,
+          "balanced_accuracy": 0.8,
+          "per_class_recall": [
+            0.8,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              80,
+              20
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.4305567145347595
+        },
+        "original_frozen": {
+          "count": 100,
+          "accuracy": 0.62,
+          "balanced_accuracy": 0.62,
+          "per_class_recall": [
+            0.62,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              62,
+              38
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 1.3219213485717773
+        }
+      },
+      "WOOD01-E02-R00-P02-H027": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.1926850825548172
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.12591715157032013
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.1497139036655426
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.4818181818181818,
+          "balanced_accuracy": 0.4818181818181818,
+          "per_class_recall": [
+            0.4818181818181818,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              53,
+              57
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 1.55693781375885
+        }
+      },
+      "WOOD01-E02-R00-P02-H041": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.25792384147644043
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.18997585773468018
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.22569024562835693
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.7636363636363637,
+          "balanced_accuracy": 0.7636363636363637,
+          "per_class_recall": [
+            0.7636363636363637,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              84,
+              26
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.7198787331581116
+        }
+      },
+      "WOOD01-E02-R00-P02-H042": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.08912937343120575
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.07262954860925674
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            1.0,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              110,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.09727701544761658
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.8454545454545455,
+          "balanced_accuracy": 0.8454545454545455,
+          "per_class_recall": [
+            0.8454545454545455,
+            null
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              93,
+              17
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "cross_entropy": 0.42587363719940186
+        }
+      },
+      "WOOD02-E01-R00-P01-H009": {
+        "control": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.011206193827092648
+        },
+        "mild_response": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.013411981984972954
+        },
+        "mild_plus_bands": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 0.030718112364411354
+        },
+        "original_frozen": {
+          "count": 25,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              25
+            ]
+          ],
+          "cross_entropy": 1.9788748772953113e-07
+        }
+      },
+      "WOOD02-E01-R00-P01-H027": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.02388163097202778
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.02271685190498829
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.03507840633392334
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 2.298759682162199e-06
+        }
+      },
+      "WOOD02-E01-R00-P01-H038": {
+        "control": {
+          "count": 30,
+          "accuracy": 0.8333333333333334,
+          "balanced_accuracy": 0.8333333333333334,
+          "per_class_recall": [
+            null,
+            0.8333333333333334
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              5,
+              25
+            ]
+          ],
+          "cross_entropy": 0.40861737728118896
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 0.8333333333333334,
+          "balanced_accuracy": 0.8333333333333334,
+          "per_class_recall": [
+            null,
+            0.8333333333333334
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              5,
+              25
+            ]
+          ],
+          "cross_entropy": 0.4528466463088989
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 0.8333333333333334,
+          "balanced_accuracy": 0.8333333333333334,
+          "per_class_recall": [
+            null,
+            0.8333333333333334
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              5,
+              25
+            ]
+          ],
+          "cross_entropy": 0.37825527787208557
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 0.0,
+          "balanced_accuracy": 0.0,
+          "per_class_recall": [
+            null,
+            0.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              30,
+              0
+            ]
+          ],
+          "cross_entropy": 7.0577521324157715
+        }
+      },
+      "WOOD02-E01-R00-P02-H036": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.08658147603273392
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.052230071276426315
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.06461090594530106
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.0008970495546236634
+        }
+      },
+      "WOOD02-E01-R00-P02-H037": {
+        "control": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.08658147603273392
+        },
+        "mild_response": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.052230071276426315
+        },
+        "mild_plus_bands": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.06461090594530106
+        },
+        "original_frozen": {
+          "count": 30,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              30
+            ]
+          ],
+          "cross_entropy": 0.00028162001399323344
+        }
+      },
+      "WOOD02-E02-R00-P01-H020": {
+        "control": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            null,
+            0.9
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              11,
+              99
+            ]
+          ],
+          "cross_entropy": 0.19219903647899628
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            null,
+            0.9
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              11,
+              99
+            ]
+          ],
+          "cross_entropy": 0.20350873470306396
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9,
+          "per_class_recall": [
+            null,
+            0.9
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              11,
+              99
+            ]
+          ],
+          "cross_entropy": 0.251535028219223
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.6181818181818182,
+          "balanced_accuracy": 0.6181818181818182,
+          "per_class_recall": [
+            null,
+            0.6181818181818182
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              42,
+              68
+            ]
+          ],
+          "cross_entropy": 1.1772639751434326
+        }
+      },
+      "WOOD02-E02-R00-P02-H021": {
+        "control": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              110
+            ]
+          ],
+          "cross_entropy": 0.1197742223739624
+        },
+        "mild_response": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              110
+            ]
+          ],
+          "cross_entropy": 0.1134485974907875
+        },
+        "mild_plus_bands": {
+          "count": 110,
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "per_class_recall": [
+            null,
+            1.0
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              110
+            ]
+          ],
+          "cross_entropy": 0.17958521842956543
+        },
+        "original_frozen": {
+          "count": 110,
+          "accuracy": 0.8272727272727273,
+          "balanced_accuracy": 0.8272727272727273,
+          "per_class_recall": [
+            null,
+            0.8272727272727273
+          ],
+          "confusion_matrix_rows_actual_columns_predicted": [
+            [
+              0,
+              0
+            ],
+            [
+              19,
+              91
+            ]
+          ],
+          "cross_entropy": 0.3979797959327698
+        }
+      }
+    }
+  }
+]

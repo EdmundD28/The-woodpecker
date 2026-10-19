@@ -1,0 +1,11 @@
+{
+  "authorized_by_user": true,
+  "accepted_recipe": "mild_response",
+  "usable_input_accuracy_floor": 0.9,
+  "usable_input_accuracy_target": 0.95,
+  "forced_abnormal_accuracy_is_release_veto": false,
+  "old_pressure_90_veto_was_assistant_misinterpretation": true,
+  "normal_new_scene_three_seed_mean": 0.9826666666666668,
+  "normal_new_scene_worst_seed": 0.9570000000000001,
+  "no_real_abnormal_used_to_fit_or_select_weights": true
+}

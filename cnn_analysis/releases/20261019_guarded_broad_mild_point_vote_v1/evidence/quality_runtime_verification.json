@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "records_recomputed": 600,
+  "reference_scaling_and_features_unchanged": true,
+  "critical_detected": {
+    "WOOD02-E01-R00-P01-H038": true,
+    "WOOD02-E02-R00-P01-H020": true
+  },
+  "critical_excluded_from_guard_fit": true,
+  "uses_sample_id_to_decide": false,
+  "strict_profile_runs": 0
+}
