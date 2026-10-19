@@ -96,12 +96,12 @@ template<class D,class Wait> void boot(D& g,Wait wait,const char* mode) {
 }
 
 // ---- Result pieces: verdict badge and healing holes ---------------------
-// Specimen 1: filled badge. Specimen 2: outline badge; no defect claim.
+// SOLID: filled badge, black letters. HOLLOW: outline only, white letters.
 template<class D> void badge(D& g,bool solid,int16_t dy) {
     if(solid) g.fillRoundRect(TEXT_X-6,1+dy,TEXT_W+5,22,5,ON);
     else { g.fillRoundRect(TEXT_X-6,1+dy,TEXT_W+5,22,5,OFF); g.drawRoundRect(TEXT_X-6,1+dy,TEXT_W+5,22,5,ON); }
     g.setFont(&SourceSerif4_Bold9pt7b); g.setTextColor(solid?OFF:ON);
-    centred(g,solid?"WOOD 1":"WOOD 2",18+dy,TEXT_X-6,TEXT_W+5);
+    centred(g,solid?"SOLID":"HOLLOW",18+dy,TEXT_X-6,TEXT_W+5);
     g.setFont(nullptr); g.setTextColor(ON);
 }
 template<class D> void pill(D& g,bool solid,const char* t,int16_t y) {
@@ -111,8 +111,8 @@ template<class D> void pill(D& g,bool solid,const char* t,int16_t y) {
 }
 template<class D> void verdictText(D& g,bool solid,int16_t dy) {
     badge(g,solid,dy);
-    if(solid) centred(g,"first wood",34+dy);
-    else { centred(g,"second wood",29+dy); centred(g,"identified",39+dy); }
+    if(solid) centred(g,"good wood!",34+dy);
+    else { centred(g,"hidden flaw",29+dy); centred(g,"check it!",39+dy); }
 }
 // holeR[i]: radius of each filled hole (3 = full, 0 = healed to a dot).
 template<class D> void trunkHeal(D& g,const uint8_t* holeR,int8_t target) {
@@ -138,8 +138,8 @@ template<class D> void resultIdle(D& g,bool solid,uint8_t phase) {
     if(solid && phase==1) s.birdY-=2;
     draw(g,s);
     badge(g,solid,0);
-    if(solid) centred(g,"first wood",34);
-    else { centred(g,"second wood",29); centred(g,"identified",39); }
+    if(solid) centred(g,"good wood!",34);
+    else { centred(g,"hidden flaw",29); centred(g,"check it!",39); }
     if(hint) {
         centred(g,"hold for next",52);
         if(phase==3) { g.drawFastHLine(TEXT_X+4,61,TEXT_W-8,ON); }   // underline pulse
@@ -159,12 +159,12 @@ template<class D> void resultIntro(D& g,bool solid,uint8_t step) {
     if(!solid && step<4) s.birdDx=step%2?1:-1;
     draw(g,s); badge(g,solid,0);
     if(solid) {
-        centred(g,"first wood",34);
+        centred(g,"good wood!",34);
         const int16_t sx[]={TEXT_X+12,TEXT_X+70,TEXT_X+24,TEXT_X+58}, sy[]={44,42,56,54};
         for(uint8_t i=0;i<4;++i) sparkle(g,sx[i],sy[i],((i+step)%2)?2:1);
         sparkle(g,BIRD_X+32,s.birdY+2,step%2?2:1);
     } else {
-        centred(g,"second wood",29); centred(g,"identified",39);
+        centred(g,"hidden flaw",29); centred(g,"check it!",39);
         warningSign(g,TEXT_X+TEXT_W/2,56,step%2==0);
         sweat(g,BIRD_X+31+s.birdDx,s.birdY+5);
     }

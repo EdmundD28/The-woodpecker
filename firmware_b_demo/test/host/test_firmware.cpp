@@ -74,7 +74,7 @@ int main() {
             }
         }
         int winner=expected_scores[row][1]>expected_scores[row][0]?2:1;
-        const char* verdict=winner==1?"WOOD 1":"WOOD 2";
+        const char* verdict=winner==1?"SOLID":"HOLLOW";
         auto resultShown=[&] {
             return accepted==3 && !running && oled.text.find(verdict)!=std::string::npos;
         };
